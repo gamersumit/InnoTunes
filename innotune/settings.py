@@ -43,9 +43,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'album',
     'colab',
-    'artist',
     'user',
-    'credits',
     'comment',
     'song',
 ]
@@ -136,6 +134,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# our user model
+AUTH_USER_MODEL = 'user.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
