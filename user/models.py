@@ -15,10 +15,6 @@ class ListenerUser(AbstractUser):
         return self.name
     
 
-
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-# Create your models here.
 class AdminUser(AbstractUser):
     name = models.CharField(max_length = 50)
     image = models.ImageField(upload_to = None, null = True, blank = True)
