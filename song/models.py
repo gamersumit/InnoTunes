@@ -1,7 +1,6 @@
 from django.db import models
 from album.models import *
 
-
 # Create your models here.
 class Song(models.Model):
     title = models.CharField(max_length = 500)
@@ -11,4 +10,8 @@ class Song(models.Model):
     credits = models.CharField(max_length = 10000)
     album = models.ForeignKey(Album, on_delete = models.CASCADE)
     likes = models.PositiveIntegerField(default = 0)
+    # artist_id = models.ForeignKey(Artist)
+   
     
+    def __str__(self):
+        return self.title
