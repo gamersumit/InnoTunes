@@ -1,6 +1,6 @@
 from django.db import models
 from user.models import User
-from song.models import Song
+from music.models import Song
 
 # Create your models here.
 
