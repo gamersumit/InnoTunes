@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+
 # Create your models here.
-class ListenerUser(AbstractUser):
+class User(AbstractUser):
     name = models.CharField(max_length = 50)
-    image = models.ImageField(upload_to = None, null = True, blank = True)
-    email = models.EmailField()
+    avatar = models.ImageField(upload_to = None, null = True, blank = True)
+    email = models.EmailField(unique=True, null = False, blank = False)
     isArtist = models.BooleanField(default = False)
     # password in serializer
     
@@ -14,16 +15,3 @@ class ListenerUser(AbstractUser):
     def __str__(self):
         return self.name
     
-
-class AdminUser(AbstractUser):
-    name = models.CharField(max_length = 50)
-    image = models.ImageField(upload_to = None, null = True, blank = True)
-    email = models.EmailField()
-    isVerified = models.BooleanField(default=False)
-    # password in serialize
-    
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-
-    def __str__(self):
-        return self.name
