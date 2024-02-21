@@ -14,6 +14,6 @@ class SongView(APIView):
             return Response({'msg': 'Done'}, status = status.HTTP_200_OK)
 
 class SongListAPIView(ListAPIView):
-    queryset = SongSerializer.objects.all()
+    queryset = Song.objects.all()
     serializer_class = SongSerializer
     

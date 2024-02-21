@@ -6,7 +6,7 @@ from user.models import User
 # Create your models here.
 class Song(models.Model):
     title = models.CharField(max_length = 500)
-    image = models.ImageField(upload_to = 'image', null = True, blank = True)
+    image = models.ImageField(upload_to = 'image', null = True, blank = True, default = None)
 
     
     # image = CloudinaryField('image')
@@ -15,7 +15,7 @@ class Song(models.Model):
     credits = models.CharField(max_length = 10000)
     album = models.ForeignKey(Album, on_delete = models.CASCADE)
     likes = models.PositiveIntegerField(default = 0)
-    artist_id = models.ForeignKey(User, on_delete = models.CASCADE)
+    artist_id = models.ForeignKey(User, on_delete = models.CASCADE, default = 1)
     
     
     
