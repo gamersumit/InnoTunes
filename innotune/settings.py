@@ -16,7 +16,6 @@ import cloudinary_storage
 from dotenv import load_dotenv
 load_dotenv()
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,11 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-#t10403&9&xljb)ba^@@u-pb-b9=f&cs&!c3kq8b6qld*!+-!2'
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = []
@@ -141,7 +137,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # our user model
-# AUTH_USER_MODEL = 'user.ListenerUser'
+AUTH_USER_MODEL = 'user.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -154,8 +150,8 @@ REST_FRAMEWORK = {
 
           
 CLOUDINARY_STORAGE = { 
-  'CLOUD_NAME' : "djc1amyok", 
-  'API_KEY': "165762787144199", 
-  'API_SECRET': "Rg9e1P88zAzrZZnWV1j1_GVfuiU" 
+  'CLOUD_NAME' : os.getenv('CLOUD_NAME'), 
+  'API_KEY': os.getenv('API_KEY'), 
+  'API_SECRET': os.getenv('API_SECRET') 
 }
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

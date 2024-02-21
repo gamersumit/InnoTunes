@@ -29,7 +29,7 @@ class LogoutView(generics.RetrieveAPIView) :
         
         except Exception as e :
             return Response({'status': False, 'message': str(e)}, status = 400)
-        
+          
 
 class UserDetailView(generics.RetrieveAPIView) :
     serializer_class = UserSerializer
@@ -45,8 +45,10 @@ class UserDetailView(generics.RetrieveAPIView) :
 
         except Exception as e :
             return Response({'status': False, 'message': str(e)}, status = 400)
-        
+ 
+
 # SHORT NAMING :
 user_register_view = RegisterView.as_view()
 user_logout_view = LogoutView.as_view()
 user_detail_view = UserDetailView.as_view()
+
