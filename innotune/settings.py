@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+import cloudinary_storage
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
+    'cloudinary_storage',
     'rest_framework',
     'rest_framework.authtoken',
     'album',
@@ -84,7 +87,7 @@ WSGI_APPLICATION = 'innotune.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENV'),
+        'ENGINE': os.getenv('DB_ENGINE'),
         'NAME': os.getenv('DB_NAME'),
         'HOST' : os.getenv('DB_HOST'),
         'USER' :os.getenv('DB_USER'),
@@ -135,7 +138,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # our user model
-AUTH_USER_MODEL = 'user.User'
+# AUTH_USER_MODEL = 'user.ListenerUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -145,3 +148,11 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5
 
 }
+
+          
+CLOUDINARY_STORAGE = { 
+  'CLOUD_NAME' : "djc1amyok", 
+  'API_KEY': "165762787144199", 
+  'API_SECRET': "Rg9e1P88zAzrZZnWV1j1_GVfuiU" 
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
