@@ -1,5 +1,6 @@
 from django.contrib.auth.hashers import make_password
 import re
+from rest_framework.authtoken.models import Token
 
 class UserUtils :
 
@@ -25,3 +26,14 @@ class UserUtils :
         #     raise serializers.ValidationError("Password must contain a special character(@,#,$,%,^,&,*,(,),-,_,+,=,.)")
 
         return make_password(value)    # return hashed password
+    
+
+    @staticmethod
+    def getUserFromToken(token):
+        try :
+            token = Token.objects.get(key = token)
+            user = token.user
+            return user
+        
+        except Exception as e :
+            raise Exception(str(e))

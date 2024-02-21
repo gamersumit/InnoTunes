@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'colab',
     'user',
     'comment',
-    'song',
+    'music',
 ]
 
 MIDDLEWARE = [
