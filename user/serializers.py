@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'email',
             'password',
-            'name',
+            'username',
             'is_artist',
         ]
     
