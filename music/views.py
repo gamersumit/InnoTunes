@@ -10,16 +10,21 @@ from utils.utils import UserUtils
 
 # Create your views here.
 
+# <! ---------------- songs views ------------------ !> 
+# Add a song view
 class SongView(APIView):
     def post(self, request):
         serializer = SongSerializer(data = request.data)
         if serializer.is_valid(raise_exception=True):
             return Response({'status' : False, 'message': 'Done'}, status = status.HTTP_200_OK)
 
+# list all songs
 class SongListAPIView(ListAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
 
+# <! ---------------- Playlist views ------------------ !> 
+# Add a playlist view
 class PlayListViewSet(viewsets.ViewSet):    
     serializer_class = PlaylistSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -35,7 +40,8 @@ class PlayListViewSet(viewsets.ViewSet):
         
         except Exception as e:
             raise Exception(str(e))
-    
+
+#crud operations for songs inside a playlist    
 class SongsInPlayListViewSet(viewsets.ViewSet):    
     serializer_class = SongsInPlaylistSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -55,6 +61,22 @@ class SongsInPlayListViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         raise Exception('Reterive Action Not Allowed')
 
-
-
-
+#crud operations for albums inside a playlist 
+class AlbumInPlayListViewSet(viewsets.ViewSet):    
+    serializer_class = SongsInPlaylistSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get', 'post', 'delete']
+    
+    def get_queryset(self):
+        try:
+            token = self.request.headers['Authorization'].split(' ')[1]
+            user = UserUtils.getUserFromToken(token)
+            playlist = UserUtils.get()
+            Playlist = self.request.data['Playlist_id']
+            return SongsInPlaylist.objects.filter(playlist_id = Playlist)
+        
+        except Exception as e:
+            raise Exception(str(e))
+        
+    def retrieve(self, request, pk=None):
+        raise Exception('Reterive Action Not Allowed')

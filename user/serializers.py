@@ -1,8 +1,8 @@
-from tkinter import Variable
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import User, Followers
 from utils.utils import UserUtils
+from rest_framework.serializers import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -26,8 +26,6 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
        return UserUtils.validate_password(value)
     
-
-
 class ArtistSerializer(serializers.ModelSerializer):
     total_followers = serializers.IntegerField(read_only = True)
     #List action
@@ -43,8 +41,7 @@ class ArtistSerializer(serializers.ModelSerializer):
     
     def get_total_followers(self, artist):
         return Followers.get_total_followers()
-    
-    
+
 class FollowersDetailSerializer(serializers.ModelSerializer) :
     class Meta:
         model = User
