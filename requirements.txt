@@ -11,8 +11,9 @@ djangorestframework==3.14.0
 idna==3.6
 isort==5.13.2
 mccabe==0.7.0
-pillow==10.0.0
+Pillow==10.0.0
 platformdirs==4.2.0
+psycopg2==2.9.9
 pycodestyle==2.11.1
 pylint==3.0.3
 python-dotenv==1.0.1

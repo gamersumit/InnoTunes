@@ -7,6 +7,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework import viewsets
 from rest_framework import permissions
 from utils.utils import UserUtils
+
 # Create your views here.
 
 class SongView(APIView):
@@ -34,7 +35,7 @@ class PlayListViewSet(viewsets.ViewSet):
         
         except Exception as e:
             raise Exception(str(e))
-
+    
 class SongsInPlayListViewSet(viewsets.ViewSet):    
     serializer_class = SongsInPlaylistSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -53,3 +54,7 @@ class SongsInPlayListViewSet(viewsets.ViewSet):
         
     def retrieve(self, request, pk=None):
         raise Exception('Reterive Action Not Allowed')
+
+
+
+
