@@ -3,7 +3,7 @@ from .serializers import CommentSerializer
 from rest_framework.views import APIView
 from .models import Comment
 from user.models import User
-from song.models import Song
+from music.models import Song
 from rest_framework.response import Response
 from rest_framework import status
 # Create your views here.

@@ -7,12 +7,25 @@ from rest_framework.generics import ListAPIView
 from rest_framework import viewsets
 from rest_framework import permissions
 from utils.utils import UserUtils
+import cloudinary.api
 # Create your views here.
 
 class SongView(APIView):
     def post(self, request):
         serializer = SongSerializer(data = request.data)
         if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            
+            ## getting audio duration
+            audio_url = serializer.data['audio']
+            audio_info = cloudinary.api.resource(audio_url)
+            ## metadata --> duration in the cloudinary
+            audio_duration = audio_info.get('duration', None)
+            
+            ## serializer's instance for making updates
+            song_instance = serializer.instance
+            song_instance.audio_duration = audio_duration
+            song_instance.save()
             return Response({'status' : False, 'message': 'Done'}, status = status.HTTP_200_OK)
 
 class SongListAPIView(ListAPIView):

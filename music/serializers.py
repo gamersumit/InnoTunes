@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Song, Playlist, SongsInPlaylist
 
 class SongSerializer(serializers.ModelSerializer):
+    audio_duration = serializers.DecimalField(max_digits = 4, decimal_places = 2)
     class Meta:
         model = Song
         fields = '__all__'
@@ -13,7 +14,6 @@ class PlaylistSerializer(serializers.ModelSerializer):
         model = Playlist
         fields = '__all__'
         read_only_fields = ['id']
-
     
     def validate(self, attributes):
         try :
@@ -25,11 +25,19 @@ class PlaylistSerializer(serializers.ModelSerializer):
 
         except Exception as e :
             raise Exception(str(e))
-        
+    
+    
     
 class SongsInPlaylistSerializer(serializers.ModelSerializer):
     
+    total_songs = serializers.SerializerMethodField()
     class Meta:
         model = SongsInPlaylist
         fields = '__all__'
         read_only_fields = ['id']
+    
+    
+    ## to check
+    def get_total_songs(self, attributes):
+        return attributes.playlist_id.count()
+    

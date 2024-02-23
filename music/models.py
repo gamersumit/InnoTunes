@@ -11,12 +11,13 @@ class Song(models.Model):
     title = models.CharField(max_length = 500)
     lyrics = models.CharField(max_length = 10000000, null=True, blank=True)
     credits = models.CharField(max_length = 10000)
-    image = models.ImageField(upload_to = 'image', null = True, blank = True)
-
+    image = models.ImageField(upload_to = 'image/', null = True, blank = True)
+    audio = models.FileField(upload_to='audio/', null=True, blank=True)
+    video = models.FileField(upload_to='video/', null=True, blank=True)
+   
     # image = CloudinaryField('image')
     # duration = models.TimeField()
     created_at = models.DateField(auto_now_add = True)
-    
     
     def __str__(self):
         return self.title
