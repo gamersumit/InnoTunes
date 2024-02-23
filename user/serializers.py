@@ -44,17 +44,32 @@ class ArtistSerializer(serializers.ModelSerializer):
     def get_total_followers(self, artist):
         return Followers.get_total_followers()
     
-
-class FollowerSerializer(serializers.ModelSerializer):
     
+class FollowersDetailSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'avatar',
+        ]
+    
+class FollowerSerializer(serializers.ModelSerializer):
+    followers_detail = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Followers
         fields = [
             'id',
             'artist_id',
             'user_id',
+            'followers_detail',
         ]
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'followers_detail']
+        
+    def get_followers_detail(self, obj):
+        product = User.objects.get(id = obj.user_id.id)
+        serializer = FollowersDetailSerializer(product)
+        return serializer.data
     
     def validate(self, attributes):
         try :
@@ -72,8 +87,7 @@ class FollowerSerializer(serializers.ModelSerializer):
         except Exception as e :
             raise ValidationError(str(e))
             
-        
-        
+          
         
 # GET ACTION RETERIVE  -- ON ID
 # fields  = [
