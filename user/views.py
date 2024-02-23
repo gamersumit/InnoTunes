@@ -1,16 +1,41 @@
 
+from logging import raiseExceptions
 from rest_framework import generics
 from rest_framework.response import Response
-from .serializers import UserSerializer
+from .serializers import FollowerSerializer, UserSerializer
 from .models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
+from django.contrib.auth import authenticate
+from rest_framework.decorators import api_view, permission_classes
+from user.models import User, Followers
+from user.permissions import UserPermissions
+from utils.utils import UserUtils
 
 # Create your views here.
 
 class RegisterView(generics.CreateAPIView) :
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
+#Login View
+class LoginView(generics.GenericAPIView) :
+    def post(self, request, *args, **kwargs) :
+        try :
+            username = request.data['email']
+            password = request.data['password']
+            
+            user = authenticate(password = password, username = username)
+            
+            if user:
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({'token': token.key}, status = 200)
+        
+            else:
+                return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
+        
+        except Exception as e:
+                return Response({'status': False, 'message': str(e)}, status=400)
 
 
 # logout view // delete token       
@@ -47,8 +72,50 @@ class UserDetailView(generics.RetrieveAPIView) :
             return Response({'status': False, 'message': str(e)}, status = 400)
  
 
+##### FOllower Releated views ########
+
+class AddFollowerView(generics.CreateAPIView):
+    queryset = Followers.objects.all()
+    serializer_class = FollowerSerializer
+    permission_class = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        try :
+            data = {}
+            token = request.headers['Authorization'].split(' ')[1]
+            data['user_id'] = UserUtils.getUserFromToken(token).id
+            data['artist_id'] = request.data['artist_id']
+            
+            if Followers.objects.filter(user_id = data['user_id'], artist_id = data['artist_id']).exists() :
+                Followers.objects.get(user_id = data['user_id'], artist_id = data['artist_id']).delete()
+                return Response({'status' : True, 'message'  : 'Follower deleted successfully'}, status= 200)
+            
+            serializer = self.serializer_class(data = data)
+            serializer.is_valid(raise_exception = True)
+            serializer.save()
+            
+            return Response({'status' : True, 'message'  : 'Follower added successfully'}, status= 200)
+   
+        except Exception as e:
+            return Response({'status' : False, 'message'  : str(e)}, status= 400)
+    
+class ListAllFollowers(generics.ListAPIView):
+    serializer_class = FollowerSerializer
+    permission_class = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        id = self.kwargs.get('id')
+        return Followers.objects.filter(artist_id = id)
+            
+            
+    
 # SHORT NAMING :
 user_register_view = RegisterView.as_view()
 user_logout_view = LogoutView.as_view()
 user_detail_view = UserDetailView.as_view()
+user_login_view = LoginView.as_view()
+add_follower_view = AddFollowerView.as_view()
+list_followers_view = ListAllFollowers.as_view()
+
+
 

@@ -105,7 +105,8 @@ venv/
 ENV/ 
 env.bak/ 
 venv.bak/
-inntenv/ 
+intenv/
+
 
 # mkdocs documentation 
 /site 

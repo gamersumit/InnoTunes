@@ -3,6 +3,8 @@
 import os
 import sys
 from dotenv import load_dotenv
+# import psycopg2
+
 
 def main():
     load_dotenv()

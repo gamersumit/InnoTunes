@@ -39,10 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # third party apps
     'cloudinary',
     'cloudinary_storage',
     'rest_framework',
     'rest_framework.authtoken',
+    
+    # project apps
     'album',
     'colab',
     'user',
@@ -86,11 +90,11 @@ WSGI_APPLICATION = 'innotune.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE'),
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME'),
-        'HOST' : os.getenv('DB_HOST'),
-        'USER' :os.getenv('DB_USER'),
-        'PORT' : os.getenv('DB_PORT'),
+        'HOST': os.getenv('DB_HOST'),
+        'USER': os.getenv('DB_USER'),
+        'PORT': os.getenv('DB_PORT'),
         'PASSWORD': os.getenv('DB_PASSWORD')
     }
 }
@@ -141,17 +145,17 @@ AUTH_USER_MODEL = 'user.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-   ],
+        'rest_framework.authentication.TokenAuthentication',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 5
 
 }
 
-          
-CLOUDINARY_STORAGE = { 
-  'CLOUD_NAME' : os.getenv('CLOUD_NAME'), 
-  'API_KEY': os.getenv('API_KEY'), 
-  'API_SECRET': os.getenv('API_SECRET') 
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUD_NAME'),
+    'API_KEY': os.getenv('API_KEY'),
+    'API_SECRET': os.getenv('API_SECRET')
 }
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

@@ -1,7 +1,9 @@
 from django.db import models
 # from album.models import Album
 from cloudinary.models import CloudinaryField
+from django.db import models
 from user.models import User
+
 
 # Create your models here.
 class Album(models.Model):

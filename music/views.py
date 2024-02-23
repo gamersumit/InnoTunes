@@ -47,7 +47,7 @@ class PlayListViewSet(viewsets.ViewSet):
         
         except Exception as e:
             raise Exception(str(e))
-
+    
 class SongsInPlayListViewSet(viewsets.ViewSet):    
     serializer_class = SongsInPlaylistSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -66,3 +66,7 @@ class SongsInPlayListViewSet(viewsets.ViewSet):
         
     def retrieve(self, request, pk=None):
         raise Exception('Reterive Action Not Allowed')
+
+
+
+
