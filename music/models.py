@@ -9,7 +9,7 @@ from user.models import User
 class Album(models.Model):
     album_name = models.CharField(max_length = 200, unique=True)
     album_description = models.TextField(max_length = 50000)
-    album_picture = models.ImageField(upload_to='album/images/', null = True, blank = True)
+    album_picture = models.URLField(null=True, blank=True)
     artist_id = models.ForeignKey(User, on_delete = models.CASCADE) ## if artist gets deleted, his album must not be deleted    
     
     def __str__(self):

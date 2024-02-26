@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import *
-
+from cloudinary import uploader
 # <! ---------- SONGS SERIALIZERS -----------!>
 class SongSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,6 +45,8 @@ class AlbumSerializer(serializers.ModelSerializer):
     #     duration_list = [song.duration for song in (Song.object.filter(album_id = attrs['id'].id))] 
     #     duration = 10.20 # for now will have to calculate it
     #     return duration
+    
+    
     
    
 class SongsInAlbumSerializer(serializers.ModelSerializer):

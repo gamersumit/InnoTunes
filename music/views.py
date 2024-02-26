@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from rest_framework import viewsets, generics
 from rest_framework import permissions
-from utils.utils import UserUtils
+from utils.utils import CommonUtils, UserUtils
 from user.permissions import *
 from music import serializers
 
@@ -23,7 +23,22 @@ class SongView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
     permission_classes = [IsArtistOrReadOnly, IsOwnerOrReadOnly]
-
+    
+    def post(self, request):
+        try:
+            if request.data.get('song_picture'):
+                request.data['song_picture'] = CommonUtils.UploadImageToCloud(request.data['song_picture'])
+            
+            serializer = self.serializer_class(request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            
+            return Response({'message' : serializer.data}, status = 200)
+            
+        except Exception as e:
+            return Response({'message' : str(e)}, status = 400)
+           
+            
 # list all songs
 class SongListView(ListAPIView):
     serializer_class = SongSerializer
@@ -64,6 +79,22 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             return None
+    
+    def post(self, request):
+        try:
+            if request.data.get('playlist_picture'):
+                request.data['playlist_picture'] = CommonUtils.UploadImageToCloud(request.data['playlist_picture'])
+            
+            serializer = self.serializer_class(request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            
+            return Response({'message' : serializer.data}, status = 200)
+            
+        except Exception as e:
+            return Response({'message' : str(e)}, status = 400)
+ 
+ 
  # album Cruds(these cruds are not for songs inside album)
 
 
@@ -81,6 +112,20 @@ class AlbumViewSet(viewsets.ModelViewSet):
         
         except Exception as e:
             return None
+    
+    def post(self, request):
+        try:
+            if request.data.get('album_picture'):
+                request.data['album_picture'] = CommonUtils.UploadImageToCloud(request.data['album_picture'])
+            
+            serializer = self.serializer_class(request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            
+            return Response({'message' : serializer.data}, status = 200)
+            
+        except Exception as e:
+            return Response({'message' : str(e)}, status = 400)
 # post and delete operations for songs inside a playlist
 
 class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
