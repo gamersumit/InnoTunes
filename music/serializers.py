@@ -6,28 +6,20 @@ class SongSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
         fields = '__all__'
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['id', 'created_at', 'audio_duration']
 
 # <! ---------- PLAYLIST SERIALIZERS -----------!> 
 class PlaylistSerializer(serializers.ModelSerializer):
+    total_songs = serializers.IntegerField(default = 0)
     class Meta:
         model = Playlist
         fields = '__all__'
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'total_songs']
 
-    
-    def validate(self, attributes):
-        try :
-            if Playlist.objects.filter(title = attributes['title'], user_id = attributes['user_id']) :
-                raise Exception('Playlist already exists')
-            
-            attributes['title'] = attributes['title'].title()
-            return attributes
-
-        except Exception as e :
-            raise Exception(str(e))
+    def get_total_songs(attrs):
+        return SongsInPlaylist.objects.filter(playlist_id = attrs['id'].id).count()
         
-   
+
 class SongsInPlaylistSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -39,7 +31,7 @@ class SongsInPlaylistSerializer(serializers.ModelSerializer):
 # <! ---------- ALBUM SERIALIZERS -----------!> 
 class AlbumSerializer(serializers.ModelSerializer):
     total_songs = serializers.IntegerField(default = 0)
-    total_duration = serializers.DecimalField(default = 0, decimal_places = 2)
+    total_duration = serializers.DecimalField(default = 0, decimal_places = 2, max_digits=2)
     
     class Meta:
         model = Album
@@ -51,7 +43,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 
     def get_total_duration(self, attrs):
         duration_list = [song.duration for song in (Song.object.filter(album_id = attrs['id'].id))] 
-        duration = None # for now will have to calculate it
+        duration = 10.20 # for now will have to calculate it
         return duration
 
 class SongsInAlbumSerializer(serializers.ModelSerializer):
@@ -59,8 +51,5 @@ class SongsInAlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = SongsInAlbum
         fields = '__all__'
-        read_only_fields = ['id','song_id','album_id','total_songs']
+        read_only_fields = ['id']
         
-    def get_total_songs(self, attrs):   ## total songs in an album
-        songs_in_album = attrs.album_id 
-        return songs_in_album.count()

@@ -106,12 +106,16 @@ class FollowerSerializer(serializers.ModelSerializer):
 # --- songs on album id ----
 # songs = [
 #     'id',
+
 #     'song_name',
 #     'song_image',
+#     'song_discription',
+
 #     'audio',
-#     'date_added',
+#     'video',
+#     'audio_duration',
+
 #     'genre',
 #     'credits' -- will see it later ---
-#     'song_duration',
-#     'song_discription',
+#     'date_added',
 # ]

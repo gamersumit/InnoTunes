@@ -2,7 +2,7 @@
 from logging import raiseExceptions
 from rest_framework import generics
 from rest_framework.response import Response
-from .serializers import FollowerSerializer, UserSerializer
+from .serializers import *
 from .models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
@@ -70,8 +70,14 @@ class UserDetailView(generics.RetrieveAPIView) :
 
         except Exception as e :
             return Response({'status': False, 'message': str(e)}, status = 400)
- 
 
+# ArtistSerializer --- to provide list of all artist
+class ArtistListView(generics.ListAPIView) :
+    serializer_class = ArtistSerializer
+    queryset = User.objects.filter(is_artist = True)
+    permission_classes = [permissions.IsAuthenticated]
+    
+    
 ##### FOllower Releated views ########
 
 class AddFollowerView(generics.CreateAPIView):
@@ -106,8 +112,7 @@ class ListAllFollowers(generics.ListAPIView):
     def get_queryset(self):
         id = self.kwargs.get('id')
         return Followers.objects.filter(artist_id = id)
-            
-            
+                  
     
 # SHORT NAMING :
 user_register_view = RegisterView.as_view()
@@ -116,6 +121,7 @@ user_detail_view = UserDetailView.as_view()
 user_login_view = LoginView.as_view()
 add_follower_view = AddFollowerView.as_view()
 list_followers_view = ListAllFollowers.as_view()
+artist_list_view = ArtistListView.as_view()
 
 
 

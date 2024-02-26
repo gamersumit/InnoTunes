@@ -6,11 +6,14 @@ from . import views
 router = routers.DefaultRouter()
 
 # Register your viewsets with the router
-router.register('playlist/', views.PlayListViewSet, basename = 'playlist')
+router.register('playlist/', views.PlaylistViewSet, basename = 'playlist')
+router.register('album/', views.AlbumViewSet, basename = 'album')
 
 urlpatterns = [
-    path('', views.SongView.as_view(), name = 'song-view'),
-    path('list/', views.SongListAPIView.as_view(), name = 'song-list'),
+    path('songs/', views.SongView.as_view(), name = 'add_song_view'),
+    path('songs/<str:field>/<str:id>/', views.SongListView.as_view(), name = 'songs_list'),
+    path('playlist/<str:playlist_id>/<str:song_id>', views.AddDeleteSongsFromPlaylistView.as_view(), name = 'add_delete_songsfromPlaylist'),
+    path('album/<str:album_id>/<str:song_id>', views.AddDeleteSongsFromAlbumView.as_view(), name = 'add_delete_songsfromPlaylist')
 ]
 
 
