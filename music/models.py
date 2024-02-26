@@ -9,8 +9,6 @@ from user.models import User
 class Album(models.Model):
     album_name = models.CharField(max_length = 200, unique=True)
     album_description = models.TextField(max_length = 50000)
-    # album_picture_url = models.URLField(blank=True)
-    
     album_picture = models.ImageField(upload_to='album/images/', null = True, blank = True)
     artist_id = models.ForeignKey(User, on_delete = models.CASCADE) ## if artist gets deleted, his album must not be deleted    
     
