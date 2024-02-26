@@ -1,7 +1,6 @@
 from django.db import models
-from song.models import Song
+from music.models import Song
 from user.models import User
-
 # Create your models here.
 class Colab(models.Model):
     song_id = models.ForeignKey(Song, on_delete = models.CASCADE)
