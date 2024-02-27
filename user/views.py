@@ -10,13 +10,17 @@ from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, permission_classes
 from user.models import User, Followers
 from user.permissions import UserPermissions
-from utils.utils import UserUtils
+from utils.utils import UserUtils, CommonUtils
 
 # Create your views here.
 
 class RegisterView(generics.CreateAPIView) :
     serializer_class = UserSerializer
     queryset = User.objects.all()
+    
+    def post(self, request):
+        if self.request.data['avatar']:
+            self.request.data['avatar'] = CommonUtils.UploadToCloud(request.data['avatar'], 'user')
 
 #Login View
 class LoginView(generics.GenericAPIView) :

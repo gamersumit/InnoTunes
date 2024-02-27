@@ -11,7 +11,7 @@ from rest_framework import viewsets, generics
 from rest_framework import permissions
 
 ## ye 1st class SongView ni hai updated wale code mai...just for myself
-from utils.utils import UserUtils
+from utils.utils import UserUtils, CommonUtils
 import cloudinary.api
 # Create your views here.
 
@@ -37,12 +37,18 @@ class SongView(APIView):
 class SongView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
-    permission_classes = [IsArtistOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsArtistOrReadOnly, permissions.IsOwnerOrReadOnly]
     
     def post(self, request):
         try:
             if request.data.get('song_picture'):
-                request.data['song_picture'] = CommonUtils.UploadImageToCloud(request.data['song_picture'])
+                request.data['song_picture'] = CommonUtils.UploadToCloud(request.data['song_picture'], 'song')
+            if request.data.get('song_video'):
+                request.data['song_video'] = CommonUtils.UploadToCloud(request.data.get('song_video'), 'song')
+            if request.data.get('song_audio'):
+                request.data['song_audio'] = CommonUtils.UploadToCloud(request.data.get('song_audio'), 'song')    
+            else:
+                raise Exception("No audio provided")
             
             serializer = self.serializer_class(request.data)
             serializer.is_valid(raise_exception=True)
@@ -84,7 +90,7 @@ class SongListView(ListAPIView):
 #  playlist CRUDS(these cruds are not for songs inside playlist) view
 class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsOwnerOrReadOnly]
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 
@@ -98,7 +104,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     def post(self, request):
         try:
             if request.data.get('playlist_picture'):
-                request.data['playlist_picture'] = CommonUtils.UploadImageToCloud(request.data['playlist_picture'])
+                request.data['playlist_picture'] = CommonUtils.UploadImageToCloud(request.data['playlist_picture'], 'playlist')
             
             serializer = self.serializer_class(request.data)
             serializer.is_valid(raise_exception=True)
@@ -115,7 +121,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 
 class AlbumViewSet(viewsets.ModelViewSet):
     serializer_class = AlbumSerializer
-    permission_classes = [IsArtistOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsArtistOrReadOnly, permissions.IsOwnerOrReadOnly]
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 
@@ -131,7 +137,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
     def post(self, request):
         try:
             if request.data.get('album_picture'):
-                request.data['album_picture'] = CommonUtils.UploadImageToCloud(request.data['album_picture'])
+                request.data['album_picture'] = CommonUtils.UploadToCloud(request.data['album_picture'], 'album')
             
             serializer = self.serializer_class(request.data)
             serializer.is_valid(raise_exception=True)

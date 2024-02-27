@@ -42,6 +42,11 @@ class UserUtils :
 class CommonUtils:
     
     @staticmethod
-    def UploadImageToCloud(image):
-        upload_result = uploader.upload(image)
-        return upload_result
+    def UploadToCloud(media, path):
+        extension = media.split('.')[1]
+        if extension in ['jpg','jpeg','png']:
+            return uploader.upload(media, folder = f'{path}/images/', resource_type = 'video')
+        elif extension in ['mp3', 'wav','.ogg']:
+            uploader.upload(media,folder = f'{path}/audios/')
+        elif extension in ['mp4','mov','avi','mkv']:
+            uploader.upload(media, folder = f'{path}/videos/')            
