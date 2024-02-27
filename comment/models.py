@@ -1,6 +1,6 @@
 from django.db import models
 from user.models import User
-from music.models import Song
+from music.models import Song, Album
 
 # Create your models here.
 
@@ -11,3 +11,29 @@ class Comment(models.Model):
     
     def __str__(self):
         return self.description
+
+
+# Follower pattern
+class Followers(models.Model) :
+    artist_id = models.ForeignKey(User, related_name = 'following', on_delete = models.CASCADE)
+    user_id = models.ForeignKey(User,related_name = 'follower', on_delete = models.CASCADE)
+    
+    class Meta:
+        unique_together = ['artist_id', 'user_id']
+    
+    @staticmethod    
+    def get_total_followers(artist):
+        return Followers.objects.filter(artist_id = artist).count()  
+    
+
+# Liked Album Model
+class AlbumLikes(models.Model) :
+    album_id = models.ForeignKey(Album,  on_delete = models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete = models.CASCADE)
+    
+    class Meta:
+        unique_together = ['album_id', 'user_id']
+    
+    @staticmethod    
+    def get_total_likes(album):
+        return Album.objects.filter(album_id = album).count()

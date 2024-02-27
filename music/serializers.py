@@ -50,9 +50,7 @@ class AlbumSerializer(serializers.ModelSerializer):
     #     duration = 10.20 # for now will have to calculate it
     #     return duration
     
-    
-    
-   
+
 class SongsInAlbumSerializer(serializers.ModelSerializer):
 
     class Meta:
