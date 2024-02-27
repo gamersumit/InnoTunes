@@ -2,7 +2,6 @@ from rest_framework import serializers
 from .models import Song, Playlist, SongsInPlaylist
 
 class SongSerializer(serializers.ModelSerializer):
-    audio_duration = serializers.DecimalField(max_digits = 4, decimal_places = 2)
     class Meta:
         model = Song
         fields = '__all__'

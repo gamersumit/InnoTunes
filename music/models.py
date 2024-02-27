@@ -28,7 +28,7 @@ class Song(models.Model):
     image = models.ImageField(upload_to = 'image/', null = True, blank = True)
     audio = models.FileField(upload_to='audio/', null=True, blank=True)
     video = models.FileField(upload_to='video/', null=True, blank=True)
-   
+    audio_duration = models.PositiveIntegerField()
     # image = CloudinaryField('image')
     # duration = models.TimeField()
     created_at = models.DateField(auto_now_add = True)

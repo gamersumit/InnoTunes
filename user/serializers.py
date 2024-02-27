@@ -1,4 +1,4 @@
-from tkinter import Variable
+# from tkinter import Variable
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import User, Followers
