@@ -1,42 +1,58 @@
 from rest_framework import serializers
-from .models import Song, Playlist, SongsInPlaylist
-
+from .models import *
+from cloudinary import uploader
+# <! ---------- SONGS SERIALIZERS -----------!>
 class SongSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
         fields = '__all__'
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['id', 'created_at', 'audio_duration']
 
-
+# <! ---------- PLAYLIST SERIALIZERS -----------!> 
 class PlaylistSerializer(serializers.ModelSerializer):
+    total_songs = serializers.SerializerMethodField(default = 0)
     class Meta:
         model = Playlist
         fields = '__all__'
-        read_only_fields = ['id']
-    
-    def validate(self, attributes):
-        try :
-            if Playlist.objects.filter(title = attributes['title'], user_id = attributes['user_id']) :
-                raise Exception('Playlist already exists')
-            
-            attributes['title'] = attributes['title'].title()
-            return attributes
+        read_only_fields = ['id', 'total_songs']
 
-        except Exception as e :
-            raise Exception(str(e))
-    
-    
-    
+    def get_total_songs(self, obj):
+        return SongsInPlaylist.objects.filter(playlist_id = obj.id).count()
+        
+
 class SongsInPlaylistSerializer(serializers.ModelSerializer):
-    
-    total_songs = serializers.SerializerMethodField()
+   
     class Meta:
         model = SongsInPlaylist
         fields = '__all__'
+        read_only_fields = ['id', 'total_songs']
+        
+        
+# <! ---------- ALBUM SERIALIZERS -----------!> 
+class AlbumSerializer(serializers.ModelSerializer):
+    total_songs = serializers.SerializerMethodField(read_only = True)
+    # total_duration = serializers.DecimalField(default = 0, decimal_places = 2, max_digits=2)
+    
+    class Meta:
+        model = Album
+        fields = '__all__'
+        read_only_fields = ['id', 'total_songs']
+           
+    def get_total_songs(self, obj):   ## returns a list of count of songs in each album of an artist
+      return SongsInAlbum.objects.filter(album_id = obj.id).count()       
+
+    # def get_total_duration(self, attrs):
+    #     duration_list = [song.duration for song in (Song.object.filter(album_id = attrs['id'].id))] 
+    #     duration = 10.20 # for now will have to calculate it
+    #     return duration
+    
+    
+    
+   
+class SongsInAlbumSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SongsInAlbum
+        fields = '__all__'
         read_only_fields = ['id']
-    
-    
-    ## to check
-    def get_total_songs(self, attributes):
-        return attributes.playlist_id.count()
-    
+        

@@ -1,6 +1,7 @@
 # from django.db import models
 # from user.models import User
 # from music.models import Song
+# from django.db import models
 
 # Create your models here.
 # class Album(models.Model):

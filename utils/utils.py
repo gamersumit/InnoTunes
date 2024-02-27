@@ -1,7 +1,7 @@
 from django.contrib.auth.hashers import make_password
 import re
 from rest_framework.authtoken.models import Token
-
+from cloudinary import uploader
 class UserUtils :
 
     @staticmethod
@@ -37,3 +37,11 @@ class UserUtils :
         
         except Exception as e :
             raise Exception(str(e))
+        
+
+class CommonUtils:
+    
+    @staticmethod
+    def UploadImageToCloud(image):
+        upload_result = uploader.upload(image)
+        return upload_result
