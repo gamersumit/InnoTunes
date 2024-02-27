@@ -1,5 +1,3 @@
-from re import T
-from album.models import *
 from cloudinary.models import CloudinaryField
 from django.db import models
 from user.models import User
@@ -49,11 +47,11 @@ class Song(models.Model):
     artist_id = models.ForeignKey(User, on_delete = models.CASCADE)
     
     song_name = models.CharField(max_length = 500)
-    song_image = models.ImageField(upload_to = 'songs/image/', null = True, blank = True)
-    song_discription = models.TextField(max_length = 100000, null = True, blank = True)
+    song_picture = models.URLField(null = True, blank = True)
+    song_description = models.TextField(max_length = 100000, null = True, blank = True)
     
-    audio = models.FileField(upload_to = 'songs/audio/', null=True, blank=True)
-    video = models.FileField(upload_to = 'songs/video/', null=True, blank=True)
+    audio = models.URLField(null = True, blank = True)
+    video = models.URLField(null = True, blank = True)
     audio_duration = models.PositiveIntegerField(default = 0)
     
     genre = models.CharField(choices = genre_choices, null = False, blank=False)    

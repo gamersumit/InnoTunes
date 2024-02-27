@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     
     # project apps
-    'album',
     'colab',
     'user',
     'comment',

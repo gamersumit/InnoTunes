@@ -3,7 +3,6 @@ from curses.ascii import SO
 from rest_framework.views import APIView
 from .models import Song, Playlist, SongsInAlbum, SongsInPlaylist
 from .serializers import *
-from .permissions import *
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
@@ -19,26 +18,18 @@ from music import serializers
 # Add a song view
 
 
-class SongView(generics.CreateAPIView):
+class SongCreateView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
-    permission_classes = [IsArtistOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
     
     def post(self, request):
-        try:
-            if request.data.get('song_picture'):
-                request.data['song_picture'] = CommonUtils.UploadImageToCloud(request.data['song_picture'])
-            
-            serializer = self.serializer_class(request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            
-            return Response({'message' : serializer.data}, status = 200)
+        try :
+            CommonUtils.Update_Create(request, ['song_picture', 'audio', 'video'], 'song')
+            return CommonUtils.Serialize(request.data, SongSerializer)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
-           
-            
 # list all songs
 class SongListView(ListAPIView):
     serializer_class = SongSerializer
@@ -64,12 +55,11 @@ class SongListView(ListAPIView):
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status=200)
 
-
 # <! ---------------- Playlist views ------------------ !>
 #  playlist CRUDS(these cruds are not for songs inside playlist) view
 class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 
@@ -79,28 +69,28 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             return None
-    
+       
     def post(self, request):
-        try:
-            if request.data.get('playlist_picture'):
-                request.data['playlist_picture'] = CommonUtils.UploadImageToCloud(request.data['playlist_picture'])
+        try :
+            CommonUtils.Update_Create(request, ['playlist_picture'], 'playlist')
+            return CommonUtils.Serialize(request.data, PlaylistSerializer)
             
-            serializer = self.serializer_class(request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            
-            return Response({'message' : serializer.data}, status = 200)
+        except Exception as e:
+            return Response({'message' : str(e)}, status = 400)    
+    
+    def put(self, request):
+        try :
+            CommonUtils.Update_Create(request, ['playlist_picture'], 'playlist')
+            return CommonUtils.Serialize(request.data, PlaylistSerializer)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
- 
- 
- # album Cruds(these cruds are not for songs inside album)
-
-
+        
+        
+# album Cruds(these cruds are not for songs inside album)
 class AlbumViewSet(viewsets.ModelViewSet):
     serializer_class = AlbumSerializer
-    permission_classes = [IsArtistOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = permissions.IsAuthenticated, IsArtistOwnerOrReadOnly
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 
@@ -112,26 +102,32 @@ class AlbumViewSet(viewsets.ModelViewSet):
         
         except Exception as e:
             return None
-    
+        
+        
     def post(self, request):
-        try:
-            if request.data.get('album_picture'):
-                request.data['album_picture'] = CommonUtils.UploadImageToCloud(request.data['album_picture'])
+        try :
+            CommonUtils.Update_Create(request, ['album_picture'], 'album')
+            return CommonUtils.Serialize(request.data, PlaylistSerializer)
             
-            serializer = self.serializer_class(request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            
-            return Response({'message' : serializer.data}, status = 200)
+        except Exception as e:
+            return Response({'message' : str(e)}, status = 400)    
+    
+ 
+    def put(self, request):
+        try :
+            CommonUtils.Update_Create(request, ['album_picture'], 'album')
+            return CommonUtils.Serialize(request.data, PlaylistSerializer)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
+            
+
 # post and delete operations for songs inside a playlist
 
 class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
     queryset = SongsInPlaylist.objects.all()
     serializer_class = SongsInPlaylistSerializer
-    permission_classes = [permissions.IsAuthenticated, IsPlaylistOwner]
+    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
 
     def post(self):
         try:
@@ -162,11 +158,12 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status=400)
 
+
 # post and delete operations for songs inside a album
 class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
     queryset = SongsInAlbum.objects.all()
     serializer_class = SongsInAlbumSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAlbumOwner]
+    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
 
     def post(self):
         try:

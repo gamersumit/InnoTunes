@@ -2,6 +2,9 @@ from django.contrib.auth.hashers import make_password
 import re
 from rest_framework.authtoken.models import Token
 from cloudinary import uploader
+from rest_framework.response import Response
+import os
+
 class UserUtils :
 
     @staticmethod
@@ -42,6 +45,41 @@ class UserUtils :
 class CommonUtils:
     
     @staticmethod
-    def UploadImageToCloud(image):
-        upload_result = uploader.upload(image)
-        return upload_result
+    def UploadMediaToCloud(media, path):
+        try : 
+            name, extension = media.file_extension = os.path.splitext(media.name)
+            
+            if extension.lower() in ['.jpg','.jpeg','.png']:
+                return uploader.upload(media, folder = f'{path}/images/')
+            elif extension.lower() in ['.mp3']:
+                return uploader.upload(media, folder = f'{path}/audios/')
+            elif extension.lower() in ['.mp4']:
+                return uploader.upload(media, folder = f'{path}/videos/')
+            else :
+                raise Exception('Unsupported Media Type')
+            
+        except Exception as e:
+            raise Exception(str(e))
+    
+    @staticmethod
+    def Update_Create(request, fields, path):
+        try:
+            
+            for field in fields :
+                if request.data.get(field):
+                    request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], path)
+
+        except Exception as e:
+            raise Exception(str(e))
+    
+    @staticmethod
+    def Serialize(data, serializer_class):
+        try:
+            serializer = serializer_class(data = data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            
+            return Response({'message' : serializer.data}, status = 200)
+            
+        except Exception as e:
+            return Response({'message' : str(e)}, status = 400)
