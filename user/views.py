@@ -9,7 +9,6 @@ from rest_framework import permissions
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, permission_classes
 from user.models import User, Followers
-from user.permissions import UserPermissions
 from utils.utils import UserUtils, CommonUtils
 
 # Create your views here.
@@ -22,6 +21,14 @@ class RegisterView(generics.CreateAPIView) :
         if self.request.data['avatar']:
             self.request.data['avatar'] = CommonUtils.UploadToCloud(request.data['avatar'], 'user')
 
+    def post(self, request):
+        try :
+            CommonUtils.Update_Create(request, ['avatar'], 'avatar')
+            return CommonUtils.Serialize(request.data, UserSerializer)
+            
+        except Exception as e:
+            return Response({'message' : str(e)}, status = 400)
+        
 #Login View
 class LoginView(generics.GenericAPIView) :
     def post(self, request, *args, **kwargs) :
@@ -41,15 +48,16 @@ class LoginView(generics.GenericAPIView) :
         except Exception as e:
                 return Response({'status': False, 'message': str(e)}, status=400)
 
-
 # logout view // delete token       
 class LogoutView(generics.RetrieveAPIView) :
+    permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
         try :
             auth_header = request.headers.get('Authorization')
             if auth_header and auth_header.startswith('Token '):
                 token = auth_header.split(' ')[1]
                 token = Token.objects.get(key = token)
+                
                 token.delete()
                 return Response({'status': True, 'message': 'User Logout Successfully'}, status = 200)
             
@@ -58,7 +66,25 @@ class LogoutView(generics.RetrieveAPIView) :
         
         except Exception as e :
             return Response({'status': False, 'message': str(e)}, status = 400)
-          
+    
+    
+    def delete(self, request, *args, **kwargs) :
+        try :
+            username = request.data['email']
+            password = request.data['password']
+            
+            user = authenticate(password = password, username = username)
+           
+        
+            if user:
+                user.delete()
+                return Response({'message': 'User Deleted Sucessfully'}, status = 200)
+        
+            else:
+                return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
+        
+        except Exception as e:
+                return Response({'status': False, 'message': str(e)}, status=400)   
 
 class UserDetailView(generics.RetrieveAPIView) :
     serializer_class = UserSerializer

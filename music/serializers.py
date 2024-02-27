@@ -1,12 +1,16 @@
+from xml.dom import ValidationErr
 from rest_framework import serializers
+from rest_framework.serializers import ValidationError
 from .models import *
 from cloudinary import uploader
+from utils.utils import CommonUtils
 # <! ---------- SONGS SERIALIZERS -----------!>
 class SongSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'audio_duration']
+        
 
 # <! ---------- PLAYLIST SERIALIZERS -----------!> 
 class PlaylistSerializer(serializers.ModelSerializer):
