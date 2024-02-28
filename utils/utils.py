@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 from cloudinary import uploader
 from rest_framework.response import Response
 import os
+import cloudinary.api
 
 class UserUtils :
 
@@ -47,20 +48,21 @@ class CommonUtils:
     @staticmethod
     def UploadMediaToCloud(media, path):
         try : 
-            name, extension = media.file_extension = os.path.splitext(media.name)
-            
-            if extension.lower() in ['.jpg','.jpeg','.png']:
-                return uploader.upload(media, folder = f'{path}/images/')
-            elif extension.lower() in ['.mp3']:
-                return uploader.upload(media, folder = f'{path}/audios/')
-            elif extension.lower() in ['.mp4']:
-                return uploader.upload(media, folder = f'{path}/videos/')
-            else :
-                raise Exception('Unsupported Media Type')
-            
+            upload = uploader.upload_large(media, folder = path, use_filename = True)   
+            return upload['url']
+        
         except Exception as e:
             raise Exception(str(e))
     
+    @staticmethod
+    def CloudinaryAudioDuration(audio_url):
+        try :
+            audio_info = cloudinary.api.resource(audio_url)
+            ## metadata --> duration in the cloudinary
+            return audio_info.get('duration', None)
+        except :
+            return None
+        
     @staticmethod
     def Update_Create(request, fields, path):
         try:
@@ -68,7 +70,7 @@ class CommonUtils:
                 
                 if request.data.get(field):
                     request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], path)
-
+                    
         except Exception as e:
             raise Exception(str(e))
     

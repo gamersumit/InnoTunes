@@ -1,7 +1,8 @@
 from collections import UserDict
 from curses.ascii import SO
 from rest_framework.views import APIView
-from .models import Song, Playlist, SongsInAlbum, SongsInPlaylist
+from .models import *
+from .permissions import *
 from .serializers import *
 from rest_framework import status
 from rest_framework.response import Response
@@ -26,10 +27,12 @@ class SongCreateView(generics.CreateAPIView):
     def post(self, request):
         try :
             CommonUtils.Update_Create(request, ['song_picture', 'audio', 'video'], 'song')
+            request.data['audio_duration'] = CommonUtils.CloudinaryAudioDuration(request.data['audio'])
             return CommonUtils.Serialize(request.data, SongSerializer)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
+
 # list all songs
 class SongListView(ListAPIView):
     serializer_class = SongSerializer
@@ -37,21 +40,25 @@ class SongListView(ListAPIView):
 
     def get_queryset(self):
         try:
-            field = self.kwargs.get('field', None).title()
-            id = self.kwargs.get('id', None)
+           
+            field = self.kwargs.get('field', None)
+            id = self.kwargs.get('id')
+            
             if not field:
+                return Song.objects.all()
+            elif field == 'artist':
                 model = Song
-            elif field == 'Artist':
-                model = Song
-            elif field == 'Album':
+                return model.objects.filter(artist_id=id)
+            elif field == 'album':
                 model = SongsInAlbum
-            elif field == 'Playlist':
+                return model.objects.filter(album_id=id)
+            elif field == 'playlist':
                 model = SongsInPlaylist
+                return model.objects.filter(playlist_id=id)
             else:
                 raise Exception('Invalid Url : /songs/!/!')
 
-            return model.objects.filter(id=id)
-
+     
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status=200)
 
@@ -70,7 +77,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return None
        
-    def post(self, request):
+    def create(self, request):
         try :
             CommonUtils.Update_Create(request, ['playlist_picture'], 'playlist')
             return CommonUtils.Serialize(request.data, PlaylistSerializer)
@@ -78,7 +85,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)    
     
-    def put(self, request):
+    def update(self, request):
         try :
             CommonUtils.Update_Create(request, ['playlist_picture'], 'playlist')
             return CommonUtils.Serialize(request.data, PlaylistSerializer)
@@ -104,19 +111,19 @@ class AlbumViewSet(viewsets.ModelViewSet):
             return None
         
         
-    def post(self, request):
+    def create(self, request):
         try :
             CommonUtils.Update_Create(request, ['album_picture'], 'album')
-            return CommonUtils.Serialize(request.data, PlaylistSerializer)
+            return CommonUtils.Serialize(request.data, AlbumSerializer)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)    
     
  
-    def put(self, request):
+    def update(self, request):
         try :
             CommonUtils.Update_Create(request, ['album_picture'], 'album')
-            return CommonUtils.Serialize(request.data, PlaylistSerializer)
+            return CommonUtils.Serialize(request.data, AlbumSerializer)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
@@ -127,7 +134,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
 class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
     queryset = SongsInPlaylist.objects.all()
     serializer_class = SongsInPlaylistSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsPlaylistOwnerOrReadOnly]
 
     def post(self):
         try:
@@ -163,16 +170,16 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
 class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
     queryset = SongsInAlbum.objects.all()
     serializer_class = SongsInAlbumSerializer
-    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
 
-    def post(self):
+    def post(self, request):
         try:
 
-            data = {}
-            data['song_id'] = self.kwargs.get('song_id')
-            data['album_id'] = self.kwargs.get('album_id')
-
-            serializer = self.serializer_class(data=data)
+            # data = {}
+            # data['song_id'] = self.kwargs.get('song_id')
+            # data['album_id'] = self.kwargs.get('album_id')
+            
+            serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
 
             serializer.save()
@@ -181,7 +188,7 @@ class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status=400)
 
-    def delete(self):
+    def delete(self, request):
         try:
             data = {}
             data['album_id'] = self.kwargs.get('album_id')

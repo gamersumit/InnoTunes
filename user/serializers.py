@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import User
 from music.models import Album
+from music.serializers import AlbumSerializer
 from comment.models import Followers
 from utils.utils import UserUtils
 from rest_framework.serializers import ValidationError
@@ -51,7 +52,9 @@ class ArtistSerializer(serializers.ModelSerializer):
         return Followers.get_total_followers(artist)
     
     def get_albums(self, artist):
-        return Album.objects.filter(artist_id = artist.id)
+        albums = Album.objects.filter(artist_id = artist.id)
+        serializer = AlbumSerializer(albums, many = True)
+        return serializer.data
     
     def get_total_albums(self, artist):
         print("#### ", artist)

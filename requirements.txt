@@ -15,6 +15,7 @@ mccabe==0.7.0
 Pillow==10.0.0
 platformdirs==4.2.0
 psycopg2==2.9.9
+psycopg2-binary==2.9.9
 pycodestyle==2.11.1
 pylint==3.0.3
 python-dotenv==1.0.1
@@ -25,3 +26,5 @@ sqlparse==0.4.4
 tomlkit==0.12.3
 typing_extensions==4.9.0
 urllib3==2.2.1
+dj-database-url==1.2.0
+gunicorn==20.1.0
