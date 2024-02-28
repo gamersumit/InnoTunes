@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from .models import User, Followers
+from .models import User
+from music.models import Album
+from comment.models import Followers
 from utils.utils import UserUtils
 from rest_framework.serializers import ValidationError
 
@@ -16,9 +18,11 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'password',
             'username',
+            'avatar',
             'is_artist',
             'total_followers',
         ]
+        read_only_fields = ['id']
     
     def get_total_followers(self, artist):
         return Followers.get_total_followers()
@@ -27,7 +31,10 @@ class UserSerializer(serializers.ModelSerializer):
        return UserUtils.validate_password(value)
     
 class ArtistSerializer(serializers.ModelSerializer):
-    total_followers = serializers.IntegerField(read_only = True)
+    total_followers = serializers.SerializerMethodField(read_only = True)
+    total_albums = serializers.SerializerMethodField(read_only = True)
+    albums = serializers.SerializerMethodField(read_only = True)
+    
     #List action
     class Meta:
         model = User
@@ -37,10 +44,18 @@ class ArtistSerializer(serializers.ModelSerializer):
             'avatar',
             'total_followers',
             'total_albums',
+            'albums', # list of albums
         ]
     
     def get_total_followers(self, artist):
-        return Followers.get_total_followers()
+        return Followers.get_total_followers(artist)
+    
+    def get_albums(self, artist):
+        return Album.objects.filter(artist_id = artist.id)
+    
+    def get_total_albums(self, artist):
+        print("#### ", artist)
+        return Album.objects.filter(artist_id = artist.id).count()
 
 
           

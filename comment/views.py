@@ -1,12 +1,9 @@
 from tkinter import E
 from django.shortcuts import render
-
-import comment
-from .serializers import CommentSerializer, FollowerSerializer
+from .serializers import *
 from rest_framework import generics, viewsets
-from .models import AlbumLikes, Comment, Followers
+from .models import *
 from rest_framework.response import Response
-from utils.utils import UserUtils, CommonUtils
 from rest_framework.permissions import IsAuthenticated
 from user.permissions import *
 
@@ -70,18 +67,32 @@ class ListAllFollowersView(generics.ListAPIView):
         id = self.kwargs.get('id')
         return Followers.objects.filter(artist_id = id)
 
-##### FOllower Releated views ########
-class LikeDislikeView(generics.GenericAPIView):
+##### Likes Releated views ########
+class AlbumLikeDislikeView(generics.GenericAPIView):
     queryset = AlbumLikes.objects.all()
-    serializer_class = FollowerSerializer
+    serializer_class = AlbumLikesSerializer
     permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post', 'delete']
     
     def delete(self, request):
       try :
-        Followers.objects.get(album_id = request.data['album_id'], user_id = request.data['user_id']).delete()
+        AlbumLikes.objects.get(album_id = request.data['album_id'], user_id = request.data['user_id']).delete()
         return Response({'message' : 'request successful'}, status = 200)
       
       except Exception as e:
         return Response({'message' : str(e)}, status = 400)
       
+##### FOllower Releated views ########
+class PlaylistLikeDislikeView(generics.GenericAPIView):
+    queryset = PlaylistLikes.objects.all()
+    serializer_class = PlaylistLikesSerializer
+    permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    http_method_names = ['post', 'delete']
+    
+    def delete(self, request):
+      try :
+        PlaylistLikes.objects.get(playlist_id = request.data['playlist_id'], user_id = request.data['user_id']).delete()
+        return Response({'message' : 'request successful'}, status = 200)
+      
+      except Exception as e:
+        return Response({'message' : str(e)}, status = 400)

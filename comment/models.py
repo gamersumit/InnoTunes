@@ -1,6 +1,6 @@
 from django.db import models
 from user.models import User
-from music.models import Song, Album
+from music.models import Song, Album, Playlist
 
 # Create your models here.
 
@@ -36,4 +36,17 @@ class AlbumLikes(models.Model) :
     
     @staticmethod    
     def get_total_likes(album):
-        return Album.objects.filter(album_id = album).count()
+        return AlbumLikes.objects.filter(album_id = album).count()
+    
+    
+# Liked Album Model
+class PlaylistLikes(models.Model) :
+    playlist_id = models.ForeignKey(Playlist,  on_delete = models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete = models.CASCADE)
+    
+    class Meta:
+        unique_together = ['playlist_id', 'user_id']
+    
+    @staticmethod    
+    def get_total_likes(playlist):
+        return PlaylistLikes.objects.filter(playlist_id = playlist).count()

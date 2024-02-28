@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
-from .models import Comment, Followers
+from .models import *
 from user.models import User
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -44,4 +44,18 @@ class FollowerSerializer(serializers.ModelSerializer):
         
         except Exception as e :
             raise ValidationError(str(e))
-            
+
+
+# Likes --- album, playlist
+
+class AlbumLikesSerializer(serializers.Serializer):
+    class Meta:
+        model = AlbumLikes
+        fields = '__all__'
+        read_only_fields = ['id']
+
+class PlaylistLikesSerializer(serializers.Serializer):
+    class Meta:
+        model = PlaylistLikes
+        fields = '__all__'
+        read_only_fields = ['id']

@@ -46,7 +46,7 @@ class IsArtistOwnerOrReadOnly(permissions.DjangoModelPermissions):
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
             request_user = request.data.get('artist_id')
-            
+    
             return token_user.is_artist and request_user == str(token_user.id)
         
         except Exception as e:

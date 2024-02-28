@@ -7,9 +7,8 @@ from .models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
 from django.contrib.auth import authenticate
-from rest_framework.decorators import api_view, permission_classes
-from user.models import User, Followers
-from utils.utils import UserUtils, CommonUtils
+from user.models import User
+from utils.utils import CommonUtils
 
 # Create your views here.
 
@@ -102,8 +101,11 @@ class ArtistListView(generics.ListAPIView) :
     serializer_class = ArtistSerializer
     queryset = User.objects.filter(is_artist = True)
     permission_classes = [permissions.IsAuthenticated]
-    
-    
+
+class ArtistDetailView(generics.RetrieveAPIView):   
+    serializer_class = ArtistSerializer
+    queryset = User.objects.filter(is_artist = True)
+    permission_classes = [permissions.IsAuthenticated]
 
                   
     
@@ -113,6 +115,7 @@ user_logout_view = LogoutView.as_view()
 user_detail_view = UserDetailView.as_view()
 user_login_view = LoginView.as_view()
 artist_list_view = ArtistListView.as_view()
+artist_detail_view = ArtistDetailView.as_view()
 
 
 

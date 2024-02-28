@@ -11,8 +11,10 @@ router.register('album', views.AlbumViewSet, 'album')
 
 
 urlpatterns = [
-    path('songs/', views.SongCreateView.as_view(), name='add_song_view'),
+    path('songs/add/', views.SongCreateView.as_view(), name='add_song_view'),
     path('songs/<str:field>/<str:id>/',
+         views.SongListView.as_view(), name='songs_list'),
+    path('songs/',
          views.SongListView.as_view(), name='songs_list'),
     path('playlist/<str:playlist_id>/<str:song_id>',
          views.AddDeleteSongsFromPlaylistView.as_view(), name='add_delete_songsfromPlaylist'),

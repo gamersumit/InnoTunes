@@ -64,8 +64,8 @@ class CommonUtils:
     @staticmethod
     def Update_Create(request, fields, path):
         try:
-            
             for field in fields :
+                
                 if request.data.get(field):
                     request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], path)
 

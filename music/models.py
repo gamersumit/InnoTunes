@@ -46,7 +46,7 @@ class Song(models.Model):
     
     artist_id = models.ForeignKey(User, on_delete = models.CASCADE)
     
-    song_name = models.CharField(max_length = 500)
+    song_name = models.CharField(max_length = 500, unique=True)
     song_picture = models.URLField(null = True, blank = True)
     song_description = models.TextField(max_length = 100000, null = True, blank = True)
     
