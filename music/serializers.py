@@ -57,4 +57,15 @@ class SongsInAlbumSerializer(serializers.ModelSerializer):
         model = SongsInAlbum
         fields = '__all__'
         read_only_fields = ['id']
-        
+    
+    def validate(self, attrs):
+        try :
+            artist1 = attrs['album_id'].artist_id
+            artist2 = attrs['song_id'].artist_id
+
+            if artist1 == artist2:
+                return attrs
+            else :
+                raise ValidationError("SONG and ALBUM must belong to same artist")
+        except Exception as e:
+            raise ValidationError(str(e))
