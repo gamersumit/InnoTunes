@@ -17,13 +17,13 @@ class RegisterView(generics.CreateAPIView) :
     serializer_class = UserSerializer
     queryset = User.objects.all()
     
-    def post(self, request):
-        if self.request.data['avatar']:
-            self.request.data['avatar'] = CommonUtils.UploadToCloud(request.data['avatar'], 'user')
+    # def post(self, request):
+    #     if self.request.data['avatar']:
+    #         self.request.data['avatar'] = CommonUtils.UploadToCloud(request.data['avatar'], 'user')
 
     def post(self, request):
         try :
-            CommonUtils.Update_Create(request, ['avatar'], 'avatar')
+            CommonUtils.Update_Create(request, ['avatar'])
             return CommonUtils.Serialize(request.data, UserSerializer)
             
         except Exception as e:

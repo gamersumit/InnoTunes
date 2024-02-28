@@ -22,5 +22,4 @@ urlpatterns = [
     path('music/', include('music.urls')),
     path('comment/', include('comment.urls')),
     path('colab/', include('colab.urls')),
-    path('album/', include('album.urls')),
 ]

@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from rest_framework import viewsets, generics
 from rest_framework import permissions
+from user.permissions import IsUserOwnerOrReadOnly, IsArtistOwnerOrReadOnly
 
 ## ye 1st class SongView ni hai updated wale code mai...just for myself
 from utils.utils import UserUtils, CommonUtils
@@ -17,20 +18,26 @@ import cloudinary.api
 class SongView(APIView):
     def post(self, request):
         serializer = SongSerializer(data = request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
+        try:
+            CommonUtils.Update_Create(request, ['song_picture','audio', 'video'])
+            return CommonUtils.Serialize(request.data, SongSerializer)
+        except Exception as e:
+            return Response({'message' : str(e)}, status = 400)
+    
+        # if serializer.is_valid(raise_exception=True):
+        #     serializer.save()
             
-            ## getting audio duration
-            audio_url = serializer.data['audio']
-            audio_info = cloudinary.api.resource(audio_url)
-            ## metadata --> duration in the cloudinary
-            audio_duration = audio_info.get('duration', None)
+        #     ## getting audio duration
+        #     audio_url = serializer.data['audio']
+        #     audio_info = cloudinary.api.resource(audio_url)
+        #     ## metadata --> duration in the cloudinary
+        #     audio_duration = audio_info.get('duration', None)
             
-            ## serializer's instance for making updates
-            song_instance = serializer.instance
-            song_instance.audio_duration = audio_duration
-            song_instance.save()
-            return Response({'status' : False, 'message': 'Done'}, status = status.HTTP_200_OK)
+        #     ## serializer's instance for making updates
+        #     song_instance = serializer.instance
+        #     song_instance.audio_duration = audio_duration
+        #     song_instance.save()
+        #     return Response({'status' : False, 'message': 'Done'}, status = status.HTTP_200_OK)
 
 
 class SongCreateView(generics.CreateAPIView):
@@ -40,7 +47,7 @@ class SongCreateView(generics.CreateAPIView):
     
     def post(self, request):
         try :
-            CommonUtils.Update_Create(request, ['song_picture', 'audio', 'video'], 'song')
+            CommonUtils.Update_Create(request, ['song_picture', 'audio', 'video'])
             return CommonUtils.Serialize(request.data, SongSerializer)
             
         except Exception as e:
@@ -87,7 +94,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
        
     def post(self, request):
         try :
-            CommonUtils.Update_Create(request, ['playlist_picture'], 'playlist')
+            CommonUtils.Update_Create(request, ['playlist_picture'])
             return CommonUtils.Serialize(request.data, PlaylistSerializer)
             
         except Exception as e:
@@ -95,7 +102,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     
     def put(self, request):
         try :
-            CommonUtils.Update_Create(request, ['playlist_picture'], 'playlist')
+            CommonUtils.Update_Create(request, ['playlist_picture'])
             return CommonUtils.Serialize(request.data, PlaylistSerializer)
             
         except Exception as e:
@@ -105,7 +112,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 # album Cruds(these cruds are not for songs inside album)
 class AlbumViewSet(viewsets.ModelViewSet):
     serializer_class = AlbumSerializer
-    permission_classes = permissions.IsAuthenticated, IsArtistOwnerOrReadOnly
+    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 
@@ -121,16 +128,15 @@ class AlbumViewSet(viewsets.ModelViewSet):
         
     def post(self, request):
         try:
-            if request.data.get('album_picture'):
-                request.data['album_picture'] = CommonUtils.UploadToCloud(request.data['album_picture'], 'album')
+            CommonUtils.Update_Create(request, ['album_picture'])
+            return CommonUtils.Serialize(request.data, AlbumSerializer)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)    
-    
- 
+     
     def put(self, request):
         try :
-            CommonUtils.Update_Create(request, ['album_picture'], 'album')
+            CommonUtils.Update_Create(request, ['album_picture'])
             return CommonUtils.Serialize(request.data, PlaylistSerializer)
             
         except Exception as e:

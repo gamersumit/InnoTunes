@@ -47,28 +47,25 @@ class CommonUtils:
     @staticmethod
     def UploadMediaToCloud(media, path):
         try : 
-            name, extension = media.file_extension = os.path.splitext(media.name)
-            
-            if extension.lower() in ['.jpg','.jpeg','.png']:
-                return uploader.upload(media, folder = f'{path}/images/')
-            elif extension.lower() in ['.mp3']:
-                return uploader.upload(media, folder = f'{path}/audios/')
-            elif extension.lower() in ['.mp4']:
-                return uploader.upload(media, folder = f'{path}/videos/')
-            else :
-                raise Exception('Unsupported Media Type')
-            
+            print("media: ", media)
+            upload = uploader.upload_large(media, folder = path, use_filename = True)
+            print("upload ", upload)
+            print(f"{path}: {upload['url']}")    
+            return upload['url']
         except Exception as e:
             raise Exception(str(e))
     
     @staticmethod
-    def Update_Create(request, fields, path):
-        try:
-            
-            for field in fields :
+    def Update_Create(request, fields):
+        try:   
+            for field in fields:
+                print("Field: ", field)
                 if request.data.get(field):
-                    request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], path)
-
+                    
+                    print(request.data.get(field))
+                    
+                    request.data[field] = CommonUtils.UploadToCloud(request.data[field], field)
+                    print(request.data[field])
         except Exception as e:
             raise Exception(str(e))
     
