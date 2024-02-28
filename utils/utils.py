@@ -51,9 +51,15 @@ class CommonUtils:
             upload = uploader.upload_large(media, folder = path, use_filename = True)
             print("upload ", upload)
             print(f"{path}: {upload['url']}")    
+            
+            ## song duration
+            if path == 'song_audio':
+                print("upload url :",upload['url'])
+                duration = upload['duration']
+                return [duration, upload['url']]   
             return upload['url']
         except Exception as e:
-            raise Exception(str(e))
+            return Response(str(e))
     
     @staticmethod
     def Update_Create(request, fields):
@@ -61,11 +67,14 @@ class CommonUtils:
             for field in fields:
                 print("Field: ", field)
                 if request.data.get(field):
-                    
-                    print(request.data.get(field))
-                    
-                    request.data[field] = CommonUtils.UploadToCloud(request.data[field], field)
-                    print(request.data[field])
+                    if field == 'song_audio':
+                        result = CommonUtils.UploadToCloud(request.data[field], field)
+                        request.data['song_duration'] = result[0]
+                        request.data[field] = result[1]
+                        
+                    else:
+                        request.data[field] = CommonUtils.UploadToCloud(request.data[field], field)
+                        print("other urls: ", request.data[field])
         except Exception as e:
             raise Exception(str(e))
     
