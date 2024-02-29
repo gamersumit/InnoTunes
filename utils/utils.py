@@ -67,9 +67,9 @@ class CommonUtils:
             for field in fields:
                 print("Field: ", field)
                 if request.data.get(field):
-                    if field == 'song_audio':
+                    if field == 'audio':
                         result = CommonUtils.UploadToCloud(request.data[field], field)
-                        request.data['song_duration'] = result[0]
+                        request.data['audio_duration'] = result[0]
                         request.data[field] = result[1]
                         
                     else:
