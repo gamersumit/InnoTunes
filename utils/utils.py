@@ -48,7 +48,7 @@ class CommonUtils:
     def UploadMediaToCloud(media, path):
         try : 
             ## song duration
-            if path == 'audio':
+            if path in ['audio', 'colab_audio']:
                 upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)   
 
                 duration = upload['duration']
@@ -64,11 +64,14 @@ class CommonUtils:
     def Update_Create(request, fields):
         try:
             for field in fields :
-                if field == 'audio' : 
+                if field == 'audio': 
                     res = CommonUtils.UploadMediaToCloud(request.data[field], field)
                     request.data['audio'] = res[1]
                     request.data['audio_duration'] = int(res[0])
-                
+                elif field == 'colab_audio':
+                    res = CommonUtils.UploadMediaToCloud(request.data[field], field)
+                    request.data['colab_audio'] = res[1]
+                    request.data['audio_duration'] = int(res[0])
                 elif request.data.get(field):
                     request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], field)
                     

@@ -31,23 +31,7 @@ class ColabViewSet(viewsets.ViewSet):
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
    
-    def destroy(self, request, pk = None):
-        try:
-            print(request.data)
-            instance = self.get_object()
-            
-            print("instance: ", instance)
-            media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
-            if media_deletion is not None:
-                print(media_deletion)
-                # return media_deletion
-            self.perform_destroy(instance)
-            print("instance after deletion: ", instance)
-            # request.delete()
-            return Response({'message':'Colab deleted successfully'})
-        except Exception as e:
-            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+   
 class GetColabsView(ListAPIView):
     serializer_class = ColabSerializer
     permission_classes = [permissions.IsAuthenticated]
