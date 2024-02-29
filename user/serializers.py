@@ -39,13 +39,15 @@ class UserSerializer(serializers.ModelSerializer):
         return Followers.get_total_following(user)
     
     def get_followers(self, user):
-        users = Followers.objects.filter(artist_id = user.id)
-        serializer = FollowersDetailSerializer(users)
+        users = [follower.user_id for follower in Followers.objects.filter(artist_id = user)]
+        serializer = FollowersDetailSerializer(users, many = True)
+        
         return serializer.data
     
     def get_following(self, user):
-        users = Followers.objects.filter(user_id = user.id)
-        serializer = FollowersDetailSerializer(users)
+        users = [follower.artist_id for follower in Followers.objects.filter(artist_id = user)]
+        
+        serializer = FollowersDetailSerializer(users, many =True)
         return serializer.data
     
     def validate_password(self, value):
@@ -81,13 +83,13 @@ class ArtistSerializer(serializers.ModelSerializer):
         return Followers.get_total_following(artist)
     
     def get_followers(self, artist):
-        artists = Followers.objects.filter(artist_id = artist.id)
-        serializer = FollowersDetailSerializer(artists)
+        artists = [follower.user_id for follower in Followers.objects.filter(artist_id = artist)]
+        serializer = FollowersDetailSerializer(artists, many = True)
         return serializer.data
     
     def get_following(self, artist):
-        artists = Followers.objects.filter(user_id = artist.id)
-        serializer = FollowersDetailSerializer(artists)
+        artists = [follower.artist_id for follower in Followers.objects.filter(artist_id = artist)]
+        serializer = FollowersDetailSerializer(artists, many = True)
         return serializer.data
     
     def get_albums(self, artist):
@@ -96,5 +98,4 @@ class ArtistSerializer(serializers.ModelSerializer):
         return serializer.data
     
     def get_total_albums(self, artist):
-        print("#### ", artist)
         return Album.objects.filter(artist_id = artist.id).count()

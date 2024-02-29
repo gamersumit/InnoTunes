@@ -1,5 +1,4 @@
 
-from logging import raiseExceptions
 from rest_framework import generics
 from rest_framework.response import Response
 from .serializers import *
@@ -113,8 +112,8 @@ class ArtistDetailView(generics.RetrieveAPIView):
     serializer_class = ArtistSerializer
     queryset = User.objects.filter(is_artist = True)
     permission_classes = [permissions.IsAuthenticated]
-
-                  
+   
+    
     
 # SHORT NAMING :
 user_register_view = RegisterView.as_view()

@@ -16,20 +16,24 @@ import os
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from pathlib import Path
+import dj_database_url
+
 
 from dotenv import load_dotenv
-load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG')
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
 
 ALLOWED_HOSTS = ['*']
 
@@ -39,7 +43,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     # cors
     'corsheaders',
-    
+
     # default apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,14 +51,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # third party apps
     'cloudinary',
     'cloudinary_storage',
     'rest_framework',
     'rest_framework.authtoken',
-    
-    
+
+
     # project apps
     'colab',
     'user',
@@ -83,8 +87,11 @@ CORS_ALLOWED_ORIGINS = [
     'http://192.168.1.106:3000',
     'http://192.168.1.87:3000',
     'https://innotune.vercel.app',
-    
+<<<<<<< Updated upstream
+    ]
+=======
                         ]
+>>>>>>> Stashed changes
 
 TEMPLATES = [
     {
@@ -109,14 +116,15 @@ WSGI_APPLICATION = 'innotune.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'HOST': os.getenv('DB_HOST'),
-        'USER': os.getenv('DB_USER'),
-        'PORT': os.getenv('DB_PORT'),
-        'PASSWORD': os.getenv('DB_PASSWORD')
-    }
+    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'), conn_max_age=600),
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': os.getenv('DB_NAME'),
+    #     'HOST': os.getenv('DB_HOST'),
+    #     'USER': os.getenv('DB_USER'),
+    #     'PORT': os.getenv('DB_PORT'),
+    #     'PASSWORD': os.getenv('DB_PASSWORD')
+    # }
 }
 
 # Password validation
@@ -154,6 +162,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -174,9 +184,9 @@ REST_FRAMEWORK = {
 
 
 cloudinary.config(
-    cloud_name = os.getenv('CLOUD_NAME'),
-    api_key = os.getenv('API_KEY'),
-    api_secret = os.getenv('API_SECRET'),
-    secure = True
+    cloud_name=os.getenv('CLOUD_NAME'),
+    api_key=os.getenv('API_KEY'),
+    api_secret=os.getenv('API_SECRET'),
+    secure=True
 )
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
