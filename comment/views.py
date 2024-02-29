@@ -65,12 +65,20 @@ class FollowUnfollowView(generics.GenericAPIView):
         return Response({'message' : str(e)}, status = 400)
       
 class ListAllFollowersView(generics.ListAPIView):
-    serializer_class = FollowerSerializer
+    serializer_class = FollowersDetailSerializer
     # permission_class = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         id = self.kwargs.get('id')
-        return Followers.objects.filter(artist_id = id)
+        return [follower.user_id for follower in Followers.objects.filter(artist_id = id)]
+
+class ListAllFollowingView(generics.ListAPIView):
+    serializer_class = FollowersDetailSerializer
+    # permission_class = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        id = self.kwargs.get('id')
+        return [follower.artist_id for follower in Followers.objects.filter(user_id = id)]
 
 ##### Likes Releated views ########
 class AlbumLikeDislikeView(generics.GenericAPIView):
