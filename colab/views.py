@@ -4,68 +4,69 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import permissions
-from utils.utils import UserUtils
+from utils.utils import UserUtils, CommonUtils
 from .models import Colab
+from user.permissions import *
 # Create your views here.
 
-class UserColabListViewSet(viewsets.ViewSet):
+    
+class ColabViewSet(viewsets.ModelViewSet):
     serializer_class = ColabSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    http_method_names = ['get', 'post', 'delete']
     lookup_field = 'pk'
-    # http_method_names = ['get', 'post', 'put', 'delete']
     
-    def get_queryset(self):
-        if self.action in ['list', 'destroy', 'retrieve']:        
-            try:
-                song_id = self.request.get('song_id')
-                token = self.request.headers['Authorization'].split(' ')[1]
-                user = UserUtils.getUserFromToken(token)    # instance of User model
-                user_id = user.id
-                # self.request.data['user_id'] = user
+    def create(self, request):
+        try:
+            CommonUtils.Update_Create(request, ['colab_picture','colab_audio','colab_video'])
+            print(self.serializer_class)
+
+            serialized_result =  CommonUtils.Serialize(request.data, self.serializer_class)
+            print(serialized_result)
+            return serialized_result
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request):
+        try:
+            instance = self.get_object()
             
-                if song_id and not user_id:
-                    return Colab.objects.filter(song_id = song_id)
-                elif not song_id and user_id:
-                    return Colab.objects.filter(user_id = user_id)
-        
-            except Exception as e:
-                raise Exception(str(e))
+            print("instance: ", instance)
+            media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
+            if media_deletion is not None:
+                print(media_deletion)
+                # return media_deletion
+            self.perform_destroy(instance)
+            print("instance after deletion: ", instance)
+            # request.delete()
+            return Response({'message':'Colab deleted successfully'})
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def retrieve(self, request, pk = None):
+        try:
             
-        else:
-            try:
-                token = self.request.headers['Authorization'].split(' ')[1]
-                user = UserUtils.getUserFromToken(token)    # instance of User model
-                user_id = user.id
-                return Colab.objects.filter(user_id = user_id)
+            ## as request body
+            # song_id = request.data.get('song_id')
+            # user_id = request.data.get('user_id')
+
+            ## as dynamic url
+            # song_id = self.kwargs.get('song_id')
+            # user_id = self.kwargs.get('user_id')
             
-            except Exception as e:
-                raise Exception(str(e))
-    
-    # def create(self, request):
-    #     queryset = self.get_queryset()
-    #     # serializer = ColabSerializer(queryset)
-    #     return Response({'message': 'Colab request received'}, status = status.HTTP_201_CREATED)
-    
-    # def retrieve(self, request, pk=None):
-    #     queryset = self.get_queryset()
-    #     serializer = ColabSerializer(queryset)
-    #     return Response(serializer.data, {'message': 'Retrieve request received'}, status = status.HTTP_200_OK)
-        
-    # def update(self, request, pk=None):
-    #     queryset = self.get_queryset()
-    #     # serializer = ColabSerializer(queryset)
-    #     return Response({'message': 'Put request received'}, status = status.HTTP_200_OK)
-    
-    # def partial_update(self, request, pk=None):
-    #     queryset = self.get_queryset()
-    #     return Response({'message': 'PATCH request received for object with pk={}'.format(pk)})
-    
-    # def destroy(self, request, pk=None):
-    #     queryset = self.get_queryset()
-    #     return Response({'message': 'DELETE request received for object with pk={}'.format(pk)})
-    
-    # def list(self, request):
-    #     queryset = self.get_queryset()  # Use the custom queryset
-    #     serializer = self.serializer_class(queryset, many=True)
-    #     return Response(serializer.data)
-        
+            ## as query params
+            song_id = request.query_params.get('song_id')
+            user_id = request.query_params.get('user_id')
+
+            if song_id:
+                queryset = Colab.objects.filter(song_id=song_id)
+            elif user_id:
+                queryset = Colab.objects.filter(user_id=user_id)
+            else:
+                return Response({'message':"Invalid Request"}, status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+   

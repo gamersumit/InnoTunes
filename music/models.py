@@ -69,15 +69,6 @@ class SongsInPlaylist(models.Model):
     song_id = models.ForeignKey(Song, on_delete = models.CASCADE)
 
 
-
-
-class SongsInAlbum(models.Model):
-    song_id = models.ForeignKey(Song, on_delete=models.CASCADE)
-    album_id = models.ForeignKey(Album, on_delete=models.CASCADE)    
-
-    class Meta :
-        unique_together = ['playlist_id', 'song_id']
-
 # Songs in Album Model   
 class SongsInAlbum(models.Model):
     song_id = models.ForeignKey(Song, on_delete=models.CASCADE)

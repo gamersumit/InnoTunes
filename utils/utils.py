@@ -48,7 +48,7 @@ class CommonUtils:
     def UploadMediaToCloud(media, path):
         try : 
             print("media: ", media)
-            upload = uploader.upload_large(media, folder = path, use_filename = True)
+            upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)
             print("upload ", upload)
             print(f"{path}: {upload['url']}")    
             
@@ -89,3 +89,20 @@ class CommonUtils:
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
+
+    @staticmethod
+    def Delete_Media(request, fields): 
+        if request.data.get(id):
+            print("id: ", request.data.get(id))
+            print("song_id: ", request.data.get('song_id'))
+            print("user id: ", request.data.get('user_id'))
+            try:
+                for field in fields:
+                    url = request.data.get(field)
+                    public_id = cloudinary.utils.cloudinary_url(url)[0]
+                    deletion_response = cloudinary.uploader.destroy(public_id)
+                    if deletion_response.get('result') == 'ok':
+                        return Response({'message': f'{field} deleted successfully'})
+
+            except Exception as e:
+                return Response({'error': str(e)}, status=400)
