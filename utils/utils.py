@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from cloudinary import uploader
 from rest_framework.response import Response
 import os
-
+import cloudinary
 class UserUtils :
 
     @staticmethod
@@ -47,34 +47,31 @@ class CommonUtils:
     @staticmethod
     def UploadMediaToCloud(media, path):
         try : 
-            print("media: ", media)
-            upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)
-            print("upload ", upload)
-            print(f"{path}: {upload['url']}")    
-            
             ## song duration
-            if path == 'song_audio':
-                print("upload url :",upload['url'])
+            if path == 'audio':
+                upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)   
+
                 duration = upload['duration']
                 return [duration, upload['url']]   
+            
+            upload = uploader.upload_large(media, folder = path, use_filename = True)   
             return upload['url']
+        
         except Exception as e:
-            return Response(str(e))
+            raise Exception(str(e))
     
     @staticmethod
     def Update_Create(request, fields):
-        try:   
-            for field in fields:
-                print("Field: ", field)
-                if request.data.get(field):
-                    if field == 'audio':
-                        result = CommonUtils.UploadToCloud(request.data[field], field)
-                        request.data['audio_duration'] = result[0]
-                        request.data[field] = result[1]
-                        
-                    else:
-                        request.data[field] = CommonUtils.UploadToCloud(request.data[field], field)
-                        print("other urls: ", request.data[field])
+        try:
+            for field in fields :
+                if field == 'audio' : 
+                    res = CommonUtils.UploadMediaToCloud(request.data[field], field)
+                    request.data['audio'] = res[1]
+                    request.data['audio_duration'] = int(res[0])
+                
+                elif request.data.get(field):
+                    request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], field)
+                    
         except Exception as e:
             raise Exception(str(e))
     
@@ -82,6 +79,7 @@ class CommonUtils:
     def Serialize(data, serializer_class):
         try:
             serializer = serializer_class(data = data)
+            print("Serializer: ", serializer)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             

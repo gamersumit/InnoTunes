@@ -9,7 +9,7 @@ class SongSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'audio_duration']
+        read_only_fields = ['id', 'created_at']
         
 
 # <! ---------- PLAYLIST SERIALIZERS -----------!> 

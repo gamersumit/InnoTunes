@@ -43,11 +43,13 @@ class SongView(APIView):
 class SongCreateView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
     
     def post(self, request):
         try :
+            print(request.data)
             CommonUtils.Update_Create(request, ['song_picture', 'audio', 'video'])
+            print("result")
             return CommonUtils.Serialize(request.data, SongSerializer)
             
         except Exception as e:
@@ -59,20 +61,21 @@ class SongListView(ListAPIView):
 
     def get_queryset(self):
         try:
-            field = self.kwargs.get('field', None).title()
-            id = self.kwargs.get('id', None)
+            field = self.kwargs.get('field', None)
+            id = self.kwargs.get('id')
             if not field:
+                return Song.objects.all()
+            elif field == 'artist':
                 model = Song
-            elif field == 'Artist':
-                model = Song
-            elif field == 'Album':
+                return model.objects.filter(artist_id=id)
+            elif field == 'album':
                 model = SongsInAlbum
-            elif field == 'Playlist':
+                return model.objects.filter(album_id=id)
+            elif field == 'playlist':
                 model = SongsInPlaylist
+                return model.objects.filter(playlist_id=id)
             else:
                 raise Exception('Invalid Url : /songs/!/!')
-
-            return model.objects.filter(id=id)
 
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status=200)

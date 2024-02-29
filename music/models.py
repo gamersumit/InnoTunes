@@ -49,7 +49,7 @@ class Song(models.Model):
     
     audio = models.URLField(null = True, blank = True)
     video = models.URLField(null = True, blank = True)
-    audio_duration = models.PositiveIntegerField(default = 0)
+    audio_duration = models.CharField(max_length = 200, null = True, blank = True)
     
     genre = models.CharField(choices = genre_choices, null = False, blank=False)    
     lyrics = models.TextField(max_length = 100000, null=True, blank=True)
