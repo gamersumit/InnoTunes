@@ -51,7 +51,7 @@ class CommonUtils:
             upload = uploader.upload_large(media, folder = path, use_filename = True)   
         
             ## song duration
-            if path == 'song_audio':
+            if path == 'audio':
                 duration = upload['duration']
                 return [duration, upload['url']]   
             return upload['url']
@@ -69,14 +69,15 @@ class CommonUtils:
     #         return None
         
     @staticmethod
-    def Update_Create(request, fields, path):
+    def Update_Create(request, fields):
         try:
             for field in fields :
                 
                 if field == 'audio' : 
-                    res = CommonUtils.UploadMediaToCloud(request.data[field], path)
+                        
+                    res = CommonUtils.UploadMediaToCloud(request.data[field], field)
                     request.data['audio'] = res[1]
-                    request.data['duration'] = res[0]
+                    request.data['audio_duration'] = res[0]
                 
                 if request.data.get(field):
                     request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], path)

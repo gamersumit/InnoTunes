@@ -27,7 +27,6 @@ class SongCreateView(generics.CreateAPIView):
     def post(self, request):
         try :
             CommonUtils.Update_Create(request, ['song_picture', 'audio', 'video'], 'song')
-            request.data['audio_duration'] = CommonUtils.CloudinaryAudioDuration(request.data['audio'])
             return CommonUtils.Serialize(request.data, SongSerializer)
             
         except Exception as e:
