@@ -43,7 +43,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     # cors
     'corsheaders',
-    
+
     # default apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -51,14 +51,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # third party apps
     'cloudinary',
     'cloudinary_storage',
     'rest_framework',
     'rest_framework.authtoken',
-    
-    
+
+
     # project apps
     'colab',
     'user',
@@ -85,7 +85,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:3000',
     'http://192.168.1.106:3000',
-                        ]
+]
 
 TEMPLATES = [
     {
@@ -156,6 +156,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -176,9 +177,9 @@ REST_FRAMEWORK = {
 
 
 cloudinary.config(
-    cloud_name = os.getenv('CLOUD_NAME'),
-    api_key = os.getenv('API_KEY'),
-    api_secret = os.getenv('API_SECRET'),
-    secure = True
+    cloud_name=os.getenv('CLOUD_NAME'),
+    api_key=os.getenv('API_KEY'),
+    api_secret=os.getenv('API_SECRET'),
+    secure=True
 )
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
