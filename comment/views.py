@@ -48,11 +48,12 @@ class CommentsListView(generics.ListAPIView):
 class FollowUnfollowView(generics.GenericAPIView):
     queryset = Followers.objects.all()
     serializer_class = FollowerSerializer
-    # permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post', 'delete']
     
     def post(self, request):
       try :
+        print(request.data)
         return CommonUtils.Serialize(request.data, self.serializer_class)
       except Exception as e:
         return Response({'message' : str(e)}, status = 400)

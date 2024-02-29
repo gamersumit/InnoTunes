@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import User
+from comment.serializers import FollowersDetailSerializer
 from music.models import Album
 from music.serializers import AlbumSerializer
 from comment.models import Followers
@@ -10,7 +11,10 @@ from rest_framework.serializers import ValidationError
 class UserSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(max_length=128, min_length = 8, write_only = True)
-    total_followers = serializers.IntegerField(read_only = True)
+    total_followers = serializers.SerializerMethodField(read_only = True)
+    total_following = serializers.SerializerMethodField(read_only = True)
+    followers = serializers.SerializerMethodField(read_only = True)
+    following = serializers.SerializerMethodField(read_only = True)
     
     class Meta:
         model = User
@@ -22,17 +26,36 @@ class UserSerializer(serializers.ModelSerializer):
             'avatar',
             'is_artist',
             'total_followers',
+            'total_following',
+            'followers',
+            'following',
         ]
         read_only_fields = ['id']
     
-    def get_total_followers(self, artist):
-        return Followers.get_total_followers()
+    def get_total_followers(self, user):
+        return Followers.get_total_followers(user)
+    
+    def get_total_following(self, user):
+        return Followers.get_total_following(user)
+    
+    def get_followers(self, user):
+        users = Followers.objects.filter(artist_id = user.id)
+        serializer = FollowersDetailSerializer(users)
+        return serializer.data
+    
+    def get_following(self, user):
+        users = Followers.objects.filter(user_id = user.id)
+        serializer = FollowersDetailSerializer(users)
+        return serializer.data
     
     def validate_password(self, value):
        return UserUtils.validate_password(value)
     
 class ArtistSerializer(serializers.ModelSerializer):
     total_followers = serializers.SerializerMethodField(read_only = True)
+    total_following = serializers.SerializerMethodField(read_only = True)
+    followers = serializers.SerializerMethodField(read_only = True)
+    following = serializers.SerializerMethodField(read_only = True)
     total_albums = serializers.SerializerMethodField(read_only = True)
     albums = serializers.SerializerMethodField(read_only = True)
     
@@ -44,12 +67,28 @@ class ArtistSerializer(serializers.ModelSerializer):
             'username',
             'avatar',
             'total_followers',
+            'total_following',
+            'followers',
+            'following',
             'total_albums',
             'albums', # list of albums
         ]
     
     def get_total_followers(self, artist):
         return Followers.get_total_followers(artist)
+    
+    def get_total_following(self, artist):
+        return Followers.get_total_following(artist)
+    
+    def get_followers(self, artist):
+        artists = Followers.objects.filter(artist_id = artist.id)
+        serializer = FollowersDetailSerializer(artists)
+        return serializer.data
+    
+    def get_following(self, artist):
+        artists = Followers.objects.filter(user_id = artist.id)
+        serializer = FollowersDetailSerializer(artists)
+        return serializer.data
     
     def get_albums(self, artist):
         albums = Album.objects.filter(artist_id = artist.id)
@@ -59,40 +98,3 @@ class ArtistSerializer(serializers.ModelSerializer):
     def get_total_albums(self, artist):
         print("#### ", artist)
         return Album.objects.filter(artist_id = artist.id).count()
-
-
-          
-        
-# GET ACTION RETERIVE  -- ON ID
-# fields  = [
-#     {album1}, {album2} , {}
-# ]
-
-# ---- album structure on artist id---
-# album = [
-#     'id',
-#     'album_name',
-#     'album_picture',
-#     'album_discription',
-#     'credits', # ---- will see later
-#     'total_duration',
-#     'total_songs',
-#     'total_likes',
-# ]
-
-# --- songs on album id ----
-# songs = [
-#     'id',
-
-#     'song_name',
-#     'song_image',
-#     'song_discription',
-
-#     'audio',
-#     'video',
-#     'audio_duration',
-
-#     'genre',
-#     'credits' -- will see it later ---
-#     'date_added',
-# ]

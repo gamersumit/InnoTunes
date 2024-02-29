@@ -88,14 +88,21 @@ class UserDetailView(generics.RetrieveAPIView) :
 
     def get(self, request, *args, **kwargs):
         try :
-            token = request.header['Authorization'].split(' ')[1]
+            token = request.headers['Authorization'].split(' ')[1]
             token = Token.objects.get(key = token)
-            data = self.serializer(token.user).data
+            data = self.serializer_class(token.user).data
             return Response({'status': True, 'message': data}, status = 200)
 
         except Exception as e :
             return Response({'status': False, 'message': str(e)}, status = 400)
 
+
+class UserListView(generics.ListAPIView) :
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+        
 # ArtistSerializer --- to provide list of all artist
 class ArtistListView(generics.ListAPIView) :
     serializer_class = ArtistSerializer
@@ -113,6 +120,7 @@ class ArtistDetailView(generics.RetrieveAPIView):
 user_register_view = RegisterView.as_view()
 user_logout_view = LogoutView.as_view()
 user_detail_view = UserDetailView.as_view()
+user_list_view = UserListView.as_view()
 user_login_view = LoginView.as_view()
 artist_list_view = ArtistListView.as_view()
 artist_detail_view = ArtistDetailView.as_view()
