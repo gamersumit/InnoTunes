@@ -48,7 +48,7 @@ class CommonUtils:
     @staticmethod
     def UploadMediaToCloud(media, path):
         try : 
-            upload = uploader.upload_large(media, folder = path, use_filename = True)   
+            upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)  
         
             ## song duration
             if path == 'audio':
