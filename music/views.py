@@ -135,29 +135,22 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
     serializer_class = SongsInPlaylistSerializer
     permission_classes = [permissions.IsAuthenticated, IsPlaylistOwnerOrReadOnly]
 
-    def post(self):
-        try:
+    def post(self, request):
+            return CommonUtils.Serialize(request.data, self.serializer_class)
 
-            data = {}
-            data['song_id'] = self.kwargs.get('song_id')
-            data['playlist_id'] = self.kwargs.get('playlist_id')
-
-            serializer = self.serializer_class(data=data)
-            serializer.is_valid(raise_exception=True)
-
-            serializer.save()
-            return Response({'status': True, 'message': 'Songs Added to Playlist Successfuly'}, status=200)
-
-        except Exception as e:
-            return Response({'status': False, 'message': str(e)}, status=400)
-
-    def delete(self):
+    def delete(self, request):
         try:
             data = {}
-            data['playlist_id'] = self.kwargs.get('playlist_id')
-            data['song_id'] = self.kwargs.get('song_id')
+            data['playlist_id'] = request.data['playlist_id']
+            data['song_id'] = request.data['song_id']
 
-            SongsInPlaylist.objects.get(**data).delete()
+            playlist_song = SongsInPlaylist.objects.get(**data).delete()
+            
+            if playlist_song:
+                playlist_song.delete()
+                
+            else :
+                raise Exception("Givem playlist and song combination does'nt exist")
 
             return Response({'status': True, 'message': 'Song Removed from Playlist Successfuly'}, status=200)
 
@@ -172,29 +165,19 @@ class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
     # permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
 
     def post(self, request):
-        try:
-
-            # data = {}
-            # data['song_id'] = self.kwargs.get('song_id')
-            # data['album_id'] = self.kwargs.get('album_id')
-            
-            serializer = self.serializer_class(data=request.data)
-            serializer.is_valid(raise_exception=True)
-
-            serializer.save()
-            return Response({'status': True, 'message': 'Songs Added to album Successfuly'}, status=200)
-
-        except Exception as e:
-            return Response({'status': False, 'message': str(e)}, status=400)
+        return CommonUtils.Serialize(request.data, self.serializer_class)
 
     def delete(self, request):
         try:
             data = {}
-            data['album_id'] = self.kwargs.get('album_id')
-            data['song_id'] = self.kwargs.get('song_id')
+            data['album_id'] = request.data['album_id']
+            data['song_id'] = request.data['song_id']
 
-            SongsInAlbum.objects.get(**data).delete()
-
+            album_song = SongsInAlbum.objects.get(**data)
+            if album_song:
+                album_song.delete()
+            else :
+                raise Exception("Givem album and song combination does'nt exist")
             return Response({'status': True, 'message': 'Song Removed from album Successfuly'}, status=200)
 
         except Exception as e:

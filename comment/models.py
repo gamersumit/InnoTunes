@@ -25,6 +25,10 @@ class Followers(models.Model) :
     def get_total_followers(artist):
         return Followers.objects.filter(artist_id = artist).count()  
     
+    @staticmethod
+    def get_total_following(artist):
+        return Followers.objects.filter(user_id = artist).count() 
+    
 
 # Liked Album Model
 class AlbumLikes(models.Model) :

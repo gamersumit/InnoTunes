@@ -93,7 +93,7 @@ class CommonUtils:
             serializer.is_valid(raise_exception=True)
             serializer.save()
             
-            return Response({'message' : serializer.data}, status = 200)
+            return Response({'message' : 'request successful'}, status = 200)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
