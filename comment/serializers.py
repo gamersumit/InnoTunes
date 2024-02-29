@@ -37,9 +37,10 @@ class FollowerSerializer(serializers.ModelSerializer):
     
     def validate(self, attrs):
         try :
-            if attrs['user'] == attrs['artist'] :
+            
+            if attrs['user_id'] == attrs['artist_id'] :
                 raise ValidationError('Follower and Artist cannot be the same')
-           
+            
             return attrs
         
         except Exception as e :

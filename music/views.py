@@ -169,7 +169,7 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
 class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
     queryset = SongsInAlbum.objects.all()
     serializer_class = SongsInAlbumSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
 
     def post(self, request):
         try:

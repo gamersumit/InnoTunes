@@ -1,3 +1,4 @@
+from utils.utils import CommonUtils
 from .serializers import *
 from rest_framework import generics, viewsets
 from .models import *
@@ -47,9 +48,15 @@ class CommentsListView(generics.ListAPIView):
 class FollowUnfollowView(generics.GenericAPIView):
     queryset = Followers.objects.all()
     serializer_class = FollowerSerializer
-    permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post', 'delete']
     
+    def post(self, request):
+      try :
+        return CommonUtils.Serialize(request.data, self.serializer_class)
+      except Exception as e:
+        return Response({'message' : str(e)}, status = 400)
+      
     def delete(self, request):
       try :
         Followers.objects.get(artist_id = request.data['artist_id'], user_id = request.data['user_id']).delete()
@@ -58,12 +65,20 @@ class FollowUnfollowView(generics.GenericAPIView):
         return Response({'message' : str(e)}, status = 400)
       
 class ListAllFollowersView(generics.ListAPIView):
-    serializer_class = FollowerSerializer
-    permission_class = [permissions.IsAuthenticated]
+    serializer_class = FollowersDetailSerializer
+    # permission_class = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         id = self.kwargs.get('id')
-        return Followers.objects.filter(artist_id = id)
+        return [follower.user_id for follower in Followers.objects.filter(artist_id = id)]
+
+class ListAllFollowingView(generics.ListAPIView):
+    serializer_class = FollowersDetailSerializer
+    # permission_class = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        id = self.kwargs.get('id')
+        return [follower.artist_id for follower in Followers.objects.filter(user_id = id)]
 
 ##### Likes Releated views ########
 class AlbumLikeDislikeView(generics.GenericAPIView):
