@@ -10,7 +10,7 @@ router.register('', views.CommentViewset, 'comment')
 
 
 urlpatterns = [
-    path('<str:field>/<str:id>/', views.CommentsListView.as_view(), name = 'show_comments'),
+    path('comment/<str:field>/<str:id>/', views.CommentsListView.as_view(), name = 'show_comments'),
     path('follow/', views.FollowUnfollowView.as_view(), name = 'follow_unfollow'),
     path('followers/<str:id>/', views.ListAllFollowersView.as_view(), name = 'list_followers'),
     path('like/album/', views.AlbumLikeDislikeView.as_view(), name = 'like_dislike'),

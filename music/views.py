@@ -26,7 +26,7 @@ class SongCreateView(generics.CreateAPIView):
     
     def post(self, request):
         try :
-            CommonUtils.Update_Create(request, ['song_picture', 'audio', 'video'], 'song')
+            CommonUtils.Update_Create(request, ['song_picture', 'audio', 'video'])
             return CommonUtils.Serialize(request.data, SongSerializer)
             
         except Exception as e:
@@ -78,7 +78,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
        
     def create(self, request):
         try :
-            CommonUtils.Update_Create(request, ['playlist_picture'], 'playlist')
+            CommonUtils.Update_Create(request, ['playlist_picture'])
             return CommonUtils.Serialize(request.data, PlaylistSerializer)
             
         except Exception as e:
@@ -86,7 +86,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     
     def update(self, request):
         try :
-            CommonUtils.Update_Create(request, ['playlist_picture'], 'playlist')
+            CommonUtils.Update_Create(request, ['playlist_picture'])
             return CommonUtils.Serialize(request.data, PlaylistSerializer)
             
         except Exception as e:
@@ -112,7 +112,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
         
     def create(self, request):
         try :
-            CommonUtils.Update_Create(request, ['album_picture'], 'album')
+            CommonUtils.Update_Create(request, ['album_picture'])
             return CommonUtils.Serialize(request.data, AlbumSerializer)
             
         except Exception as e:
@@ -121,7 +121,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
  
     def update(self, request):
         try :
-            CommonUtils.Update_Create(request, ['album_picture'], 'album')
+            CommonUtils.Update_Create(request, ['album_picture'])
             return CommonUtils.Serialize(request.data, AlbumSerializer)
             
         except Exception as e:
@@ -169,7 +169,7 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
 class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
     queryset = SongsInAlbum.objects.all()
     serializer_class = SongsInAlbumSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
 
     def post(self, request):
         try:

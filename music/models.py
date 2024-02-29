@@ -18,7 +18,7 @@ class Playlist(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     playlist_name = models.CharField(max_length=50)
     playlist_picture = models.ImageField(upload_to=None)
-
+    
     class Meta:
         unique_together = ['user_id', 'playlist_name']
         
@@ -52,7 +52,7 @@ class Song(models.Model):
     
     audio = models.URLField(null = True, blank = True)
     video = models.URLField(null = True, blank = True)
-    audio_duration = models.PositiveIntegerField(default = 0)
+    audio_duration = models.PositiveIntegerField()
     
     genre = models.CharField(choices = genre_choices, null = False, blank=False)    
     lyrics = models.TextField(max_length = 100000, null=True, blank=True)

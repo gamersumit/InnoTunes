@@ -5,6 +5,7 @@ from cloudinary import uploader
 from rest_framework.response import Response
 import os
 import cloudinary.api
+from user.models import User
 
 class UserUtils :
 
@@ -48,12 +49,14 @@ class CommonUtils:
     @staticmethod
     def UploadMediaToCloud(media, path):
         try : 
-            upload = uploader.upload_large(media, folder = path, use_filename = True)   
-        
             ## song duration
             if path == 'audio':
+                upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)   
+
                 duration = upload['duration']
                 return [duration, upload['url']]   
+            
+            upload = uploader.upload_large(media, folder = path, use_filename = True)   
             return upload['url']
         
         except Exception as e:
@@ -72,15 +75,13 @@ class CommonUtils:
     def Update_Create(request, fields):
         try:
             for field in fields :
-                
                 if field == 'audio' : 
-                        
                     res = CommonUtils.UploadMediaToCloud(request.data[field], field)
                     request.data['audio'] = res[1]
-                    request.data['audio_duration'] = res[0]
+                    request.data['audio_duration'] = int(res[0])
                 
-                if request.data.get(field):
-                    request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], path)
+                elif request.data.get(field):
+                    request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], field)
                     
         except Exception as e:
             raise Exception(str(e))
@@ -96,3 +97,6 @@ class CommonUtils:
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
+        
+
+    
