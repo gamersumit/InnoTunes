@@ -1,5 +1,3 @@
-from tkinter import E
-from django.shortcuts import render
 from .serializers import *
 from rest_framework import generics, viewsets
 from .models import *
