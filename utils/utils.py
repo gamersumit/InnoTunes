@@ -49,24 +49,34 @@ class CommonUtils:
     def UploadMediaToCloud(media, path):
         try : 
             upload = uploader.upload_large(media, folder = path, use_filename = True)   
+        
+            ## song duration
+            if path == 'song_audio':
+                duration = upload['duration']
+                return [duration, upload['url']]   
             return upload['url']
         
         except Exception as e:
             raise Exception(str(e))
     
-    @staticmethod
-    def CloudinaryAudioDuration(audio_url):
-        try :
-            audio_info = cloudinary.api.resource(audio_url)
-            ## metadata --> duration in the cloudinary
-            return audio_info.get('duration', None)
-        except :
-            return None
+    # @staticmethod
+    # def CloudinaryAudioDuration(audio_url):
+    #     try :
+    #         audio_info = cloudinary.api.resource(audio_url)
+    #         ## metadata --> duration in the cloudinary
+    #         return audio_info.get('duration', None)
+    #     except :
+    #         return None
         
     @staticmethod
     def Update_Create(request, fields, path):
         try:
             for field in fields :
+                
+                if field == 'audio' : 
+                    res = CommonUtils.UploadMediaToCloud(request.data[field], path)
+                    request.data['audio'] = res[1]
+                    request.data['duration'] = res[0]
                 
                 if request.data.get(field):
                     request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], path)
