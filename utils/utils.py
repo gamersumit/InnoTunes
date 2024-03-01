@@ -104,6 +104,9 @@ class CommonUtils:
 
     @staticmethod
     def Delete_Media(request, fields): 
+        print("In method::::\n")
+        print(request.data)
+        print("Fields: ", fields)
         if request.data.get(id):
             print("id: ", request.data.get(id))
             print("song_id: ", request.data.get('song_id'))
@@ -114,6 +117,7 @@ class CommonUtils:
                     public_id = cloudinary.utils.cloudinary_url(url)[0]
                     deletion_response = cloudinary.uploader.destroy(public_id)
                     if deletion_response.get('result') == 'ok':
+                        print(f'{field} deleted successfully')
                         return Response({'message': f'{field} deleted successfully'})
 
             except Exception as e:

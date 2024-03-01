@@ -52,7 +52,12 @@ class UserSerializer(serializers.ModelSerializer):
     
     def validate_password(self, value):
        return UserUtils.validate_password(value)
-    
+
+# class AllUserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ['username', ]
+
 class ArtistSerializer(serializers.ModelSerializer):
     total_followers = serializers.SerializerMethodField(read_only = True)
     total_following = serializers.SerializerMethodField(read_only = True)
