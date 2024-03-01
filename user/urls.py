@@ -7,8 +7,8 @@ urlpatterns = [
     path('register/', views.user_register_view, name = 'register'),
     path('logout/', views.user_logout_view, name = 'logout'),
     path('login/', views.user_login_view, name='login'),
-    path('', views.user_detail_view, name = 'detail'),
-    path('follow/', views.add_follower_view, name = 'add_follower'),
-    path('followers/<str:id>/', views.list_followers_view, name = 'list_followers'),
-    path('artists/', views.artist_list_view, name = 'list_artists')
+    path('list/<str:id>/', views.user_detail_view, name = 'user_detail'),
+    path('list/', views.user_list_view, name = 'list_user'),
+    path('artists/', views.artist_list_view, name = 'list_artists'),
+    path('artists/<str:pk>/', views.artist_detail_view, name = 'detail_artist')
 ]
