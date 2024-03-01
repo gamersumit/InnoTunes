@@ -23,7 +23,7 @@ from music import serializers
 class SongCreateView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
     
     def post(self, request):
         try :
@@ -42,7 +42,7 @@ class AllSongListView(ListAPIView):
 # list all songs
 class ArtistSongListView(ListAPIView):
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         return Song.objects.filter(artist_id = self.kwargs.get('id'))

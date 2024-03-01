@@ -42,8 +42,6 @@ class CommentsListView(generics.ListAPIView):
       except :
         return {}
         
-
-
 ##### FOllower Releated views ########
 class FollowUnfollowView(generics.GenericAPIView):
     queryset = Followers.objects.all()
