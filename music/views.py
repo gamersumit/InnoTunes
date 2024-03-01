@@ -57,13 +57,12 @@ class SongCreateView(generics.CreateAPIView):
 # list all songs
 class AllSongListView(ListAPIView):
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    queryset = Song.objects.all()
+    # permission_classes = [permissions.IsAuthenticated]
 
 # list all songs
 class ArtistSongListView(ListAPIView):
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         return Song.objects.filter(artist_id = self.kwargs.get('id'))
@@ -98,8 +97,19 @@ class AlbumSongListView(ListAPIView):
         
         except Exception as e:
             return Response({'message' : str(e)})
-        
-        
+    
+
+class ListFilterSongsView(generics.ListAPIView):
+    serializer_class = SongSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        queryset = Song.objects.all()
+        song_name = self.request.query_params.get('song_name', None)
+        if song_name:
+            queryset = queryset.filter(song_name__icontains=song_name)
+        return queryset
+
 # <! ---------------- Playlist views ------------------ !>
 #  playlist CRUDS(these cruds are not for songs inside playlist) view
 class PlaylistViewSet(viewsets.ModelViewSet):

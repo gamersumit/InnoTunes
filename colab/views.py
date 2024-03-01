@@ -15,7 +15,7 @@ from user.permissions import *
     
 class ColabViewSet(viewsets.ViewSet):
     serializer_class = ColabSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post']
     lookup_field = 'pk'
     
@@ -55,7 +55,7 @@ class GetColabsView(ListAPIView):
             return Response({'status': False, 'message': str(e)}, status=200)
     
 class DeleteColabView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     
     def get_object(self, pk):
         try:
@@ -64,15 +64,25 @@ class DeleteColabView(APIView):
             raise Response({'message': 'Colab not found'}, status=status.HTTP_404_NOT_FOUND)
                 
     def delete(self, request, **kwargs):
+        print('aaye')
         try:
+            print('noii')
             field = kwargs.get('field')
             id = kwargs.get('id')
+            print('one')
             if field == 'song':
+                print('five')
+                # print("Data to be sent: ", Colab.objects.filter(song_id=id))
+                
+                media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_video'])
+                print("Deletion called\n")
+                if media_deletion is not None:
+                    print('two')
+                    print(media_deletion)
+                
+                print('three')
                 Colab.objects.filter(song_id=id).delete()
-                # media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
-                # if media_deletion is not None:
-                #     print(media_deletion)
-             
+                print('four')
             elif field == 'user':
                 Colab.objects.filter(user_id=id).delete()
                 # media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
