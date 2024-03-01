@@ -1,6 +1,8 @@
 
 from rest_framework import generics
 from rest_framework.response import Response
+
+from music.serializers import SongSerializer
 from .serializers import *
 from .models import User
 from rest_framework.authtoken.models import Token
@@ -8,6 +10,7 @@ from rest_framework import permissions
 from django.contrib.auth import authenticate
 from user.models import User
 from utils.utils import CommonUtils
+from comment.models import SongLikes
 
 # Create your views here.
 
@@ -39,7 +42,9 @@ class LoginView(generics.GenericAPIView) :
             if user:
                 token, created = Token.objects.get_or_create(user=user)
                 data = UserSerializer(user).data
-                return Response({'token': token.key, 'user_info' : data}, status = 200)
+                liked_songs = [song.song_id for song in SongLikes.objects.filter(user_id = user.id)]
+                liked_songs = SongSerializer(liked_songs, many = True).data
+                return Response({'token': token.key, 'user_info' : data, 'liked_songs' : liked_songs}, status = 200)
         
             else:
                 return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
