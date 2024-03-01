@@ -3,7 +3,7 @@ from rest_framework import permissions
 from utils.utils import UserUtils
 
 # class for normal user / Audiance
-class UserPermissions(permissions.DjangoModelPermissions):
+class IsUserOwnerOrReadOnly(permissions.DjangoModelPermissions):
     permission_queryset = None
 
     perms_map = {
@@ -18,17 +18,25 @@ class UserPermissions(permissions.DjangoModelPermissions):
     }
 
     def has_permission(self, request, view):
-        if not request.user.is_artist :
-            return  True
+        if request.method == 'GET':
+            return True
         
-        return False
-    
-class IsOwnerOrReadOnly(permissions.BasePermission):
+        try :
+            token = request.headers['Authorization'].split(' ')[1]
+            token_user = UserUtils.getUserFromToken(token)
+            request_user = request.data.get('user_id')
+            # Write permissions are only allowed to the owner of the playlist.
+            return request_user == str(token_user.id)
+        
+        except Exception as e:
+            return False
+        
+class IsArtistOwnerOrReadOnly(permissions.DjangoModelPermissions):
     """
-    Custom permission to only allow owners of an object to edit it.
+    Custom permission to only allow Artist to perform actions.
     """
 
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         # Read permissions are allowed to any request,
         # so we'll always allow GET
         if request.method == 'GET':
@@ -36,28 +44,10 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         
         try :
             token = request.headers['Authorization'].split(' ')[1]
-            token_user = UserUtils.getUserFromToken(token).id
-            request_user = request.data.get('owner_id')
-            # Write permissions are only allowed to the owner of the playlist.
-            return request_user == token_user 
+            token_user = UserUtils.getUserFromToken(token)
+            request_user = request.data.get('artist_id')
+    
+            return token_user.is_artist and request_user == str(token_user.id)
         
         except Exception as e:
-            raise Exception(str(e)) 
-        
-class IsArtistOrReadOnly(permissions.BasePermission):
-    """
-    Custom permission to only allow Artist to perform actions.
-    """
-
-    def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET
-        try :
-            token = request.headers['Authorization'].split(' ')[1]
-            user = UserUtils.getUserFromToken(token)
-            # Write permissions are only allowed to the owner of the playlist.
-            return user.is_artist
-        
-        except Exception as e:
-            raise Exception(str(e)) 
-
+            return False

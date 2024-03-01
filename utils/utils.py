@@ -1,6 +1,11 @@
 from django.contrib.auth.hashers import make_password
 import re
 from rest_framework.authtoken.models import Token
+from cloudinary import uploader
+from rest_framework.response import Response
+import os
+import cloudinary.api
+from user.models import User
 
 class UserUtils :
 
@@ -37,3 +42,61 @@ class UserUtils :
         
         except Exception as e :
             raise Exception(str(e))
+        
+
+class CommonUtils:
+    
+    @staticmethod
+    def UploadMediaToCloud(media, path):
+        try : 
+            ## song duration
+            if path == 'audio':
+                upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)   
+
+                duration = upload['duration']
+                return [duration, upload['url']]   
+            
+            upload = uploader.upload_large(media, folder = path, use_filename = True)   
+            return upload['url']
+        
+        except Exception as e:
+            raise Exception(str(e))
+    
+    # @staticmethod
+    # def CloudinaryAudioDuration(audio_url):
+    #     try :
+    #         audio_info = cloudinary.api.resource(audio_url)
+    #         ## metadata --> duration in the cloudinary
+    #         return audio_info.get('duration', None)
+    #     except :
+    #         return None
+        
+    @staticmethod
+    def Update_Create(request, fields):
+        try:
+            for field in fields :
+                if field == 'audio' : 
+                    res = CommonUtils.UploadMediaToCloud(request.data[field], field)
+                    request.data['audio'] = res[1]
+                    request.data['audio_duration'] = int(res[0])
+                
+                elif request.data.get(field):
+                    request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], field)
+                    
+        except Exception as e:
+            raise Exception(str(e))
+    
+    @staticmethod
+    def Serialize(data, serializer_class):
+        try:
+            serializer = serializer_class(data = data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            
+            return Response({'message' : 'request successful'}, status = 200)
+            
+        except Exception as e:
+            return Response({'message' : str(e)}, status = 400)
+        
+
+    

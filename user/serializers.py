@@ -1,13 +1,20 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from .models import User, Followers
+from .models import User
+from comment.serializers import FollowersDetailSerializer
+from music.models import Album
+from music.serializers import AlbumSerializer
+from comment.models import Followers
 from utils.utils import UserUtils
 from rest_framework.serializers import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(max_length=128, min_length = 8, write_only = True)
-    total_followers = serializers.IntegerField(read_only = True)
+    total_followers = serializers.SerializerMethodField(read_only = True)
+    total_following = serializers.SerializerMethodField(read_only = True)
+    followers = serializers.SerializerMethodField(read_only = True)
+    following = serializers.SerializerMethodField(read_only = True)
     
     class Meta:
         model = User
@@ -16,18 +23,44 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'password',
             'username',
+            'avatar',
             'is_artist',
             'total_followers',
+            'total_following',
+            'followers',
+            'following',
         ]
+        read_only_fields = ['id']
     
-    def get_total_followers(self, artist):
-        return Followers.get_total_followers()
+    def get_total_followers(self, user):
+        return Followers.get_total_followers(user)
+    
+    def get_total_following(self, user):
+        return Followers.get_total_following(user)
+    
+    def get_followers(self, user):
+        users = [follower.user_id for follower in Followers.objects.filter(artist_id = user)]
+        serializer = FollowersDetailSerializer(users, many = True)
+        
+        return serializer.data
+    
+    def get_following(self, user):
+        users = [follower.artist_id for follower in Followers.objects.filter(user_id = user)]
+        
+        serializer = FollowersDetailSerializer(users, many =True)
+        return serializer.data
     
     def validate_password(self, value):
        return UserUtils.validate_password(value)
     
 class ArtistSerializer(serializers.ModelSerializer):
-    total_followers = serializers.IntegerField(read_only = True)
+    total_followers = serializers.SerializerMethodField(read_only = True)
+    total_following = serializers.SerializerMethodField(read_only = True)
+    followers = serializers.SerializerMethodField(read_only = True)
+    following = serializers.SerializerMethodField(read_only = True)
+    total_albums = serializers.SerializerMethodField(read_only = True)
+    albums = serializers.SerializerMethodField(read_only = True)
+    
     #List action
     class Meta:
         model = User
@@ -36,86 +69,33 @@ class ArtistSerializer(serializers.ModelSerializer):
             'username',
             'avatar',
             'total_followers',
+            'total_following',
+            'followers',
+            'following',
             'total_albums',
+            'albums', # list of albums
         ]
     
     def get_total_followers(self, artist):
-        return Followers.get_total_followers()
-
-class FollowersDetailSerializer(serializers.ModelSerializer) :
-    class Meta:
-        model = User
-        fields = [
-            'id',
-            'username',
-            'avatar',
-        ]
+        return Followers.get_total_followers(artist)
     
-class FollowerSerializer(serializers.ModelSerializer):
-    followers_detail = serializers.SerializerMethodField(read_only=True)
-    class Meta:
-        model = Followers
-        fields = [
-            'id',
-            'artist_id',
-            'user_id',
-            'followers_detail',
-        ]
-        read_only_fields = ['id', 'followers_detail']
-        
-    def get_followers_detail(self, obj):
-        product = User.objects.get(id = obj.user_id.id)
-        serializer = FollowersDetailSerializer(product)
+    def get_total_following(self, artist):
+        return Followers.get_total_following(artist)
+    
+    def get_followers(self, artist):
+        artists = [follower.user_id for follower in Followers.objects.filter(artist_id = artist)]
+        serializer = FollowersDetailSerializer(artists, many = True)
         return serializer.data
     
-    def validate(self, attributes):
-        try :
-            user = attributes['user_id']
-            artist = attributes['artist_id']
-            
-            if user == artist :
-                raise ValidationError('Follower and Artist cannot be the same')
-            
-            if Followers.objects.filter(user_id = user, artist_id = artist).exists() :
-                raise ValidationError('User is already Following the given artist')
-            
-            return attributes
-        
-        except Exception as e :
-            raise ValidationError(str(e))
-            
-          
-        
-# GET ACTION RETERIVE  -- ON ID
-# fields  = [
-#     {album1}, {album2} , {}
-# ]
-
-# ---- album structure on artist id---
-# album = [
-#     'id',
-#     'album_name',
-#     'album_picture',
-#     'album_discription',
-#     'credits', # ---- will see later
-#     'total_duration',
-#     'total_songs',
-#     'total_likes',
-# ]
-
-# --- songs on album id ----
-# songs = [
-#     'id',
-
-#     'song_name',
-#     'song_image',
-#     'song_discription',
-
-#     'audio',
-#     'video',
-#     'audio_duration',
-
-#     'genre',
-#     'credits' -- will see it later ---
-#     'date_added',
-# ]
+    def get_following(self, artist):
+        artists = [follower.artist_id for follower in Followers.objects.filter(user_id = artist)]
+        serializer = FollowersDetailSerializer(artists, many = True)
+        return serializer.data
+    
+    def get_albums(self, artist):
+        albums = Album.objects.filter(artist_id = artist.id)
+        serializer = AlbumSerializer(albums, many = True)
+        return serializer.data
+    
+    def get_total_albums(self, artist):
+        return Album.objects.filter(artist_id = artist.id).count()

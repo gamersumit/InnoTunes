@@ -1,5 +1,3 @@
-from re import T
-from album.models import *
 from cloudinary.models import CloudinaryField
 from django.db import models
 from user.models import User
@@ -9,7 +7,7 @@ from user.models import User
 class Album(models.Model):
     album_name = models.CharField(max_length = 200, unique=True)
     album_description = models.TextField(max_length = 50000)
-    album_picture = models.ImageField(upload_to='album/images/', null = True, blank = True)
+    album_picture = models.URLField(null=True, blank=True)
     artist_id = models.ForeignKey(User, on_delete = models.CASCADE) ## if artist gets deleted, his album must not be deleted    
     
     def __str__(self):
@@ -19,8 +17,8 @@ class Album(models.Model):
 class Playlist(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     playlist_name = models.CharField(max_length=50)
-    playlist_picture = models.ImageField(upload_to=None)
-
+    playlist_picture = models.URLField(blank=True, null=True)
+    
     class Meta:
         unique_together = ['user_id', 'playlist_name']
         
@@ -48,13 +46,13 @@ class Song(models.Model):
     
     artist_id = models.ForeignKey(User, on_delete = models.CASCADE)
     
-    song_name = models.CharField(max_length = 500)
-    song_image = models.ImageField(upload_to = 'songs/image/', null = True, blank = True)
-    song_discription = models.TextField(max_length = 100000, null = True, blank = True)
+    song_name = models.CharField(max_length = 500, unique=True)
+    song_picture = models.URLField(null = True, blank = True)
+    song_description = models.TextField(max_length = 100000, null = True, blank = True)
     
-    audio = models.FileField(upload_to = 'songs/audio/', null=True, blank=True)
-    video = models.FileField(upload_to = 'songs/video/', null=True, blank=True)
-    audio_duration = models.PositiveIntegerField(default = 0)
+    audio = models.URLField(null = True, blank = True)
+    video = models.URLField(null = True, blank = True)
+    audio_duration = models.PositiveIntegerField()
     
     genre = models.CharField(choices = genre_choices, null = False, blank=False)    
     lyrics = models.TextField(max_length = 100000, null=True, blank=True)
@@ -79,7 +77,7 @@ class SongsInPlaylist(models.Model):
 
 # Songs in Album Model   
 class SongsInAlbum(models.Model):
-    song_id = models.ForeignKey(Song, on_delete=models.CASCADE)
+    song_id = models.OneToOneField(Song, on_delete=models.CASCADE, unique=True)
     album_id = models.ForeignKey(Album, on_delete=models.CASCADE)
     
     class Meta :
