@@ -105,7 +105,6 @@ class UserListView(generics.ListAPIView) :
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
-
         
 # ArtistSerializer --- to provide list of all artist
 class ArtistListView(generics.ListAPIView) :
@@ -119,26 +118,7 @@ class ArtistDetailView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
    
     
-class ListAllFollowers(generics.ListAPIView):
-    serializer_class = FollowerSerializer
-    permission_class = [permissions.IsAuthenticated]
     
-    def get_queryset(self):
-        id = self.kwargs.get('id')
-        return Followers.objects.filter(artist_id = id)
-                  
-class ListUsersView(generics.ListAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
-    def get_queryset(self):
-        queryset = User.objects.all()
-        username = self.request.query_params.get('username', None)
-        if username:
-            queryset = queryset.filter(username__icontains=username)
-        return queryset
-    
-
 # SHORT NAMING :
 user_register_view = RegisterView.as_view()
 user_logout_view = LogoutView.as_view()

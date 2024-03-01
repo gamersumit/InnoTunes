@@ -87,7 +87,11 @@ CORS_ALLOWED_ORIGINS = [
     'http://192.168.1.106:3000',
     'http://192.168.1.87:3000',
     'https://innotune.vercel.app',
+<<<<<<< Updated upstream
     ]
+=======
+                        ]
+>>>>>>> Stashed changes
 
 TEMPLATES = [
     {
@@ -106,17 +110,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'innotune.wsgi.application'
-
-CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:3000',
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://192.168.1.106:3000',
-    'http://192.168.1.87:3000',
-    'https://innotune.vercel.app',
-    
-]
 
 
 # Database
