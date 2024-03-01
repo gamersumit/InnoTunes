@@ -1,3 +1,6 @@
+.env
+nenv
+
 # Django #
 *.log
 *.pot

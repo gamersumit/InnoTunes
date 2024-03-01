@@ -92,6 +92,7 @@ class UserListView(generics.ListAPIView) :
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+    
 
         
 # ArtistSerializer --- to provide list of all artist

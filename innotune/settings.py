@@ -33,7 +33,9 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
+# DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
+DEBUG = os.getenv('DEBUG')
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -87,11 +89,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://192.168.1.106:3000',
     'http://192.168.1.87:3000',
     'https://innotune.vercel.app',
-<<<<<<< Updated upstream
-    ]
-=======
-                        ]
->>>>>>> Stashed changes
+]
 
 TEMPLATES = [
     {
@@ -116,15 +114,15 @@ WSGI_APPLICATION = 'innotune.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'), conn_max_age=600),
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': os.getenv('DB_NAME'),
-    #     'HOST': os.getenv('DB_HOST'),
-    #     'USER': os.getenv('DB_USER'),
-    #     'PORT': os.getenv('DB_PORT'),
-    #     'PASSWORD': os.getenv('DB_PASSWORD')
-    # }
+    # 'default': dj_database_url.parse(os.environ.get('DATABASE_URL'), conn_max_age=600),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'HOST': os.getenv('DB_HOST'),
+        'USER': os.getenv('DB_USER'),
+        'PORT': os.getenv('DB_PORT'),
+        'PASSWORD': os.getenv('DB_PASSWORD')
+    }
 }
 
 # Password validation
