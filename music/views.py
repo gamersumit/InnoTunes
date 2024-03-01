@@ -38,21 +38,41 @@ class AllSongListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Song.objects.all()
 
-class PlaylistSongListView(ListAPIView):
+# list all songs
+class ArtistSongListView(ListAPIView):
     serializer_class = SongSerializer
     permission_classes = [permissions.IsAuthenticated]
     
+    def get_queryset(self):
+        return Song.objects.filter(artist_id = self.kwargs.get('id'))
+    
+class PlaylistSongListView(ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, **kwargs):
+        try :
+            queryset = [song.song_id for song in SongsInPlaylist.objects.filter(playlist_id = self.kwargs.get('id'))]
+            playlist = Playlist.objects.get(id = self.kwargs.get('id'))
+            playlist = PlaylistSerializer(playlist).data
+            songs = SongSerializer(queryset, many = True).data
+            data = {"playlist" : playlist, "songs" : songs}
+            return Response(data, status = 200)
+        
+        except Exception as e:
+            return Response({'message' : str(e)})
+    
 
 class AlbumSongListView(ListAPIView):
-
-    def get(self, request):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, **kwargs):
         try :
-            queryset = SongsInAlbum.objects.filter(album_id = self.kwargs.get('id'))
-            data = SongSerializer(queryset, many = True).data
-            print(data, "########")
-            album = Album.object.get(id = self.kwargs.get('id'))
-            data.update(AlbumSerializer(album).data)
-            return Response({'message' : data}, status = 200)
+            queryset = [song.song_id for song in SongsInAlbum.objects.filter(album_id = self.kwargs.get('id'))]
+            album = Album.objects.get(id = self.kwargs.get('id'))
+            album = AlbumSerializer(album).data
+            songs = SongSerializer(queryset, many = True).data
+            data = {"album" : album, "songs" : songs}
+            return Response(data, status = 200)
         
         except Exception as e:
             return Response({'message' : str(e)})
