@@ -26,7 +26,7 @@ class PlaylistSerializer(serializers.ModelSerializer):
         return SongsInPlaylist.objects.filter(playlist_id = obj.id).count()
     
     def get_playlist_duration(self, obj):
-        duration = sum([song.audio_duration for song in (SongsInPlaylist.objects.filter(playlist_id = obj.id))])
+        duration = sum([song.song_id.audio_duration for song in (SongsInPlaylist.objects.filter(playlist_id = obj.id))])
         return duration   
 
 class SongsInPlaylistSerializer(serializers.ModelSerializer):

@@ -1,5 +1,6 @@
 from collections import UserDict
 from curses.ascii import SO
+from pydoc import plain
 from rest_framework.views import APIView
 from .models import *
 from .permissions import *
@@ -52,10 +53,15 @@ class PlaylistSongListView(ListAPIView):
     def get(self, request, **kwargs):
         try :
             queryset = [song.song_id for song in SongsInPlaylist.objects.filter(playlist_id = self.kwargs.get('id'))]
+            print(queryset)
             playlist = Playlist.objects.get(id = self.kwargs.get('id'))
+            print(playlist)
             playlist = PlaylistSerializer(playlist).data
+            print(playlist)
             songs = SongSerializer(queryset, many = True).data
+            print(songs)
             data = {"playlist" : playlist, "songs" : songs}
+            print(data)
             return Response(data, status = 200)
         
         except Exception as e:
@@ -82,7 +88,7 @@ class AlbumSongListView(ListAPIView):
 #  playlist CRUDS(these cruds are not for songs inside playlist) view
 class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
-    # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 
@@ -157,12 +163,11 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
 
     def delete(self, request):
         try:
-            data = {}
-            data['playlist_id'] = request.data['playlist_id']
-            data['song_id'] = request.data['song_id']
-
-            playlist_song = SongsInPlaylist.objects.get(**data).delete()
             
+            playlist_id = request.data['playlist_id']
+            song_id = request.data['song_id']
+            playlist_song = SongsInPlaylist.objects.get(playlist_id = playlist_id, song_id = song_id)
+            print(playlist_song)
             if playlist_song:
                 playlist_song.delete()
                 
@@ -179,18 +184,16 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
 class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
     queryset = SongsInAlbum.objects.all()
     serializer_class = SongsInAlbumSerializer
-    # permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
 
     def post(self, request):
         return CommonUtils.Serialize(request.data, self.serializer_class)
 
     def delete(self, request):
         try:
-            data = {}
-            data['album_id'] = request.data['album_id']
-            data['song_id'] = request.data['song_id']
-
-            album_song = SongsInAlbum.objects.get(**data)
+            album_id = request.data['album_id']
+            song_id = request.data['song_id']
+            album_song = SongsInAlbum.objects.get(album_id = album_id, song_id = song_id)
             if album_song:
                 album_song.delete()
             else :
