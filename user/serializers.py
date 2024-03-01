@@ -45,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
         return serializer.data
     
     def get_following(self, user):
-        users = [follower.artist_id for follower in Followers.objects.filter(artist_id = user)]
+        users = [follower.artist_id for follower in Followers.objects.filter(user_id = user)]
         
         serializer = FollowersDetailSerializer(users, many =True)
         return serializer.data
@@ -88,7 +88,7 @@ class ArtistSerializer(serializers.ModelSerializer):
         return serializer.data
     
     def get_following(self, artist):
-        artists = [follower.artist_id for follower in Followers.objects.filter(artist_id = artist)]
+        artists = [follower.artist_id for follower in Followers.objects.filter(user_id = artist)]
         serializer = FollowersDetailSerializer(artists, many = True)
         return serializer.data
     

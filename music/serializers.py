@@ -1,3 +1,4 @@
+from email.policy import default
 from xml.dom import ValidationErr
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
@@ -6,11 +7,19 @@ from cloudinary import uploader
 from utils.utils import CommonUtils
 # <! ---------- SONGS SERIALIZERS -----------!>
 class SongSerializer(serializers.ModelSerializer):
+    album_name = serializers.SerializerMethodField(default = 'Single')
     class Meta:
         model = Song
         fields = '__all__'
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['id', 'created_at', 'album_name']
         
+    def get_album_name(self, obj):
+        try :
+            album =  SongsInAlbum.objects.get(song_id = obj.id)
+            album = Album.objects.get(id = album.album_id)
+            return album.album_name
+        except :
+            return 'Single'
 
 # <! ---------- PLAYLIST SERIALIZERS -----------!> 
 class PlaylistSerializer(serializers.ModelSerializer):

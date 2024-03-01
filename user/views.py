@@ -25,11 +25,15 @@ class RegisterView(generics.CreateAPIView) :
         
 #Login View
 class LoginView(generics.GenericAPIView) :
+    serializer_class = UserSerializer
     def post(self, request, *args, **kwargs) :
         try :
             username = request.data['email']
             password = request.data['password']
             
+            if not User.objects.filter(email = username).exists() :
+               return Response({'status': False, 'message': 'New User'}, status=400)
+                
             user = authenticate(password = password, username = username)
             
             if user:
