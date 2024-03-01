@@ -1,3 +1,4 @@
+from asyncio import mixins
 from utils.utils import CommonUtils
 from .serializers import *
 from rest_framework import generics, viewsets
@@ -9,7 +10,7 @@ from user.permissions import *
 ##### Comment Releated views ########
 class CommentViewset(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
-    serializer_class = [CommentSerializer]
+    serializer_class = CommentSerializer
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
     
@@ -80,7 +81,7 @@ class ListAllFollowingView(generics.ListAPIView):
         return [follower.artist_id for follower in Followers.objects.filter(user_id = id)]
 
 ##### Likes Releated views ########
-class AlbumLikeDislikeView(generics.GenericAPIView):
+class AlbumLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     queryset = AlbumLikes.objects.all()
     serializer_class = AlbumLikesSerializer
     permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
@@ -94,8 +95,8 @@ class AlbumLikeDislikeView(generics.GenericAPIView):
       except Exception as e:
         return Response({'message' : str(e)}, status = 400)
       
-##### FOllower Releated views ########
-class PlaylistLikeDislikeView(generics.GenericAPIView):
+
+class PlaylistLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     queryset = PlaylistLikes.objects.all()
     serializer_class = PlaylistLikesSerializer
     permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
@@ -104,6 +105,21 @@ class PlaylistLikeDislikeView(generics.GenericAPIView):
     def delete(self, request):
       try :
         PlaylistLikes.objects.get(playlist_id = request.data['playlist_id'], user_id = request.data['user_id']).delete()
+        return Response({'message' : 'request successful'}, status = 200)
+      
+      except Exception as e:
+        return Response({'message' : str(e)}, status = 400)
+      
+      
+class SongLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
+    queryset = SongLikes.objects.all()
+    serializer_class = SongLikesSerializer
+    # permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    http_method_names = ['post', 'delete']
+    
+    def delete(self, request):
+      try :
+        SongLikes.objects.get(song_id = request.data['song_id'], user_id = request.data['user_id']).delete()
         return Response({'message' : 'request successful'}, status = 200)
       
       except Exception as e:

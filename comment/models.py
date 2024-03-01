@@ -39,11 +39,11 @@ class AlbumLikes(models.Model) :
         unique_together = ['album_id', 'user_id']
     
     @staticmethod    
-    def get_total_likes(album):
+    def get_total_likes(self, album):
         return AlbumLikes.objects.filter(album_id = album).count()
     
     
-# Liked Album Model
+# Liked Playlist Model
 class PlaylistLikes(models.Model) :
     playlist_id = models.ForeignKey(Playlist,  on_delete = models.CASCADE)
     user_id = models.ForeignKey(User, on_delete = models.CASCADE)
@@ -52,5 +52,18 @@ class PlaylistLikes(models.Model) :
         unique_together = ['playlist_id', 'user_id']
     
     @staticmethod    
-    def get_total_likes(playlist):
+    def get_total_likes(self, playlist):
         return PlaylistLikes.objects.filter(playlist_id = playlist).count()
+    
+
+# Liked Songs Model
+class SongLikes(models.Model) :
+    song_id = models.ForeignKey(Song,  on_delete = models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete = models.CASCADE)
+    
+    class Meta:
+        unique_together = ['song_id', 'user_id']
+    
+    @staticmethod    
+    def get_total_likes(self, song):
+        return SongLikes.objects.filter(song_id = song).count()
