@@ -82,13 +82,13 @@ class AlbumSongListView(ListAPIView):
 #  playlist CRUDS(these cruds are not for songs inside playlist) view
 class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 
     def get_queryset(self):
         try:
-            return Playlist.objects.filter(user_id=self.request.data['owner_id'])
+            return Playlist.objects.filter(user_id=self.request.data['user_id'])
 
         except Exception as e:
             return None
@@ -124,7 +124,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
             return Album.objects.filter(artist_id = id)
         
         except Exception as e:
-            return None
+            return {}
         
         
     def create(self, request):
