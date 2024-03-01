@@ -49,14 +49,24 @@ class FollowerSerializer(serializers.ModelSerializer):
 
 # Likes --- album, playlist
 
-class AlbumLikesSerializer(serializers.Serializer):
+class AlbumLikesSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlbumLikes
         fields = '__all__'
         read_only_fields = ['id']
 
-class PlaylistLikesSerializer(serializers.Serializer):
+class PlaylistLikesSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaylistLikes
         fields = '__all__'
         read_only_fields = ['id']
+
+class SongLikesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SongLikes
+        fields = '__all__'
+        read_only_fields = ['id']
+        
+    def validate(self, attrs):
+        print("******", attrs)
+        return attrs

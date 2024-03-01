@@ -23,7 +23,7 @@ from music import serializers
 class SongCreateView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
-    # permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
     
     def post(self, request):
         try :
@@ -67,7 +67,6 @@ class PlaylistSongListView(ListAPIView):
         except Exception as e:
             return Response({'message' : str(e)})
     
-
 class AlbumSongListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     
