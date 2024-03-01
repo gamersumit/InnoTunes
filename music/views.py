@@ -33,34 +33,51 @@ class SongCreateView(generics.CreateAPIView):
             return Response({'message' : str(e)}, status = 400)
 
 # list all songs
-class SongListView(ListAPIView):
+class AllSongListView(ListAPIView):
     serializer_class = SongSerializer
     permission_classes = [permissions.IsAuthenticated]
+    queryset = Song.objects.all()
 
+# list all songs
+class ArtistSongListView(ListAPIView):
+    serializer_class = SongSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
     def get_queryset(self):
-        try:
-           
-            field = self.kwargs.get('field', None)
-            id = self.kwargs.get('id')
-            
-            if not field:
-                return Song.objects.all()
-            elif field == 'artist':
-                model = Song
-                return model.objects.filter(artist_id=id)
-            elif field == 'album':
-                model = SongsInAlbum
-                return model.objects.filter(album_id=id)
-            elif field == 'playlist':
-                model = SongsInPlaylist
-                return model.objects.filter(playlist_id=id)
-            else:
-                raise Exception('Invalid Url : /songs/!/!')
-
-     
+        return Song.objects.filter(artist_id = self.kwargs.get('id'))
+    
+class PlaylistSongListView(ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, **kwargs):
+        try :
+            queryset = [song.song_id for song in SongsInPlaylist.objects.filter(playlist_id = self.kwargs.get('id'))]
+            playlist = Playlist.objects.get(id = self.kwargs.get('id'))
+            playlist = PlaylistSerializer(playlist).data
+            songs = SongSerializer(queryset, many = True).data
+            data = {"playlist" : playlist, "songs" : songs}
+            return Response(data, status = 200)
+        
         except Exception as e:
-            return Response({'status': False, 'message': str(e)}, status=200)
+            return Response({'message' : str(e)})
+    
 
+class AlbumSongListView(ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, **kwargs):
+        try :
+            queryset = [song.song_id for song in SongsInAlbum.objects.filter(album_id = self.kwargs.get('id'))]
+            album = Album.objects.get(id = self.kwargs.get('id'))
+            album = AlbumSerializer(album).data
+            songs = SongSerializer(queryset, many = True).data
+            data = {"album" : album, "songs" : songs}
+            return Response(data, status = 200)
+        
+        except Exception as e:
+            return Response({'message' : str(e)})
+        
+        
 # <! ---------------- Playlist views ------------------ !>
 #  playlist CRUDS(these cruds are not for songs inside playlist) view
 class PlaylistViewSet(viewsets.ModelViewSet):

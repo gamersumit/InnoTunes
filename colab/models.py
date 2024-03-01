@@ -12,4 +12,4 @@ class Colab(models.Model):
     date_added = models.DateField(auto_now_add = True)
     
     def __str__(self):
-        self.song_id
+        self.song_idself,
