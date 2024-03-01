@@ -20,6 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('user.urls')),
     path('music/', include('music.urls')),
-    path('comment/', include('comment.urls')),
     path('colab/', include('colab.urls')),
+    path('reach/', include('comment.urls')),
 ]

@@ -4,7 +4,9 @@ from rest_framework.authtoken.models import Token
 from cloudinary import uploader
 from rest_framework.response import Response
 import os
-import cloudinary
+import cloudinary.api
+from user.models import User
+
 class UserUtils :
 
     @staticmethod
@@ -60,6 +62,15 @@ class CommonUtils:
         except Exception as e:
             raise Exception(str(e))
     
+    # @staticmethod
+    # def CloudinaryAudioDuration(audio_url):
+    #     try :
+    #         audio_info = cloudinary.api.resource(audio_url)
+    #         ## metadata --> duration in the cloudinary
+    #         return audio_info.get('duration', None)
+    #     except :
+    #         return None
+        
     @staticmethod
     def Update_Create(request, fields):
         try:
@@ -86,7 +97,7 @@ class CommonUtils:
             serializer.is_valid(raise_exception=True)
             serializer.save()
             
-            return Response({'message' : serializer.data}, status = 200)
+            return Response({'message' : 'request successful'}, status = 200)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
