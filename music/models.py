@@ -17,7 +17,7 @@ class Album(models.Model):
 class Playlist(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     playlist_name = models.CharField(max_length=50)
-    playlist_picture = models.ImageField(upload_to=None)
+    playlist_picture = models.URLField(blank=True, null=True)
     
     class Meta:
         unique_together = ['user_id', 'playlist_name']

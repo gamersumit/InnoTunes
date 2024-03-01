@@ -34,7 +34,8 @@ class LoginView(generics.GenericAPIView) :
             
             if user:
                 token, created = Token.objects.get_or_create(user=user)
-                return Response({'token': token.key}, status = 200)
+                data = UserSerializer(user).data
+                return Response({'token': token.key, 'user_info' : data}, status = 200)
         
             else:
                 return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
@@ -84,16 +85,7 @@ class UserDetailView(generics.RetrieveAPIView) :
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        try :
-            token = request.headers['Authorization'].split(' ')[1]
-            token = Token.objects.get(key = token)
-            data = self.serializer_class(token.user).data
-            return Response({'status': True, 'message': data}, status = 200)
-
-        except Exception as e :
-            return Response({'status': False, 'message': str(e)}, status = 400)
+    lookup_field = 'id'
 
 
 class UserListView(generics.ListAPIView) :
