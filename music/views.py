@@ -42,7 +42,7 @@ class AllSongListView(ListAPIView):
 # list all songs
 class ArtistSongListView(ListAPIView):
     serializer_class = SongSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         return Song.objects.filter(artist_id = self.kwargs.get('id'))

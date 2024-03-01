@@ -114,7 +114,7 @@ class PlaylistLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
 class SongLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     queryset = SongLikes.objects.all()
     serializer_class = SongLikesSerializer
-    # permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post', 'delete']
     
     def delete(self, request):
