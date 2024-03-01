@@ -8,6 +8,7 @@ from rest_framework import permissions
 from django.contrib.auth import authenticate
 from user.models import User
 from utils.utils import CommonUtils
+from comment.serializers import FollowerSerializer
 
 # Create your views here.
 
@@ -102,10 +103,14 @@ class UserDetailView(generics.RetrieveAPIView) :
 
 class UserListView(generics.ListAPIView) :
     serializer_class = UserSerializer
-    queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
-
+    def get_queryset(self):
+        queryset = User.objects.all()
+        username = self.request.query_params.get('username', None)
+        if username:
+            queryset = queryset.filter(username__icontains=username)
+        return queryset
         
 # ArtistSerializer --- to provide list of all artist
 class ArtistListView(generics.ListAPIView) :
