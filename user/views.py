@@ -8,17 +8,12 @@ from rest_framework import permissions
 from django.contrib.auth import authenticate
 from user.models import User
 from utils.utils import CommonUtils
-from comment.serializers import FollowerSerializer
 
 # Create your views here.
 
 class RegisterView(generics.CreateAPIView) :
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    
-    # def post(self, request):
-    #     if self.request.data['avatar']:
-    #         self.request.data['avatar'] = CommonUtils.UploadToCloud(request.data['avatar'], 'user')
 
     def post(self, request):
         try :
@@ -39,7 +34,8 @@ class LoginView(generics.GenericAPIView) :
             
             if user:
                 token, created = Token.objects.get_or_create(user=user)
-                return Response({'token': token.key}, status = 200)
+                data = UserSerializer(user).data
+                return Response({'token': token.key, 'user_info' : data}, status = 200)
         
             else:
                 return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
@@ -89,28 +85,20 @@ class UserDetailView(generics.RetrieveAPIView) :
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        try :
-            token = request.headers['Authorization'].split(' ')[1]
-            token = Token.objects.get(key = token)
-            data = self.serializer_class(token.user).data
-            return Response({'status': True, 'message': data}, status = 200)
-
-        except Exception as e :
-            return Response({'status': False, 'message': str(e)}, status = 400)
+    lookup_field = 'id'
 
 
 class UserListView(generics.ListAPIView) :
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
+    # permission_classes = [permissions.IsAuthenticated]
+    
     def get_queryset(self):
         queryset = User.objects.all()
         username = self.request.query_params.get('username', None)
         if username:
             queryset = queryset.filter(username__icontains=username)
         return queryset
+
         
 # ArtistSerializer --- to provide list of all artist
 class ArtistListView(generics.ListAPIView) :
@@ -124,26 +112,7 @@ class ArtistDetailView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
    
     
-class ListAllFollowers(generics.ListAPIView):
-    serializer_class = FollowerSerializer
-    permission_class = [permissions.IsAuthenticated]
     
-    def get_queryset(self):
-        id = self.kwargs.get('id')
-        return Followers.objects.filter(artist_id = id)
-                  
-class ListUsersView(generics.ListAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
-    def get_queryset(self):
-        queryset = User.objects.all()
-        username = self.request.query_params.get('username', None)
-        if username:
-            queryset = queryset.filter(username__icontains=username)
-        return queryset
-    
-
 # SHORT NAMING :
 user_register_view = RegisterView.as_view()
 user_logout_view = LogoutView.as_view()
@@ -152,6 +121,3 @@ user_list_view = UserListView.as_view()
 user_login_view = LoginView.as_view()
 artist_list_view = ArtistListView.as_view()
 artist_detail_view = ArtistDetailView.as_view()
-
-
-

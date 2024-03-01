@@ -61,15 +61,6 @@ class CommonUtils:
         
         except Exception as e:
             raise Exception(str(e))
-    
-    # @staticmethod
-    # def CloudinaryAudioDuration(audio_url):
-    #     try :
-    #         audio_info = cloudinary.api.resource(audio_url)
-    #         ## metadata --> duration in the cloudinary
-    #         return audio_info.get('duration', None)
-    #     except :
-    #         return None
         
     @staticmethod
     def Update_Create(request, fields):

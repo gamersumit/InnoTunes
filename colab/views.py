@@ -34,7 +34,7 @@ class ColabViewSet(viewsets.ViewSet):
    
 class GetColabsView(ListAPIView):
     serializer_class = ColabSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         try:
@@ -80,7 +80,6 @@ class DeleteColabView(APIView):
                     print('two')
                     print(media_deletion)
                 
-                print('three')
                 Colab.objects.filter(song_id=id).delete()
                 print('four')
             elif field == 'user':
