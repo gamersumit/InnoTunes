@@ -18,15 +18,12 @@ class IsUserOwnerOrReadOnly(permissions.DjangoModelPermissions):
     }
 
     def has_permission(self, request, view):
-        if request.method == 'GET':
-            return True
-        
         try :
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
             request_user = request.data.get('user_id')
             # Write permissions are only allowed to the owner of the playlist.
-            return request_user == str(token_user.id)
+            return int(request_user) == token_user.id
         
         except Exception as e:
             return False

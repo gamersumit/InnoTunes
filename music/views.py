@@ -1,5 +1,4 @@
-from collections import UserDict
-from curses.ascii import SO
+from django.utils import timezone
 from pydoc import plain
 from rest_framework.views import APIView
 from .models import *
@@ -162,7 +161,6 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
 
     def delete(self, request):
         try:
-            
             playlist_id = request.data['playlist_id']
             song_id = request.data['song_id']
             playlist_song = SongsInPlaylist.objects.get(playlist_id = playlist_id, song_id = song_id)
@@ -171,7 +169,7 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
                 playlist_song.delete()
                 
             else :
-                raise Exception("Givem playlist and song combination does'nt exist")
+                raise Exception("Given playlist and song combination does'nt exist")
 
             return Response({'status': True, 'message': 'Song Removed from Playlist Successfuly'}, status=200)
 
@@ -201,3 +199,51 @@ class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
 
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status=400)
+
+
+
+class AddToRecentsView(generics.UpdateAPIView):
+    queryset = RecentSongs.objects.all()
+    serializer_class = RecentSongsSerializer
+    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    lookup_field =None
+    def put(self, request):
+        try : 
+            song_id = request.data['song_id']
+            user_id = request.data['user_id']
+            if RecentSongs.objects.filter(song_id = song_id, user_id = user_id).exists():
+                recent =  RecentSongs.objects.get(song_id = song_id, user_id = user_id)
+                recent.last_played_at = timezone.now()
+                recent.save()
+            
+
+            else : 
+                serializer = self.serializer_class(data = request.data)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                
+            return Response({'message': 'Updated recents'}, status = 200)
+        
+        except Exception as e:
+            return Response({'message ': str(e)}, status = 400)
+                
+    # have to implement cron job to remove recents after every 1 hour
+
+class RecentSongsListView(generics.ListCreateAPIView):
+    serializer_class = RecentSongsSerializer
+    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    
+    def get_queryset(self):
+        # Retrieve the last 10 played songs
+        recent_songs = RecentSongs.objects.filter().order_by('-last_played_at')[:10]
+        
+        # # If fewer than 10 songs are played, retrieve all existing songs
+        # if recent_songs.count() < 10:
+        #     all_songs = RecentSongs.objects.all()
+        #     recent_songs = recent_songs.union(all_songs)
+        
+        return recent_songs
+
+
+
+            

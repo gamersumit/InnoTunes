@@ -3,11 +3,29 @@ from rest_framework.serializers import ValidationError
 from .models import *
 from user.models import User
 
-class CommentSerializer(serializers.ModelSerializer):
+class UserCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
-        read_only_fields = ['id']
+        extra_kwargs = {
+            'song_id': {'write_only': True},
+        }
+        
+class SongCommentSerializer(serializers.ModelSerializer):
+    user_info = serializers.SerializerMethodField()
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        read_only_fields = ['id', 'user_info']
+        extra_kwargs = {
+            'song_id': {'write_only': True},
+            'user_id': {'write_only': True}
+        }
+    
+    def get_user_info(self, obj):
+        user = obj.user_id
+        return FollowersDetailSerializer(user).data
+        
         
 class FollowersDetailSerializer(serializers.ModelSerializer) :
     class Meta:
@@ -31,7 +49,7 @@ class FollowerSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'followers_detail']
         
     def get_followers_detail(self, obj):
-        user = User.objects.get(id = obj.user_id.id)
+        user = obj.user_id.id
         serializer = FollowersDetailSerializer(user)
         return serializer.data
     

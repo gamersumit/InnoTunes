@@ -19,5 +19,9 @@ urlpatterns = [
     path('songs/playlist/<str:id>/',views.PlaylistSongListView.as_view(), name='playlist_songs_list'),
     path('songs/playlist/',views.AddDeleteSongsFromPlaylistView.as_view(), name='add_delete_songsfromPlaylist'),
     path('songs/album/', views.AddDeleteSongsFromAlbumView.as_view(), name = 'add_delete_songsfromPlaylist'),
+    path('songs/recents/add/', views.AddToRecentsView.as_view(), name = 'add_to_recents'),
+    path('songs/recents/', views.RecentSongsListView.as_view(), name = 'list_recent_songs'),
+   
+   
     path('router/', include(router.urls))
 ]
