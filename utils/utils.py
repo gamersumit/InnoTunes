@@ -55,12 +55,12 @@ class CommonUtils:
 
                 duration = upload['duration']
                 return [duration, upload['url']]   
-            
             upload = uploader.upload_large(media, folder = path, use_filename = True)   
             return upload['url']
         
         except Exception as e:
             raise Exception(str(e))
+
         
     @staticmethod
     def Update_Create(request, fields):

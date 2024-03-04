@@ -9,7 +9,7 @@ from rest_framework import permissions
 from utils.utils import UserUtils, CommonUtils
 from .models import Colab
 from user.permissions import *
-
+from user.models import User
 # Create your views here.
 
     
@@ -21,8 +21,17 @@ class ColabViewSet(viewsets.ViewSet):
     
     def create(self, request):
         try:
-            CommonUtils.Update_Create(request, ['colab_picture','colab_audio','colab_video'])
-            print(self.serializer_class)
+            colab_picture = request.data.get('colab_picture', None)
+            if colab_picture is None:
+                user_id = request.data['user_id']
+                user = User.objects.get(id = user_id)
+                user_avatar = user.avatar
+                request.data['colab_picture'] = user_avatar
+                CommonUtils.Update_Create(request, ['colab_audio', 'colab_video'])
+            
+            else:
+                CommonUtils.Update_Create(request, ['colab_picture','colab_audio','colab_video'])
+            # print(self.serializer_class)
 
             serialized_result =  CommonUtils.Serialize(request.data, self.serializer_class)
             print(serialized_result)
@@ -34,7 +43,7 @@ class ColabViewSet(viewsets.ViewSet):
    
 class GetColabsView(ListAPIView):
     serializer_class = ColabSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         try:
@@ -55,7 +64,7 @@ class GetColabsView(ListAPIView):
             return Response({'status': False, 'message': str(e)}, status=200)
     
 class DeleteColabView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_object(self, pk):
         try:
