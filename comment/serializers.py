@@ -34,7 +34,17 @@ class FollowersDetailSerializer(serializers.ModelSerializer) :
             'id',
             'username',
             'avatar',
+            'is_active',
         ]
+        extra_kwargs = {
+            'is_active': {'write_only': True},
+        }
+        
+    def to_representation(self, obj):
+        ret = super().to_representation(obj)
+        if not ret['is_active'] : 
+            ret['username'] = 'innouser'
+        return ret
     
 class FollowerSerializer(serializers.ModelSerializer):
     followers_detail = serializers.SerializerMethodField(read_only=True)
