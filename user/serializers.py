@@ -1,3 +1,4 @@
+from tkinter import E
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import User
@@ -9,7 +10,6 @@ from utils.utils import UserUtils
 from rest_framework.serializers import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
-
     password = serializers.CharField(max_length=128, min_length = 8, write_only = True)
     total_followers = serializers.SerializerMethodField(read_only = True)
     total_following = serializers.SerializerMethodField(read_only = True)
@@ -25,12 +25,20 @@ class UserSerializer(serializers.ModelSerializer):
             'username',
             'avatar',
             'is_artist',
+            'is_deleted',
             'total_followers',
             'total_following',
             'followers',
             'following',
         ]
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'is_deleted']
+    
+    def to_representation(self, obj):
+        ret = super().to_representation(obj)
+        if ret['is_deleted'] : 
+            ret['username'] = 'innouser'
+        return ret
+        
     
     def get_total_followers(self, user):
         return Followers.get_total_followers(user)
@@ -49,6 +57,10 @@ class UserSerializer(serializers.ModelSerializer):
         
         serializer = FollowersDetailSerializer(users, many =True)
         return serializer.data
+    
+    def run_validation(self, data):
+        print('internal, ################')
+        return super().to_internal_value(data)
     
     def validate_password(self, value):
        return UserUtils.validate_password(value)
@@ -73,8 +85,15 @@ class ArtistSerializer(serializers.ModelSerializer):
             'followers',
             'following',
             'total_albums',
+            'is_deleted',
             'albums', # list of albums
         ]
+    
+    def to_representation(self, obj):
+        ret = super().to_representation(obj)
+        if ret['is_deleted'] : 
+            ret['username'] = 'innouser'
+        return ret
     
     def get_total_followers(self, artist):
         return Followers.get_total_followers(artist)

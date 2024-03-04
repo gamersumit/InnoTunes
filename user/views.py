@@ -1,4 +1,4 @@
-
+from django.utils import timezone
 from rest_framework import generics
 from rest_framework.response import Response
 
@@ -10,7 +10,7 @@ from rest_framework import permissions
 from django.contrib.auth import authenticate
 from user.models import User
 from utils.utils import CommonUtils
-from comment.models import SongLikes
+from comment.models import SongLikes, AlbumLikes, PlaylistLikes
 
 # Create your views here.
 
@@ -42,11 +42,16 @@ class LoginView(generics.GenericAPIView) :
             user = authenticate(password = password, username = username)
             
             if user:
+                user.is_deleted = False
+                user.save()
                 token, created = Token.objects.get_or_create(user=user)
                 data = UserSerializer(user).data
-                liked_songs = [song.song_id.id for song in SongLikes.objects.filter(user_id = user.id)]
-                # liked_songs = SongSerializer(liked_songs, many = True).data
-                return Response({'token': token.key, 'user_info' : data, 'liked_songs' : liked_songs}, status = 200)
+                liked_songs = {song.song_id.id : 'id' for song in SongLikes.objects.filter(user_id = user.id)} 
+                liked_album = {album.album_id.id : 'id' for album in AlbumLikes.objects.filter(user_id = user.id)} 
+                liked_playlist = {playlist.playlist_id.id : 'id' for playlist in PlaylistLikes.objects.filter(user_id = user.id)} 
+                user.is_active = True
+                user.save()
+                return Response({'token': token.key, 'user_info' : data, 'liked_songs' : liked_songs, 'liked_album' : liked_album, 'liked_playlist' : liked_playlist}, status = 200)
         
             else:
                 return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
@@ -80,12 +85,15 @@ class LogoutView(generics.RetrieveAPIView) :
             password = request.data['password']
             
             user = authenticate(password = password, username = username)
-           
+
         
             if user:
-                user.delete()
-                return Response({'message': 'User Deleted Sucessfully'}, status = 200)
-        
+                if not user.is_deleted :
+                    user.is_deleted = True
+                    user.last_deactivation = timezone.now()
+                    user.save()
+                    return Response({'message': 'User is inactive and will deleted after 30 days'}, status = 200)
+                return Response({'message': 'User is already inactive'}, status = 400)
             else:
                 return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
         
@@ -99,10 +107,13 @@ class UserDetailView(generics.RetrieveAPIView) :
     lookup_field = 'id'
 
 
+# ArtistSerializer --- to provide list of all artist
 class UserListView(generics.ListAPIView) :
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+    
+        
 
         
 # ArtistSerializer --- to provide list of all artist
