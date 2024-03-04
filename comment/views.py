@@ -1,4 +1,5 @@
 from asyncio import mixins
+from cgitb import lookup
 from utils.utils import CommonUtils
 from .serializers import *
 from rest_framework import generics, viewsets
@@ -10,7 +11,7 @@ from user.permissions import *
 ##### Comment Releated views ########
 class CommentViewset(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
-    serializer_class = CommentSerializer
+    serializer_class = UserCommentSerializer
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
     
@@ -18,30 +19,18 @@ class CommentViewset(viewsets.ModelViewSet):
         try :
           user = self.request.data['user_id']
           return Comment.objects.filter(user_id = user)
-        
+  
         except :
           return {}
 
 class CommentsListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    
+    serializer_class = SongCommentSerializer
+   
     def get_queryset(self):
-      try :
-        
-        field = self.kwargs['field']
-        id = self.kwargs['id']
-        
-        if field == 'user' :
-          return Comment.objects.filter(user_id = id)
-        
-        if field == 'song' :
-          return Comment.objects.filter(song_id = id)
-
-        else :
-          return {}
-      
-      except :
-        return {}
+      print(self.kwargs.get('id'))
+      print(Comment.objects.filter(song_id = self.kwargs.get('id')))
+      return Comment.objects.filter(song_id = self.kwargs.get('id'))
         
 ##### FOllower Releated views ########
 class FollowUnfollowView(generics.GenericAPIView):

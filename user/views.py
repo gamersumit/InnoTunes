@@ -31,9 +31,11 @@ class LoginView(generics.GenericAPIView) :
     serializer_class = UserSerializer
     def post(self, request, *args, **kwargs) :
         try :
-            username = request.data['email']
-            password = request.data['password']
-            
+            # will uncomment later for now bypassing it for frontend
+            # username = request.data['email']
+            # password = request.data['password']
+            username =  'kishore@gmail.com'
+            password =  'Test@123'
             if not User.objects.filter(email = username).exists() :
                return Response({'status': False, 'message': 'New User'}, status=400)
                 
@@ -42,8 +44,8 @@ class LoginView(generics.GenericAPIView) :
             if user:
                 token, created = Token.objects.get_or_create(user=user)
                 data = UserSerializer(user).data
-                liked_songs = [song.song_id for song in SongLikes.objects.filter(user_id = user.id)]
-                liked_songs = SongSerializer(liked_songs, many = True).data
+                liked_songs = [song.song_id.id for song in SongLikes.objects.filter(user_id = user.id)]
+                # liked_songs = SongSerializer(liked_songs, many = True).data
                 return Response({'token': token.key, 'user_info' : data, 'liked_songs' : liked_songs}, status = 200)
         
             else:
