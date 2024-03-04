@@ -19,6 +19,8 @@ class IsUserOwnerOrReadOnly(permissions.DjangoModelPermissions):
 
     def has_permission(self, request, view):
         try :
+            if request.method == 'GET':
+                return True
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
             request_user = request.data.get('user_id')
@@ -36,10 +38,11 @@ class IsArtistOwnerOrReadOnly(permissions.DjangoModelPermissions):
     def has_permission(self, request, view):
         # Read permissions are allowed to any request,
         # so we'll always allow GET
-        if request.method == 'GET':
-            return True
         
         try :
+            if request.method == 'GET':
+                return True
+        
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
             request_user = request.data.get('artist_id')

@@ -1,3 +1,4 @@
+from tkinter import E
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import User
@@ -24,19 +25,20 @@ class UserSerializer(serializers.ModelSerializer):
             'username',
             'avatar',
             'is_artist',
-            'is_active',
+            'is_deleted',
             'total_followers',
             'total_following',
             'followers',
             'following',
         ]
-        read_only_fields = ['id', 'is_active']
+        read_only_fields = ['id', 'is_deleted']
     
     def to_representation(self, obj):
         ret = super().to_representation(obj)
-        if not ret['is_active'] : 
+        if ret['is_deleted'] : 
             ret['username'] = 'innouser'
         return ret
+        
     
     def get_total_followers(self, user):
         return Followers.get_total_followers(user)
@@ -83,13 +85,13 @@ class ArtistSerializer(serializers.ModelSerializer):
             'followers',
             'following',
             'total_albums',
-            'is_active',
+            'is_deleted',
             'albums', # list of albums
         ]
     
     def to_representation(self, obj):
         ret = super().to_representation(obj)
-        if not ret['is_active'] : 
+        if ret['is_deleted'] : 
             ret['username'] = 'innouser'
         return ret
     

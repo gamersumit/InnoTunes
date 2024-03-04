@@ -36,9 +36,6 @@ class FollowersDetailSerializer(serializers.ModelSerializer) :
             'avatar',
             'is_active',
         ]
-        extra_kwargs = {
-            'is_active': {'write_only': True},
-        }
         
     def to_representation(self, obj):
         ret = super().to_representation(obj)

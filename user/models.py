@@ -8,6 +8,8 @@ class User(AbstractUser):
     avatar = models.URLField(null = True, blank = True)
     email = models.EmailField(unique=True, null = False, blank = False)
     is_artist = models.BooleanField(default = False)
+    is_deleted = models.BooleanField(default=False)
+    last_deactivation = models.DateTimeField(null = True, blank = True)
     # password in serializer
     
     USERNAME_FIELD = 'email'

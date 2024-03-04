@@ -21,7 +21,7 @@ urlpatterns = [
     path('songs/album/', views.AddDeleteSongsFromAlbumView.as_view(), name = 'add_delete_songsfromPlaylist'),
     path('songs/recents/add/', views.AddToRecentsView.as_view(), name = 'add_to_recents'),
     path('songs/recents/', views.RecentSongsListView.as_view(), name = 'list_recent_songs'),
-   
-   
+    path('playlist/liked/',views.LikedPlaylistListView.as_view(), name='liked_playlists'),
+    path('album/liked/',views.LikedAlbumListView.as_view(), name='liked_albums'),
     path('router/', include(router.urls))
 ]
