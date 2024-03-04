@@ -10,27 +10,28 @@ from utils.utils import UserUtils, CommonUtils
 from .models import Colab
 from user.permissions import *
 from user.models import User
+from collections import defaultdict
 # Create your views here.
 
     
 class ColabViewSet(viewsets.ViewSet):
     serializer_class = ColabSerializer
-    # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['post']
     lookup_field = 'pk'
     
     def create(self, request):
         try:
-            colab_picture = request.data.get('colab_picture', None)
+            colab_picture = request.data.get('song_picture', None)
             if colab_picture is None:
                 user_id = request.data['user_id']
                 user = User.objects.get(id = user_id)
                 user_avatar = user.avatar
-                request.data['colab_picture'] = user_avatar
-                CommonUtils.Update_Create(request, ['colab_audio', 'colab_video'])
+                request.data['song_picture'] = user_avatar
+                CommonUtils.Update_Create(request, ['audio', 'video'])
             
             else:
-                CommonUtils.Update_Create(request, ['colab_picture','colab_audio','colab_video'])
+                CommonUtils.Update_Create(request, ['song_picture','audio','video'])
             # print(self.serializer_class)
 
             serialized_result =  CommonUtils.Serialize(request.data, self.serializer_class)
@@ -43,7 +44,7 @@ class ColabViewSet(viewsets.ViewSet):
    
 class GetColabsView(ListAPIView):
     serializer_class = ColabSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         try:
@@ -62,6 +63,32 @@ class GetColabsView(ListAPIView):
 
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status=200)
+   
+
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     data = defaultdict(list)
+    #     # data = defaultdict(dict)
+        
+    #     for colab in queryset:
+    #         user_id = colab.user_id_id  # Assuming user_id is ForeignKey
+    #         data[user_id].append({
+    #             'id': colab.id,
+    #             'song_description': colab.song_description,
+    #             'created_at': colab.created_at,
+    #             # 'genre': colab.genre,
+    #             # 'credits': colab.credits,
+    #             'audio_duration': colab.audio_duration,
+    #             'audio': colab.audio,
+    #             'video': colab.video,
+    #             'song_picture': colab.song_picture,
+                
+    #         })
+
+    #     result = [{user_id: colabs} for user_id, colabs in data.items()]
+    #     return Response(result)
+
+  
     
 class DeleteColabView(APIView):
     permission_classes = [permissions.IsAuthenticated]
