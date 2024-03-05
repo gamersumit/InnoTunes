@@ -8,7 +8,8 @@ from rest_framework import permissions
 from django.contrib.auth import authenticate
 from user.models import User
 from utils.utils import CommonUtils
-
+from datetime import timezone, timedelta
+from comment.models import SongLikes, AlbumLikes, PlaylistLikes
 # Create your views here.
 
 class RegisterView(generics.CreateAPIView) :
@@ -30,13 +31,22 @@ class LoginView(generics.GenericAPIView) :
             username = request.data['email']
             password = request.data['password']
             
+            if not User.objects.filter(email = username).exists() :
+               return Response({'status': False, 'message': 'New User'}, status=400)
+           
             user = authenticate(password = password, username = username)
             
             if user:
+                user.is_deleted = False
+                user.save()
                 token, created = Token.objects.get_or_create(user=user)
                 data = UserSerializer(user).data
-                return Response({'token': token.key, 'user_info' : data}, status = 200)
-        
+                liked_songs = {song.song_id.id : 'id' for song in SongLikes.objects.filter(user_id = user.id)} 
+                liked_album = {album.album_id.id : 'id' for album in AlbumLikes.objects.filter(user_id = user.id)} 
+                liked_playlist = {playlist.playlist_id.id : 'id' for playlist in PlaylistLikes.objects.filter(user_id = user.id)} 
+                user.is_active = True
+                user.save()
+                return Response({'token': token.key, 'user_info' : data, 'liked_songs' : liked_songs, 'liked_album' : liked_album, 'liked_playlist' : liked_playlist}, status = 200)
             else:
                 return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
         
@@ -63,7 +73,7 @@ class LogoutView(generics.RetrieveAPIView) :
             return Response({'status': False, 'message': str(e)}, status = 400)
     
     
-    def delete(self, request, *args, **kwargs) :
+    def delete(self, request, *args, **kwargs):
         try :
             username = request.data['email']
             password = request.data['password']
@@ -72,12 +82,14 @@ class LogoutView(generics.RetrieveAPIView) :
            
         
             if user:
-                user.delete()
-                return Response({'message': 'User Deleted Sucessfully'}, status = 200)
-        
+                if not user.is_deleted :
+                    user.is_deleted = True
+                    user.last_deactivation = timezone.now()
+                    user.save()
+                    return Response({'message': 'User is inactive and will deleted after 30 days'}, status = 200)
+                return Response({'message': 'User is already inactive'}, status = 400)
             else:
                 return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
-        
         except Exception as e:
                 return Response({'status': False, 'message': str(e)}, status=400)   
 

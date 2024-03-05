@@ -16,7 +16,7 @@ from collections import defaultdict
     
 class ColabViewSet(viewsets.ViewSet):
     serializer_class = ColabSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['post']
     lookup_field = 'pk'
     
@@ -44,7 +44,7 @@ class ColabViewSet(viewsets.ViewSet):
    
 class GetColabsView(ListAPIView):
     serializer_class = ColabSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         try:
@@ -63,32 +63,6 @@ class GetColabsView(ListAPIView):
 
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status=200)
-   
-
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     data = defaultdict(list)
-    #     # data = defaultdict(dict)
-        
-    #     for colab in queryset:
-    #         user_id = colab.user_id_id  # Assuming user_id is ForeignKey
-    #         data[user_id].append({
-    #             'id': colab.id,
-    #             'song_description': colab.song_description,
-    #             'created_at': colab.created_at,
-    #             # 'genre': colab.genre,
-    #             # 'credits': colab.credits,
-    #             'audio_duration': colab.audio_duration,
-    #             'audio': colab.audio,
-    #             'video': colab.video,
-    #             'song_picture': colab.song_picture,
-                
-    #         })
-
-    #     result = [{user_id: colabs} for user_id, colabs in data.items()]
-    #     return Response(result)
-
-  
     
 class DeleteColabView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -100,43 +74,41 @@ class DeleteColabView(APIView):
             raise Response({'message': 'Colab not found'}, status=status.HTTP_404_NOT_FOUND)
                 
     def delete(self, request, **kwargs):
-        print('aaye')
         try:
-            print('noii')
             field = kwargs.get('field')
             id = kwargs.get('id')
-            print('one')
+            print("Request: ", request.data)
             if field == 'song':
-                print('five')
-                # print("Data to be sent: ", Colab.objects.filter(song_id=id))
-                
-                media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_video'])
+                print("id: ", id)
+                media_deletion = CommonUtils.Delete_Media(request, ['song_picture', 'audio', 'video'])
+                print(media_deletion)
                 print("Deletion called\n")
                 if media_deletion is not None:
                     print('two')
-                    print(media_deletion)
                 
                 Colab.objects.filter(song_id=id).delete()
-                print('four')
             elif field == 'user':
                 Colab.objects.filter(user_id=id).delete()
-                # media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
-                # if media_deletion is not None:
-                #     print(media_deletion)
+                media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
+                if media_deletion is not None:
+                    print(media_deletion)
             else:
-                # media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
-                # if media_deletion is not None:
-                #     print(media_deletion)
+                media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
+                if media_deletion is not None:
+                    print(media_deletion)
                 
                 field1 = kwargs.get('field1')
                 field2 = kwargs.get('field2')
+                print("field1", field1)
+                print("Field2", field2)
                 id1 = kwargs.get('id1')
                 id2 = kwargs.get('id2')
+                print("id1", id1, "id2", id2)
                 if field1 == 'song' and field2 == 'user':
                     Colab.objects.filter(song_id=id1, user_id=id2).delete()
                 else:
                     raise Exception('Invalid field format')
-            return Response({'message': 'Colabs deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'message': 'Colabs deleted successfully'}, status=status.HTTP_202_ACCEPTED)
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
        
