@@ -75,6 +75,13 @@ class SongsInPlaylist(models.Model):
     class Meta :
         unique_together = ['playlist_id', 'song_id']
 
+# songs Inside Playlist
+class RecentSongs(models.Model):
+    user_id = models.ForeignKey(User, on_delete = models.CASCADE)
+    song_id = models.ForeignKey(Song, on_delete = models.CASCADE)
+    last_played_at = models.DateTimeField(auto_now = True)
+    
+
 # Songs in Album Model   
 class SongsInAlbum(models.Model):
     song_id = models.OneToOneField(Song, on_delete=models.CASCADE, unique=True)

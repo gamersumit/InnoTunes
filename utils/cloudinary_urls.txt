@@ -1,0 +1,5 @@
+artist : http://res.cloudinary.com/djc1amyok/raw/upload/v1709637518/public/avatar/images_2_ckhdnj.jpeg
+album1 : http://res.cloudinary.com/djc1amyok/raw/upload/v1709630014/public/album_picture/wallpaperflare.com_wallpaper_rrbja4.jpg
+album2 : http://res.cloudinary.com/djc1amyok/raw/upload/v1709630014/public/album_picture/wallpaperflare.com_wallpaper_rrbja4.jpg
+song1 : http://res.cloudinary.com/djc1amyok/video/upload/v1709629848/public/audio/Gabru_Da_Time_-_Veet_Baljit_64_Kbps-_SongsPk.com.se_sucgsp.mp3
+song2 : http://res.cloudinary.com/djc1amyok/video/upload/v1709629861/public/audio/Gabru_Da_Time_-_Veet_Baljit_64_Kbps-_SongsPk.com.se_ltqbsw.mp3

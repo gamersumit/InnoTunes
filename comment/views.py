@@ -1,4 +1,5 @@
 from asyncio import mixins
+from cgitb import lookup
 from utils.utils import CommonUtils
 from .serializers import *
 from rest_framework import generics, viewsets
@@ -10,7 +11,7 @@ from user.permissions import *
 ##### Comment Releated views ########
 class CommentViewset(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
-    serializer_class = CommentSerializer
+    serializer_class = UserCommentSerializer
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
     
@@ -18,30 +19,18 @@ class CommentViewset(viewsets.ModelViewSet):
         try :
           user = self.request.data['user_id']
           return Comment.objects.filter(user_id = user)
-        
+  
         except :
           return {}
 
 class CommentsListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    
+    serializer_class = SongCommentSerializer
+   
     def get_queryset(self):
-      try :
-        
-        field = self.kwargs['field']
-        id = self.kwargs['id']
-        
-        if field == 'user' :
-          return Comment.objects.filter(user_id = id)
-        
-        if field == 'song' :
-          return Comment.objects.filter(song_id = id)
-
-        else :
-          return {}
-      
-      except :
-        return {}
+      print(self.kwargs.get('id'))
+      print(Comment.objects.filter(song_id = self.kwargs.get('id')))
+      return Comment.objects.filter(song_id = self.kwargs.get('id'))
         
 ##### FOllower Releated views ########
 class FollowUnfollowView(generics.GenericAPIView):
@@ -66,7 +55,7 @@ class FollowUnfollowView(generics.GenericAPIView):
       
 class ListAllFollowersView(generics.ListAPIView):
     serializer_class = FollowersDetailSerializer
-    # permission_class = [permissions.IsAuthenticated]
+    permission_class = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         id = self.kwargs.get('id')
@@ -74,7 +63,7 @@ class ListAllFollowersView(generics.ListAPIView):
 
 class ListAllFollowingView(generics.ListAPIView):
     serializer_class = FollowersDetailSerializer
-    # permission_class = [permissions.IsAuthenticated]
+    permission_class = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         id = self.kwargs.get('id')
@@ -89,8 +78,10 @@ class AlbumLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     
     def delete(self, request):
       try :
-        AlbumLikes.objects.get(album_id = request.data['album_id'], user_id = request.data['user_id']).delete()
-        return Response({'message' : 'request successful'}, status = 200)
+        if AlbumLikes.objects.filter(album_id = request.data['album_id'], user_id = request.data['user_id']).exists():
+          AlbumLikes.objects.get(album_id = request.data['album_id'], user_id = request.data['user_id']).delete()
+          return Response({'message' : 'request successful'}, status = 200)
+        return Response({'message' : 'already disliked'}, status = 201)
       
       except Exception as e:
         return Response({'message' : str(e)}, status = 400)
@@ -104,9 +95,10 @@ class PlaylistLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     
     def delete(self, request):
       try :
-        PlaylistLikes.objects.get(playlist_id = request.data['playlist_id'], user_id = request.data['user_id']).delete()
-        return Response({'message' : 'request successful'}, status = 200)
-      
+        if PlaylistLikes.objects.filter(playlist_id = request.data['playlist_id'], user_id = request.data['user_id']).exists() :
+          PlaylistLikes.objects.get(playlist_id = request.data['playlist_id'], user_id = request.data['user_id']).delete()
+          return Response({'message' : 'request successful'}, status = 200)
+        return Response({'message' : 'already disliked'}, status = 201)
       except Exception as e:
         return Response({'message' : str(e)}, status = 400)
       
@@ -119,8 +111,9 @@ class SongLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     
     def delete(self, request):
       try :
-        SongLikes.objects.get(song_id = request.data['song_id'], user_id = request.data['user_id']).delete()
-        return Response({'message' : 'request successful'}, status = 200)
-      
+        if SongLikes.objects.filter(song_id = request.data['song_id'], user_id = request.data['user_id']).exists():
+          SongLikes.objects.get(song_id = request.data['song_id'], user_id = request.data['user_id']).delete()
+          return Response({'message' : 'request successful'}, status = 200)
+        return Response({'message' : 'already disliked'}, status = 201)
       except Exception as e:
         return Response({'message' : str(e)}, status = 400)

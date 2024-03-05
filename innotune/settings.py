@@ -87,11 +87,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://192.168.1.106:3000',
     'http://192.168.1.87:3000',
     'https://innotune.vercel.app',
-<<<<<<< Updated upstream
     ]
-=======
-                        ]
->>>>>>> Stashed changes
+
+
 
 TEMPLATES = [
     {
@@ -178,7 +176,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 5
+    'PAGE_SIZE': 10
 
 }
 

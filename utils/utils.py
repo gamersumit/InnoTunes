@@ -1,11 +1,15 @@
+import resource
 from django.contrib.auth.hashers import make_password
 import re
 from rest_framework.authtoken.models import Token
 from cloudinary import uploader
 from rest_framework.response import Response
 import os
+import cloudinary
 import cloudinary.api
 from user.models import User
+import logging 
+logger = logging.getLogger( __name__ )
 
 class UserUtils :
 
@@ -49,10 +53,10 @@ class CommonUtils:
     @staticmethod
     def UploadMediaToCloud(media, path):
         try : 
+            path = f'public/{path}'
             ## song duration
-            if path == 'audio':
+            if path == 'public/audio':
                 upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)   
-
                 duration = upload['duration']
                 return [duration, upload['url']]   
             
@@ -61,16 +65,7 @@ class CommonUtils:
         
         except Exception as e:
             raise Exception(str(e))
-    
-    # @staticmethod
-    # def CloudinaryAudioDuration(audio_url):
-    #     try :
-    #         audio_info = cloudinary.api.resource(audio_url)
-    #         ## metadata --> duration in the cloudinary
-    #         return audio_info.get('duration', None)
-    #     except :
-    #         return None
-        
+      
     @staticmethod
     def Update_Create(request, fields):
         try:
@@ -98,5 +93,15 @@ class CommonUtils:
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
         
-
-    
+        
+    @staticmethod
+    def delete_media_from_cloudinary(urls):
+        try :
+            logger.info(urls)
+            public_ids = [url[url.index('public/'):] for url in urls]
+            response = cloudinary.api.delete_resources(public_ids, resource_type = 'raw')
+             
+        except Exception as e:
+            with open('cloudinary_urls.txt', 'w') as file:
+                for url in urls :
+                    file.write(url+"\n")
