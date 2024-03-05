@@ -9,6 +9,7 @@ import cloudinary
 import cloudinary.api
 from user.models import User
 import logging 
+from  rest_framework import serializers
 logger = logging.getLogger( __name__ )
 
 class UserUtils :
@@ -19,20 +20,20 @@ class UserUtils :
     # lower(alpha), upper(alpha), (number), (symbols)
     
     # will uncomment later : ---- !>
-        # if len(value) < 8:
-        #     raise serializers.ValidationError("Password must be at least 8 characters long.")
+        if len(value) < 8:
+            raise serializers.ValidationError("Password must be at least 8 characters long.")
         
-        # if  not re.search("\d", value) :
-        #     raise serializers.ValidationError("Password must contains a number 0 to 9")
+        if  not re.search("\d", value) :
+            raise serializers.ValidationError("Password must contains a number 0 to 9")
         
-        # if not re.search("[a-z]", value) :
-        #     raise serializers.ValidationError("Password must contain a lowercase letter ")
+        if not re.search("[a-z]", value) :
+            raise serializers.ValidationError("Password must contain a lowercase letter ")
         
-        # if not re.search("[A-Z]", value) :
-        #     raise serializers.ValidationError("Password must contain a uppercase letter")
+        if not re.search("[A-Z]", value) :
+            raise serializers.ValidationError("Password must contain a uppercase letter")
         
-        # if not re.search(r"[@#$%^&*()\-_+=.]", value):
-        #     raise serializers.ValidationError("Password must contain a special character(@,#,$,%,^,&,*,(,),-,_,+,=,.)")
+        if not re.search(r"[@#$%^&*()\-_+=.]", value):
+            raise serializers.ValidationError("Password must contain a special character(@,#,$,%,^,&,*,(,),-,_,+,=,.)")
 
         return make_password(value)    # return hashed password
     
