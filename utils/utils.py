@@ -1,3 +1,4 @@
+import resource
 from django.contrib.auth.hashers import make_password
 import re
 from rest_framework.authtoken.models import Token
@@ -50,14 +51,15 @@ class CommonUtils:
     @staticmethod
     def UploadMediaToCloud(media, path):
         try : 
+            path = f'public/{path}'
             ## song duration
-            if path == 'audio':
+            if path == 'public/audio':
                 upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)   
-
                 duration = upload['duration']
                 return [duration, upload['url']]   
             
             upload = uploader.upload_large(media, folder = path, use_filename = True)   
+            print(upload, "^^^^^^^^^^")
             return upload['url']
         
         except Exception as e:
@@ -99,17 +101,12 @@ class CommonUtils:
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
         
-
+        
     @staticmethod
-    def delete_image_from_cloudinary(image_url):
-        # Extract public_id from the Cloudinary URL
-        public_id = cloudinary.utils.cloudinary_url(image_url)[0].public_id
-        
-        # Delete the image from Cloudinary
-        response = cloudinary.api.delete_resources([public_id])
-        
-        # Check the response status
-        if response['deleted'][public_id] == 'deleted':
-            print(f"Image {public_id} deleted successfully from Cloudinary")
-        else:
-            print(f"Failed to delete image {public_id} from Cloudinary")
+    def delete_media_from_cloudinary(url):
+        try :
+            cloudinary.api.delete_resources([url[url.index('public/'):]], resource_type = 'raw')
+
+        except Exception as e:
+            with open('utils/cloudinary_urls.txt', 'w') as file:
+                file.write(url+"\n")

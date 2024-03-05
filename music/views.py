@@ -2,7 +2,7 @@ from django.utils import timezone
 from pydoc import plain
 from rest_framework.views import APIView
 from .models import *
-from comment.models import PlaylistLikes, AlbumLikes
+from comment.models import PlaylistLikes, AlbumLikes, SongLikes
 from .permissions import *
 from .serializers import *
 from rest_framework import status
@@ -60,19 +60,26 @@ class PlaylistSongListView(ListAPIView):
         try:
             queryset = [song.song_id for song in SongsInPlaylist.objects.filter(
                 playlist_id=self.kwargs.get('id'))]
-            print(queryset)
             playlist = Playlist.objects.get(id=self.kwargs.get('id'))
-            print(playlist)
-            playlist = PlaylistSerializer(playlist).data
-            print(playlist)
-            songs = SongSerializer(queryset, many=True).data
-            print(songs)
-            data = {"playlist": playlist, "songs": songs}
-            print(data)
+            playlist = PlaylistSerializer(playlist).data  
+            songs = SongSerializer(queryset, many=True).data   
+            data = {"playlist": playlist, "songs": songs}   
             return Response(data, status=200)
 
         except Exception as e:
             return Response({'message': str(e)})
+        
+class LikedSongsListView(ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SongSerializer
+    
+    def get_queryset(self):
+        
+        token = self.request.headers['Authorization'].split(' ')[1]
+        user = UserUtils.getUserFromToken(token)
+        songs = [song.song_id for song in SongLikes.objects.filter(
+            user_id=user.id)]
+        return songs
 
 
 class AlbumSongListView(ListAPIView):
