@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 from cloudinary import uploader
 from rest_framework.response import Response
 import os
+import cloudinary
 import cloudinary.api
 from user.models import User
 
@@ -99,4 +100,16 @@ class CommonUtils:
             return Response({'message' : str(e)}, status = 400)
         
 
-    
+    @staticmethod
+    def delete_image_from_cloudinary(image_url):
+        # Extract public_id from the Cloudinary URL
+        public_id = cloudinary.utils.cloudinary_url(image_url)[0].public_id
+        
+        # Delete the image from Cloudinary
+        response = cloudinary.api.delete_resources([public_id])
+        
+        # Check the response status
+        if response['deleted'][public_id] == 'deleted':
+            print(f"Image {public_id} deleted successfully from Cloudinary")
+        else:
+            print(f"Failed to delete image {public_id} from Cloudinary")
