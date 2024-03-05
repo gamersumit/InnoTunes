@@ -12,7 +12,7 @@ from user.permissions import *
 from user.models import User
 from collections import defaultdict
 # Create your views here.
-
+from music.models import *
     
 class ColabViewSet(viewsets.ViewSet):
     serializer_class = ColabSerializer
@@ -23,13 +23,14 @@ class ColabViewSet(viewsets.ViewSet):
     def create(self, request):
         try:
             colab_picture = request.data.get('song_picture', None)
+            
             if colab_picture is None:
                 user_id = request.data['user_id']
                 user = User.objects.get(id = user_id)
                 user_avatar = user.avatar
                 request.data['song_picture'] = user_avatar
                 CommonUtils.Update_Create(request, ['audio', 'video'])
-            
+                
             else:
                 CommonUtils.Update_Create(request, ['song_picture','audio','video'])
             # print(self.serializer_class)
@@ -39,8 +40,6 @@ class ColabViewSet(viewsets.ViewSet):
             return serialized_result
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
-   
    
 class GetColabsView(ListAPIView):
     serializer_class = ColabSerializer

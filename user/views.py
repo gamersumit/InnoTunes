@@ -79,7 +79,7 @@ class LogoutView(generics.RetrieveAPIView) :
             password = request.data['password']
             
             user = authenticate(password = password, username = username)
-           
+            print("user: ", user)
         
             if user:
                 if not user.is_deleted :

@@ -43,6 +43,7 @@ class UserUtils :
         except Exception as e :
             raise Exception(str(e))
         
+from django.shortcuts import render
 
 class CommonUtils:
     
@@ -54,9 +55,10 @@ class CommonUtils:
                 upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)   
 
                 duration = upload['duration']
-                return [duration, upload['url']]   
+                return [duration, upload['secure_url']]   
             upload = uploader.upload_large(media, folder = path, use_filename = True)   
-            return upload['url']
+           
+            return upload['secure_url']
         
         except Exception as e:
             raise Exception(str(e))
@@ -117,3 +119,4 @@ class CommonUtils:
 
             except Exception as e:
                 return Response({'error': str(e)}, status=400)
+

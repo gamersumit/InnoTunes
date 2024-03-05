@@ -24,16 +24,17 @@ class CounterView(APIView):
         counter = 0
         
 
+from colab.models import Colab
 class SongCreateView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
-    # permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
     
     def post(self, request):
         try :
             CommonUtils.Update_Create(request, ['song_picture', 'audio', 'video'])
             return CommonUtils.Serialize(request.data, SongSerializer)
-            
+            return Response(status = 200)
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
 
