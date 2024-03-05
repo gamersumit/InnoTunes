@@ -262,8 +262,9 @@ class LikedPlaylistListView(generics.ListAPIView):
     def get_queryset(self):
         token = self.request.headers['Authorization'].split(' ')[1]
         user = UserUtils.getUserFromToken(token)
-        playlist = [playlist.playlist_id for playlsit in PlaylistLikes.objects.filter(
+        playlist = [playlist.playlist_id for playlist in PlaylistLikes.objects.filter(
             user_id=user.id)]
+        print(playlist)
         return playlist
 
 
