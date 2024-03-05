@@ -23,7 +23,6 @@ urlpatterns = [
     path('playlist/liked/',views.LikedPlaylistListView.as_view(), name='liked_playlists'),
     path('album/liked/',views.LikedAlbumListView.as_view(), name='liked_albums'),
     path('songs/liked/',views.LikedSongsListView.as_view(), name='liked_songs'),
-    
-    
+       
     path('router/', include(router.urls))
 ]

@@ -13,6 +13,8 @@ from rest_framework import permissions
 from utils.utils import CommonUtils, UserUtils
 from user.permissions import *
 from music import serializers
+import json
+
 
 # Create your views here.
 
@@ -103,7 +105,7 @@ class AlbumSongListView(ListAPIView):
 #  playlist CRUDS(these cruds are not for songs inside playlist) view
 class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 
@@ -117,10 +119,23 @@ class PlaylistViewSet(viewsets.ModelViewSet):
             return None
 
     def create(self, request):
-        try:
+        try: 
+            print(request.data)
             CommonUtils.Update_Create(request, ['playlist_picture'])
-            return CommonUtils.Serialize(request.data, PlaylistSerializer)
-
+            serializer = self.serializer_class(data = request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            data = serializer.data
+            playlist_id = data['id']
+            songs = json.loads(request.data.get('songs', None))
+            if songs :
+                for song in  songs :
+                    temp = {'playlist_id' : playlist_id, 'song_id' : int(song)}
+                    serial = SongsInPlaylistSerializer(data = temp)
+                    serial.is_valid(raise_exception=True)
+                    serial.save()
+                    
+            return Response({'message': {'id' : playlist_id}}, status = 200)
         except Exception as e:
             return Response({'message': str(e)}, status=400)
 
@@ -136,7 +151,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 # album Cruds(these cruds are not for songs inside album)
 class AlbumViewSet(viewsets.ModelViewSet):
     serializer_class = AlbumSerializer
-    permission_classes = permissions.IsAuthenticated, IsArtistOwnerOrReadOnly
+    # permission_classes = permissions.IsAuthenticated, IsArtistOwnerOrReadOnly
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 

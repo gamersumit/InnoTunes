@@ -5,7 +5,7 @@ from comment.serializers import FollowersDetailSerializer
 from music.models import Album
 from music.serializers import AlbumSerializer
 from comment.models import Followers
-from utils.utils import UserUtils
+from utils.utils import CommonUtils, UserUtils
 from rest_framework.serializers import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
@@ -63,7 +63,8 @@ class UserSerializer(serializers.ModelSerializer):
     
     def validate_password(self, value):
        return UserUtils.validate_password(value)
-    
+
+
 class ArtistSerializer(serializers.ModelSerializer):
     total_followers = serializers.SerializerMethodField(read_only = True)
     total_following = serializers.SerializerMethodField(read_only = True)
