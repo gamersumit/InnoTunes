@@ -8,6 +8,8 @@ import os
 import cloudinary
 import cloudinary.api
 from user.models import User
+import logging 
+logger = logging.getLogger( __name__ )
 
 class UserUtils :
 
@@ -59,21 +61,11 @@ class CommonUtils:
                 return [duration, upload['url']]   
             
             upload = uploader.upload_large(media, folder = path, use_filename = True)   
-            print(upload, "^^^^^^^^^^")
             return upload['url']
         
         except Exception as e:
             raise Exception(str(e))
-    
-    # @staticmethod
-    # def CloudinaryAudioDuration(audio_url):
-    #     try :
-    #         audio_info = cloudinary.api.resource(audio_url)
-    #         ## metadata --> duration in the cloudinary
-    #         return audio_info.get('duration', None)
-    #     except :
-    #         return None
-        
+      
     @staticmethod
     def Update_Create(request, fields):
         try:
@@ -103,10 +95,13 @@ class CommonUtils:
         
         
     @staticmethod
-    def delete_media_from_cloudinary(url):
+    def delete_media_from_cloudinary(urls):
         try :
-            cloudinary.api.delete_resources([url[url.index('public/'):]], resource_type = 'raw')
-
+            logger.info(urls)
+            public_ids = [url[url.index('public/'):] for url in urls]
+            response = cloudinary.api.delete_resources(public_ids, resource_type = 'raw')
+             
         except Exception as e:
-            with open('utils/cloudinary_urls.txt', 'w') as file:
-                file.write(url+"\n")
+            with open('cloudinary_urls.txt', 'w') as file:
+                for url in urls :
+                    file.write(url+"\n")
