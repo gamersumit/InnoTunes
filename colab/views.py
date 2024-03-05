@@ -79,23 +79,23 @@ class DeleteColabView(APIView):
             id = kwargs.get('id')
             print("Request: ", request.data)
             if field == 'song':
-                print("id: ", id)
-                media_deletion = CommonUtils.Delete_Media(request, ['song_picture', 'audio', 'video'])
-                print(media_deletion)
-                print("Deletion called\n")
-                if media_deletion is not None:
-                    print('two')
+                # print("id: ", id)
+                # media_deletion = CommonUtils.Delete_Media(request, ['song_picture', 'audio', 'video'])
+                # print(media_deletion)
+                # print("Deletion called\n")
+                # if media_deletion is not None:
+                #     print('two')
                 
                 Colab.objects.filter(song_id=id).delete()
             elif field == 'user':
                 Colab.objects.filter(user_id=id).delete()
-                media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
-                if media_deletion is not None:
-                    print(media_deletion)
+                # media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
+                # if media_deletion is not None:
+                #     print(media_deletion)
             else:
-                media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
-                if media_deletion is not None:
-                    print(media_deletion)
+                # media_deletion = CommonUtils.Delete_Media(request, ['colab_picture', 'colab_audio', 'colab_view'])
+                # if media_deletion is not None:
+                #     print(media_deletion)
                 
                 field1 = kwargs.get('field1')
                 field2 = kwargs.get('field2')
