@@ -107,8 +107,14 @@ class UserDetailView(generics.RetrieveAPIView) :
 # ArtistSerializer --- to provide list of all artist
 class UserListView(generics.ListAPIView) :
     serializer_class = UserSerializer
-    queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        queryset = User.objects.all()
+        username = self.request.query_params.get('username', None)
+        if username:
+            queryset = queryset.filter(username__icontains=username)
+        return queryset
     
         
 
