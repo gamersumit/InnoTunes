@@ -71,15 +71,16 @@ class CommonUtils:
     def Update_Create(request, fields):
         try:
             for field in fields :
+                print(request.data[field])
                 if field == 'audio' : 
                     res = CommonUtils.UploadMediaToCloud(request.data[field], field)
                     request.data['audio'] = res[1]
                     request.data['audio_duration'] = int(res[0])
-                
                 elif request.data.get(field):
                     request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], field)
                     
         except Exception as e:
+            print(str(e))
             raise Exception(str(e))
     
     @staticmethod
@@ -87,9 +88,9 @@ class CommonUtils:
         try:
             serializer = serializer_class(data = data)
             serializer.is_valid(raise_exception=True)
-            serializer.save()
-            
-            return Response({'message' : 'request successful'}, status = 200)
+            instance = serializer.save()
+
+            return Response({'message' : 'request successful', 'id' : instance.id}, status = 200)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
@@ -103,6 +104,6 @@ class CommonUtils:
             response = cloudinary.api.delete_resources(public_ids, resource_type = 'raw')
              
         except Exception as e:
-            with open('cloudinary_urls.txt', 'w') as file:
-                for url in urls :
-                    file.write(url+"\n")
+            pass
+        
+   

@@ -50,7 +50,7 @@ class Song(models.Model):
     song_picture = models.URLField(null = True, blank = True)
     song_description = models.TextField(max_length = 100000, null = True, blank = True)
     
-    audio = models.URLField(null = True, blank = True)
+    audio = models.URLField()
     video = models.URLField(null = True, blank = True)
     audio_duration = models.PositiveIntegerField()
     

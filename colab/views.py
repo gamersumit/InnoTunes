@@ -19,9 +19,9 @@ class ColabView(generics.CreateAPIView):
     
     def create(self, request):
         try:  
-            CommonUtils.Update_Create(request, ['audio', 'video'])
-            return  CommonUtils.Serialize(request.data, self.serializer_class)
-        
+            print(request.data)
+            CommonUtils.Update_Create(request, ['audio', 'video', 'colab_picture'])
+            return CommonUtils.Serialize(request.data, self.serializer_class)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
    
@@ -43,7 +43,6 @@ class GetColabsView(ListAPIView):
 
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status=200)
-
     
 class UserDeleteColabView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
@@ -53,8 +52,7 @@ class UserDeleteColabView(generics.DestroyAPIView):
         try:
             return Colab.objects.filter(user_id=self.request.data['user_id'])
         except Exception as e:
-            return []
-         
+            return []        
 
 class ArtistDeleteColabView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsArtistOwnerOrReadOnly]
