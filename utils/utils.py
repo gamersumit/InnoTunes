@@ -62,7 +62,7 @@ class CommonUtils:
                 return [duration, upload['url']]   
             
             upload = uploader.upload_large(media, folder = path, use_filename = True)   
-            return upload['url']
+            return upload['secure_url']
         
         except Exception as e:
             raise Exception(str(e))

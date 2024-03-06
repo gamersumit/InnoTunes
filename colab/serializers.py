@@ -3,15 +3,13 @@ from .models import Colab
 from user.models import User
 
 class ColabSerializer(serializers.ModelSerializer):
+    colab_picture = serializers.SerializerMethodField(read_only = True)
     
-    album_name = serializers.CharField(required=False, max_length=255, allow_null=True, allow_blank=True)
-    genre = serializers.CharField( required=False, max_length=100, allow_null=True, allow_blank=True)
-    lyrics = serializers.CharField( required=False, max_length = 2000, allow_null=True, allow_blank=True)
-    credits = serializers.CharField( required=False, max_length=255, allow_null=True, allow_blank=True)
-
     class Meta:
         model = Colab
-        fields = ['id', 'user_id', 'song_id', 'album_name', 'song_name', 'song_description', 'audio', 'video', 'audio_duration', 'genre', 'lyrics', 'credits', 'created_at']
-        read_only_data = ['genre', 'lyrics', 'credits', 'album_name']
+        fields = ['id', 'user_id', 'song_id', 'colab_name', 'colab_description', 'audio', 'video', 'audio_duration', 'colab_picture', 'created_at']
+        read_only_fields = ['id', 'colab_picture', 'created_at']
     
-        
+    def get_colab_picture(self, obj):
+        return obj.user_id.avatar
+    

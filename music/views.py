@@ -111,6 +111,8 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         try:
+            print("quesryset")
+            print(self.request.data)
             token = self.request.headers['Authorization'].split(' ')[1]
             user = UserUtils.getUserFromToken(token)
             return Playlist.objects.filter(user_id=user.id)

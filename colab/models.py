@@ -9,8 +9,8 @@ class Colab(models.Model):
     video = models.URLField(null = True, blank = True)
     audio_duration = models.CharField(max_length = 200, default = 0)
     created_at = models.DateField(auto_now_add = True)
-    song_name = models.CharField(max_length=255, default = 'colab')
-    song_description = models.CharField(max_length=255, default = 'this is my colab')
+    colab_name = models.CharField(max_length=255, default = 'colab')
+    colab_description = models.CharField(max_length=255, default = 'this is my colab')
     
     def __str__(self):
-        self.song_id
+        return self.colab_name

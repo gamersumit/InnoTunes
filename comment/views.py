@@ -11,7 +11,7 @@ from user.permissions import *
 ##### Comment Releated views ########
 class CommentViewset(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
-    serializer_class = UserCommentSerializer
+    serializer_class = SongCommentSerializer
     lookup_field = 'pk'
     http_method_names = ['post', 'put', 'delete']
     

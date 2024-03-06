@@ -1,6 +1,7 @@
 from rest_framework import permissions
 
 from utils.utils import UserUtils
+import json
 
 # class for normal user / Audiance
 class IsUserOwnerOrReadOnly(permissions.DjangoModelPermissions):
@@ -21,11 +22,19 @@ class IsUserOwnerOrReadOnly(permissions.DjangoModelPermissions):
         try :
             if request.method == 'GET':
                 return True
+            
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
-            request_user = request.data.get('user_id')
+            
+            if request.method == 'POST':
+                data = request.POST
+            else:
+                data = request.data
+                
+            request_user = data['user_id']
+            
             # Write permissions are only allowed to the owner of the playlist.
-            return int(request_user) == token_user.id
+            return str(request_user) == str(token_user.id)
         
         except Exception as e:
             return False
@@ -42,10 +51,15 @@ class IsArtistOwnerOrReadOnly(permissions.DjangoModelPermissions):
         try :
             if request.method == 'GET':
                 return True
+            
+            if request.method == 'POST':
+                data = request.POST
+            else:
+                data = request.data
         
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
-            request_user = request.data.get('artist_id')
+            request_user = data['artist_id']
     
             return token_user.is_artist and request_user == str(token_user.id)
         
