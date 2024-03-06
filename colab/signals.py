@@ -7,9 +7,8 @@ logger = logging.getLogger( __name__ )
 
 @receiver(models.signals.pre_delete, sender=Colab)
 def delete_user(sender, instance, **kwargs):
-    print('deleting ', instance)
     if instance.audio:
        CommonUtils.delete_media_from_cloudinary([instance.audio])
-       
+    
     if instance.video:
         CommonUtils.delete_media_from_cloudinary([instance.video])
