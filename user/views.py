@@ -20,10 +20,12 @@ class RegisterView(generics.CreateAPIView) :
 
     def post(self, request):
         try :
-            CommonUtils.Update_Create(request, ['avatar'])    
+            urls = []
+            CommonUtils.Update_Create(request, ['avatar'], urls)    
             return CommonUtils.Serialize(request.data, UserSerializer)
             
         except Exception as e:
+            CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message' : str(e)}, status = 400)
         
 #Login View

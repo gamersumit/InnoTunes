@@ -19,10 +19,11 @@ class ColabView(generics.CreateAPIView):
     
     def create(self, request):
         try:  
-            print(request.data)
-            CommonUtils.Update_Create(request, ['audio', 'video', 'colab_picture'])
+            urls = []
+            CommonUtils.Update_Create(request, ['audio', 'video', 'colab_picture'], urls)
             return CommonUtils.Serialize(request.data, self.serializer_class)
         except Exception as e:
+            CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
    
 class GetColabsView(ListAPIView):

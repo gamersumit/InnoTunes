@@ -52,7 +52,7 @@ class UserUtils :
 class CommonUtils:
     
     @staticmethod
-    def UploadMediaToCloud(media, path):
+    def UploadMediaToCloud(media, path, urls):
         try : 
             path = f'public/{path}'
             ## song duration
@@ -62,25 +62,25 @@ class CommonUtils:
                 return [duration, upload['url']]   
             
             upload = uploader.upload_large(media, folder = path, use_filename = True)   
+            urls.append(upload['secure_url'])
             return upload['secure_url']
         
         except Exception as e:
             raise Exception(str(e))
       
     @staticmethod
-    def Update_Create(request, fields):
+    def Update_Create(request, fields, urls):
         try:
             for field in fields :
-                print(request.data[field])
+                
                 if field == 'audio' : 
-                    res = CommonUtils.UploadMediaToCloud(request.data[field], field)
+                    res = CommonUtils.UploadMediaToCloud(request.data[field], field, urls)
                     request.data['audio'] = res[1]
                     request.data['audio_duration'] = int(res[0])
                 elif request.data.get(field):
-                    request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], field)
+                    request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], field, urls)
                     
         except Exception as e:
-            print(str(e))
             raise Exception(str(e))
     
     @staticmethod
@@ -94,8 +94,7 @@ class CommonUtils:
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
-        
-        
+              
     @staticmethod
     def delete_media_from_cloudinary(urls):
         try :
