@@ -51,11 +51,8 @@ class IsArtistOwnerOrReadOnly(permissions.DjangoModelPermissions):
             if request.method == 'GET':
                 return True
             
-            if request.method == 'POST':
-                data = request.POST
-            else:
-                data = request.data
-        
+            
+            data = request.data
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
             request_user = data['artist_id']
