@@ -16,6 +16,7 @@ from music import serializers
 import json
 
 
+
 # Create your views here.
 
 # <! ---------------- songs views ------------------ !>
@@ -29,11 +30,13 @@ class SongCreateView(generics.CreateAPIView):
 
     def post(self, request):
         try:
+            urls = []
             CommonUtils.Update_Create(
-                request, ['song_picture', 'audio', 'video'])
+                request, ['song_picture', 'audio', 'video'], urls)
             return CommonUtils.Serialize(request.data, SongSerializer)
 
         except Exception as e:
+            CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=400)
 
 # list all songs
@@ -42,7 +45,15 @@ class SongCreateView(generics.CreateAPIView):
 class AllSongListView(ListAPIView):
     serializer_class = SongSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Song.objects.all()
+    def get_queryset(self):
+        try:
+            queryset = Song.objects.all()
+            song_name = self.request.query_params.get('song_name', None)
+            if song_name:
+                queryset = queryset.filter(song_name__icontains=song_name)
+            return queryset
+        except Exception as e:
+            return []
 
 # list all songs
 
@@ -120,8 +131,8 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         try: 
-            print(request.data)
-            CommonUtils.Update_Create(request, ['playlist_picture'])
+            urls = []
+            CommonUtils.Update_Create(request, ['playlist_picture'], urls)
             serializer = self.serializer_class(data = request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -137,14 +148,17 @@ class PlaylistViewSet(viewsets.ModelViewSet):
                     
             return Response({'message': {'id' : playlist_id}}, status = 200)
         except Exception as e:
+            CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=400)
 
     def update(self, request):
         try:
-            CommonUtils.Update_Create(request, ['playlist_picture'])
+            urls = []
+            CommonUtils.Update_Create(request, ['playlist_picture'], urls)
             return CommonUtils.Serialize(request.data, PlaylistSerializer)
 
         except Exception as e:
+            CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=400)
 
 
@@ -166,18 +180,22 @@ class AlbumViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         try:
-            CommonUtils.Update_Create(request, ['album_picture'])
+            urls = []
+            CommonUtils.Update_Create(request, ['album_picture'], urls)
             return CommonUtils.Serialize(request.data, AlbumSerializer)
 
         except Exception as e:
+            CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=400)
 
     def update(self, request):
         try:
-            CommonUtils.Update_Create(request, ['album_picture'])
+            urls = []
+            CommonUtils.Update_Create(request, ['album_picture'], urls)
             return CommonUtils.Serialize(request.data, AlbumSerializer)
 
         except Exception as e:
+            CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=400)
 
 

@@ -5,11 +5,13 @@ from user.models import User
 class Colab(models.Model):
     song_id = models.ForeignKey(Song, on_delete = models.CASCADE)
     user_id = models.ForeignKey(User, on_delete = models.CASCADE)
-    colab_audio = models.FileField()
-    colab_video = models.FileField()
-    colab_pic = models.ImageField(upload_to = None)
-    audio_duration = models.TimeField()
-    date_added = models.DateField(auto_now_add = True)
+    audio = models.URLField()
+    video = models.URLField(null = True, blank = True)
+    colab_picture = models.URLField(null=True, blank = True)
+    audio_duration = models.CharField(max_length = 200, default = 0)
+    created_at = models.DateField(auto_now_add = True)
+    colab_name = models.CharField(max_length=255, default = 'colab')
+    
     
     def __str__(self):
-        self.song_idself,
+        return self.colab_name
