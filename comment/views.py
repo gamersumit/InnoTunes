@@ -18,6 +18,7 @@ class CommentViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         try :
           user = self.request.data['user_id']
+          print(Comment.objects.filter(user_id = user), "queryset")
           return Comment.objects.filter(user_id = user)
   
         except :
