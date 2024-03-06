@@ -20,7 +20,7 @@ class RegisterView(generics.CreateAPIView) :
 
     def post(self, request):
         try :
-            CommonUtils.Update_Create(request, ['avatar'])
+            CommonUtils.Update_Create(request, ['avatar'])    
             return CommonUtils.Serialize(request.data, UserSerializer)
             
         except Exception as e:
