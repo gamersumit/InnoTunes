@@ -31,11 +31,8 @@ class LoginView(generics.GenericAPIView) :
     serializer_class = UserSerializer
     def post(self, request, *args, **kwargs) :
         try :
-            # will uncomment later for now bypassing it for frontend
-            # username = request.data['email']
-            # password = request.data['password']
-            username =  'kishore@gmail.com'
-            password =  'Test@123'
+            username = request.data['email']
+            password = request.data['password']
             if not User.objects.filter(email = username).exists() :
                return Response({'status': False, 'message': 'New User'}, status=400)
                 
