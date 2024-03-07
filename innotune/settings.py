@@ -180,7 +180,7 @@ REST_FRAMEWORK = {
 
 }
 
-
+# cloudinary
 cloudinary.config(
     cloud_name=os.getenv('CLOUD_NAME'),
     api_key=os.getenv('API_KEY'),
@@ -188,3 +188,11 @@ cloudinary.config(
     secure=True
 )
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# MAIL
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAI_HOST = os.getenv('EMAI_HOST')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # this is temporary mail change it with ypur mail
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
