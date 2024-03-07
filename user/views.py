@@ -181,7 +181,6 @@ class SendPasswordResetOTPView(generics.UpdateAPIView):
                 raise Exception('EMAIL NOT FOUND')
             
         except Exception as e:
-            print(str(e))
             return Response({'message' : str(e)}, status = 400)
     
 
@@ -218,12 +217,9 @@ class resetPasswordView(generics.GenericAPIView):
     
     def patch(self, request):
         try :
-            print(request.headers['Authorization'].split(" ")[1])
             user = UserUtils.getUserFromToken(request.headers['Authorization'].split(" ")[1])
-            print(user)
             data = {'password' : request.data['password']}
             serializer = self.serializer_class(user, data = data, partial = True)
-            print(user)
             serializer.is_valid(raise_exception=True)
             serializer.save()
         

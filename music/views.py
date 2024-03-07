@@ -62,7 +62,6 @@ class GuestUserSongListView(ListAPIView):
             queryset = Song.objects.all()[:10]
             return queryset
         except Exception as e:
-            print(str(e))
             return Song.objects.none()
 
 # list all songs
@@ -223,7 +222,6 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
             song_id = request.data['song_id']
             playlist_song = SongsInPlaylist.objects.get(
                 playlist_id=playlist_id, song_id=song_id)
-            print(playlist_song)
             if playlist_song:
                 playlist_song.delete()
 
@@ -311,7 +309,6 @@ class LikedPlaylistListView(generics.ListAPIView):
         user = UserUtils.getUserFromToken(token)
         playlist = [playlist.playlist_id for playlist in PlaylistLikes.objects.filter(
             user_id=user.id)]
-        print(playlist)
         return playlist
 
 

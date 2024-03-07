@@ -126,7 +126,6 @@ class Mail:
     
     
     def send(self):
-        print("&&&")
         send_mail(
             self.subject, 
             self.body,
