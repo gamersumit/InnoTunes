@@ -41,7 +41,7 @@ class SongsInPlaylistSerializer(serializers.ModelSerializer):
     class Meta:
         model = SongsInPlaylist
         fields = '__all__'
-        read_only_fields = ['id', 'total_songs']
+        read_only_fields = ['id']
 
 class RecentSongsSerializer(serializers.ModelSerializer):     
     class Meta:
