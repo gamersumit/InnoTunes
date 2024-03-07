@@ -53,7 +53,17 @@ class AllSongListView(ListAPIView):
                 queryset = queryset.filter(song_name__icontains=song_name)
             return queryset
         except Exception as e:
-            return []
+            return Song.objects.none()
+
+class GuestUserSongListView(ListAPIView):
+    serializer_class = SongSerializer
+    def get_queryset(self):
+        try:
+            queryset = Song.objects.all()[:10]
+            return queryset
+        except Exception as e:
+            print(str(e))
+            return Song.objects.none()
 
 # list all songs
 
@@ -114,7 +124,7 @@ class AlbumSongListView(ListAPIView):
 #  playlist CRUDS(these cruds are not for songs inside playlist) view
 class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
-    # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 
@@ -315,3 +325,11 @@ class LikedAlbumListView(generics.ListAPIView):
         album = [album.album_id for album in AlbumLikes.objects.filter(
             user_id=user.id)]
         return album
+
+
+class ListUserPlaylistView(generics.ListAPIView):
+    serializer_class = PlaylistSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Playlist.objects.filter(user_id = self.kwargs['id'])
