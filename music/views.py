@@ -127,7 +127,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
             return Playlist.objects.filter(user_id=user.id)
 
         except Exception as e:
-            return None
+            return []
 
     def create(self, request):
         try: 
@@ -176,7 +176,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
             return Album.objects.filter(artist_id=id)
 
         except Exception as e:
-            return {}
+            return []
 
     def create(self, request):
         try:
