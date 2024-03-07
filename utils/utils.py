@@ -126,13 +126,6 @@ class Mail:
     
     
     def send(self):
-        print(
-            "subject:" , self.subject, 
-            "body: ", self.body,
-            "emailhost: ", os.getenv('EMAIL_HOST_USER'),
-            "emails: " , self.emails)
-        
-        
         send_mail(
             self.subject, 
             self.body,
