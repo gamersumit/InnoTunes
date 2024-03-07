@@ -21,3 +21,8 @@ class User(AbstractUser):  # receiver will be called before deletion of object
         return self.username
 
 
+
+class MailOTP(models.Model):
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
+    otp = models.PositiveIntegerField(null=True, blank=False)
+    updated_at = models.DateTimeField(auto_now=True)

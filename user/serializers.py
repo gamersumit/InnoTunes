@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from .models import User
+from .models import *
 from comment.serializers import FollowersDetailSerializer
 from music.models import Album
 from music.serializers import AlbumSerializer
@@ -118,3 +118,12 @@ class ArtistSerializer(serializers.ModelSerializer):
     
     def get_total_albums(self, artist):
         return Album.objects.filter(artist_id = artist.id).count()
+
+
+
+class MailOTPSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = MailOTP
+        fields = '__all__'
+        read_only_fields = ['id', 'updated_at']
