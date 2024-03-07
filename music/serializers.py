@@ -1,5 +1,3 @@
-from email.policy import default
-from xml.dom import ValidationErr
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 from .models import *

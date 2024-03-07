@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from .serializers import ColabSerializer
 from rest_framework import status, generics
 from rest_framework.generics import ListAPIView

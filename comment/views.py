@@ -1,5 +1,3 @@
-from asyncio import mixins
-from cgitb import lookup
 from utils.utils import CommonUtils
 from .serializers import *
 from rest_framework import generics, viewsets
