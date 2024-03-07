@@ -129,7 +129,7 @@ class Mail:
         print(
             "subject:" , self.subject, 
             "body: ", self.body,
-            "emailhost: ", str(settings.EMAIL_HOST_USER),
+            "emailhost: ", os.getenv('EMAIL_HOST_USER'),
             "emails: " , self.emails)
         
         
