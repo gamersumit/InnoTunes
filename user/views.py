@@ -1,5 +1,3 @@
-from logging import raiseExceptions
-from tkinter import EXCEPTION
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework.views import APIView
