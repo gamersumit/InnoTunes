@@ -126,7 +126,13 @@ class Mail:
     
     
     def send(self):
-        print("&&&")
+        print(
+            "subject:" , self.subject, 
+            "body: ", self.body,
+            "emailhost: ", str(settings.EMAIL_HOST_USER),
+            "emails: " , self.emails)
+        
+        
         send_mail(
             self.subject, 
             self.body,
