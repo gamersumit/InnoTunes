@@ -63,9 +63,7 @@ class AlbumSerializer(serializers.ModelSerializer):
       return SongsInAlbum.objects.filter(album_id = obj.id).count()       
 
     def get_album_duration(self, obj):
-        print([song.song_id.audio_duration for song in (SongsInAlbum.objects.filter(album_id = obj.id))])
         duration = sum([song.song_id.audio_duration for song in (SongsInAlbum.objects.filter(album_id = obj.id))])
-        print("***********", duration)
         return duration
     
 

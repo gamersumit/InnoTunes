@@ -93,5 +93,4 @@ class SongLikesSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
         
     def validate(self, attrs):
-        print("******", attrs)
         return attrs

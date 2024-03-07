@@ -58,7 +58,6 @@ class UserSerializer(serializers.ModelSerializer):
         return serializer.data
     
     def run_validation(self, data):
-        print('internal, ################')
         return super().to_internal_value(data)
     
     def validate_password(self, value):
