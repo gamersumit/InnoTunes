@@ -1,5 +1,3 @@
-from email.policy import default
-from turtle import back
 from rest_framework import serializers
 from .models import Colab
 from user.models import User
