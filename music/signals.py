@@ -8,20 +8,15 @@ logger = logging.getLogger( __name__ )
 # pre deltion playlist
 @receiver(models.signals.pre_delete, sender=Playlist)
 def delete_playlist(sender, instance, **kwargs):
-  try:
     if instance.playlist_picture:
       # delete the avatar media from cloudinary
        CommonUtils.delete_media_from_cloudinary([instance.playlist_picture])
-
-  except Exception as e:
-    
     
     
 # pre deltion album
 @receiver(models.signals.pre_delete, sender=Album)
 
-def delete_album(sender, instance, **kwargs):
-    
+def delete_album(sender, instance, **kwargs): 
     if instance.album_picture:
       # delete the album_picture media from cloudinary
        CommonUtils.delete_media_from_cloudinary([instance.album_picture])
