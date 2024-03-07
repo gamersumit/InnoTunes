@@ -87,11 +87,9 @@ class LikedSongsListView(ListAPIView):
     serializer_class = SongSerializer
     
     def get_queryset(self):
-        
-        token = self.request.headers['Authorization'].split(' ')[1]
-        user = UserUtils.getUserFromToken(token)
+        user_id = self.kwargs['id']
         songs = [song.song_id for song in SongLikes.objects.filter(
-            user_id=user.id)]
+            user_id=user_id)]
         return songs
 
 
@@ -171,7 +169,6 @@ class AlbumViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         try:
-
             id = self.request.data['artist_id']
             return Album.objects.filter(artist_id=id)
 

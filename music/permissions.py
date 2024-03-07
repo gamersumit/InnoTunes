@@ -30,7 +30,7 @@ class IsPlaylistOwnerOrReadOnly(permissions.DjangoModelPermissions):
               raise Exception('Playlist does\'nt exist')
             
             # Write permissions are only allowed to the owner of the playlist.
-            return playlist_owner == token_user
+            return playlist_owner.user_id == token_user
         
         except Exception as e:
             return False
@@ -63,7 +63,7 @@ class IsAlbumOwnerOrReadOnly(permissions.DjangoModelPermissions):
               raise Exception('Playlist does\'nt exist')
             
             # Write permissions are only allowed to the owner of the playlist.
-            return album_owner == token_user
+            return album_owner.user_id == token_user
         
         except Exception as e:
             return False        
