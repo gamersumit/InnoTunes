@@ -16,24 +16,20 @@ import os
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-from pathlib import Path
-import dj_database_url
-
 
 from dotenv import load_dotenv
-
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / '.env')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
+DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
@@ -43,7 +39,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     # cors
     'corsheaders',
-
+    
     # default apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -51,14 +47,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    
     # third party apps
     'cloudinary',
     'cloudinary_storage',
     'rest_framework',
     'rest_framework.authtoken',
-
-
+    'django_crontab',
+    'channels',
+    
+    
     # project apps
     'colab',
     'user',
@@ -87,9 +85,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://192.168.1.106:3000',
     'http://192.168.1.87:3000',
     'https://innotune.vercel.app',
-    ]
-
-
+    
+                        ]
 
 TEMPLATES = [
     {
@@ -107,22 +104,31 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'innotune.wsgi.application'
+# WSGI_APPLICATION = 'innotune.wsgi.application'
+ASGI_APPLICATION = 'innotune.asgi.application'
 
+# redis
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'), conn_max_age=600),
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': os.getenv('DB_NAME'),
-    #     'HOST': os.getenv('DB_HOST'),
-    #     'USER': os.getenv('DB_USER'),
-    #     'PORT': os.getenv('DB_PORT'),
-    #     'PASSWORD': os.getenv('DB_PASSWORD')
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'HOST': os.getenv('DB_HOST'),
+        'USER': os.getenv('DB_USER'),
+        'PORT': os.getenv('DB_PORT'),
+        'PASSWORD': os.getenv('DB_PASSWORD')
+    }
 }
 
 # Password validation
@@ -160,8 +166,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -182,9 +186,51 @@ REST_FRAMEWORK = {
 
 
 cloudinary.config(
-    cloud_name=os.getenv('CLOUD_NAME'),
-    api_key=os.getenv('API_KEY'),
-    api_secret=os.getenv('API_SECRET'),
-    secure=True
+    cloud_name = os.getenv('CLOUD_NAME'),
+    api_key = os.getenv('API_KEY'),
+    api_secret = os.getenv('API_SECRET'),
+    secure = True
 )
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# django looger
+
+APP_LOG_FILENAME = os.path.join(BASE_DIR, 'log/app.log')
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "app_log_file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": APP_LOG_FILENAME,
+        },
+    },
+    "root": {
+        "handlers": ["app_log_file"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["app_log_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
+
+# cron job
+CRONJOBS = [
+    ('* */6 * * *', 'music.cron.remove_recent_songs'),
+    ('*/1 * * * *', 'user.cron.remove_inactive_users'),
+]
+
+
+# MAIL
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAI_HOST = os.getenv('EMAI_HOST')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # this is temporary mail change it with ypur mail
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
