@@ -40,7 +40,7 @@ class FollowersDetailSerializer(serializers.ModelSerializer) :
         
     def to_representation(self, obj):
         ret = super().to_representation(obj)
-        if not ret['is_deleted'] : 
+        if ret['is_deleted'] : 
             ret['username'] = 'innouser'
         return ret
     

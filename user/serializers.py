@@ -85,7 +85,7 @@ class ArtistSerializer(serializers.ModelSerializer):
             'followers',
             'following',
             'total_albums',
-            'status'
+            'status',
             'is_deleted',
             'albums', # list of albums
         ]
