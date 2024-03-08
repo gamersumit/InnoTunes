@@ -1,5 +1,3 @@
-from asyncio import mixins
-from cgitb import lookup
 from utils.utils import CommonUtils
 from .serializers import *
 from rest_framework import generics, viewsets
@@ -29,8 +27,6 @@ class CommentsListView(generics.ListAPIView):
     serializer_class = SongCommentSerializer
    
     def get_queryset(self):
-      print(self.kwargs.get('id'))
-      print(Comment.objects.filter(song_id = self.kwargs.get('id')))
       return Comment.objects.filter(song_id = self.kwargs.get('id'))
         
 ##### FOllower Releated views ########
@@ -42,7 +38,6 @@ class FollowUnfollowView(generics.GenericAPIView):
     
     def post(self, request):
       try :
-        print(request.data)
         return CommonUtils.Serialize(request.data, self.serializer_class)
       except Exception as e:
         return Response({'message' : str(e)}, status = 400)

@@ -53,7 +53,16 @@ class AllSongListView(ListAPIView):
                 queryset = queryset.filter(song_name__icontains=song_name)
             return queryset
         except Exception as e:
-            return []
+            return Song.objects.none()
+
+class GuestUserSongListView(ListAPIView):
+    serializer_class = SongSerializer
+    def get_queryset(self):
+        try:
+            queryset = Song.objects.all()[:10]
+            return queryset
+        except Exception as e:
+            return Song.objects.none()
 
 # list all songs
 
@@ -87,11 +96,9 @@ class LikedSongsListView(ListAPIView):
     serializer_class = SongSerializer
     
     def get_queryset(self):
-        
-        token = self.request.headers['Authorization'].split(' ')[1]
-        user = UserUtils.getUserFromToken(token)
+        user_id = self.kwargs['id']
         songs = [song.song_id for song in SongLikes.objects.filter(
-            user_id=user.id)]
+            user_id=user_id)]
         return songs
 
 
@@ -127,7 +134,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
             return Playlist.objects.filter(user_id=user.id)
 
         except Exception as e:
-            return None
+            return []
 
     def create(self, request):
         try: 
@@ -171,12 +178,11 @@ class AlbumViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         try:
-
             id = self.request.data['artist_id']
             return Album.objects.filter(artist_id=id)
 
         except Exception as e:
-            return {}
+            return []
 
     def create(self, request):
         try:
@@ -216,7 +222,6 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
             song_id = request.data['song_id']
             playlist_song = SongsInPlaylist.objects.get(
                 playlist_id=playlist_id, song_id=song_id)
-            print(playlist_song)
             if playlist_song:
                 playlist_song.delete()
 
@@ -286,12 +291,14 @@ class AddToRecentsView(generics.UpdateAPIView):
 
 
 class RecentSongsListView(generics.ListCreateAPIView):
-    serializer_class = RecentSongsSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    serializer_class = SongSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        recent_songs = RecentSongs.objects.filter().order_by(
+        user = UserUtils.getUserFromToken(self.request.headers['Authorization'].split(' ')[1])
+        recent_songs = RecentSongs.objects.filter(user_id = user.id).order_by(
             '-last_played_at')[:10]
+        recent_songs = [song.song_id for song in recent_songs]
         return recent_songs
 
 
@@ -304,13 +311,12 @@ class LikedPlaylistListView(generics.ListAPIView):
         user = UserUtils.getUserFromToken(token)
         playlist = [playlist.playlist_id for playlist in PlaylistLikes.objects.filter(
             user_id=user.id)]
-        print(playlist)
         return playlist
 
 
 class LikedAlbumListView(generics.ListAPIView):
     serializer_class = AlbumSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         token = self.request.headers['Authorization'].split(' ')[1]
@@ -318,3 +324,11 @@ class LikedAlbumListView(generics.ListAPIView):
         album = [album.album_id for album in AlbumLikes.objects.filter(
             user_id=user.id)]
         return album
+
+
+class ListUserPlaylistView(generics.ListAPIView):
+    serializer_class = PlaylistSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Playlist.objects.filter(user_id = self.kwargs['id'])

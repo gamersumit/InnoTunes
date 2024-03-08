@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from .models import User
+from .models import *
 from comment.serializers import FollowersDetailSerializer
 from music.models import Album
 from music.serializers import AlbumSerializer
@@ -29,8 +29,9 @@ class UserSerializer(serializers.ModelSerializer):
             'total_following',
             'followers',
             'following',
+            'status',
         ]
-        read_only_fields = ['id', 'is_deleted']
+        read_only_fields = ['id', 'is_deleted', 'status']
     
     def to_representation(self, obj):
         ret = super().to_representation(obj)
@@ -58,7 +59,6 @@ class UserSerializer(serializers.ModelSerializer):
         return serializer.data
     
     def run_validation(self, data):
-        print('internal, ################')
         return super().to_internal_value(data)
     
     def validate_password(self, value):
@@ -85,6 +85,7 @@ class ArtistSerializer(serializers.ModelSerializer):
             'followers',
             'following',
             'total_albums',
+            'status',
             'is_deleted',
             'albums', # list of albums
         ]
@@ -118,3 +119,11 @@ class ArtistSerializer(serializers.ModelSerializer):
     
     def get_total_albums(self, artist):
         return Album.objects.filter(artist_id = artist.id).count()
+
+
+class MailOTPSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = MailOTP
+        fields = '__all__'
+        read_only_fields = ['id', 'updated_at']

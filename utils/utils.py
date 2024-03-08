@@ -1,6 +1,6 @@
 import resource
 from django.contrib.auth.hashers import make_password
-import re
+import random
 from rest_framework.authtoken.models import Token
 from cloudinary import uploader
 from rest_framework.response import Response
@@ -10,6 +10,11 @@ import cloudinary.api
 from user.models import User
 import logging 
 from  rest_framework import serializers
+from django.core.mail import send_mail
+from django.conf import settings
+import re
+
+
 logger = logging.getLogger( __name__ )
 
 class UserUtils :
@@ -104,5 +109,27 @@ class CommonUtils:
              
         except Exception as e:
             pass
+    
+    @staticmethod
+    def otp_generator():
+        otp = random.randint(100001, 999999)
+        return otp
+    
+
+class Mail:
+    
+    def __init__(self, subject, body, emails):
+        self.subject = subject
+        self.body = body
+        self.emails = emails
+    
+    
+    def send(self):
+        send_mail(
+            self.subject, 
+            self.body,
+            settings.EMAIL_HOST_USER,
+            self.emails,
+            fail_silently=False)
         
-   
+
