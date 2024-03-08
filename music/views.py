@@ -291,12 +291,14 @@ class AddToRecentsView(generics.UpdateAPIView):
 
 
 class RecentSongsListView(generics.ListCreateAPIView):
-    serializer_class = RecentSongsSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    serializer_class = SongSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        recent_songs = RecentSongs.objects.filter().order_by(
+        user = UserUtils.getUserFromToken(self.request.headers['Authorization'].split(' ')[1])
+        recent_songs = RecentSongs.objects.filter(user_id = user.id).order_by(
             '-last_played_at')[:10]
+        recent_songs = [song.song_id for song in recent_songs]
         return recent_songs
 
 
@@ -314,7 +316,7 @@ class LikedPlaylistListView(generics.ListAPIView):
 
 class LikedAlbumListView(generics.ListAPIView):
     serializer_class = AlbumSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         token = self.request.headers['Authorization'].split(' ')[1]

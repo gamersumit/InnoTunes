@@ -26,11 +26,9 @@ class SongSerializer(serializers.ModelSerializer):
             return 'Single'
         
     def get_likes(self, obj):
-        print("$$$")
         return SongLikes.objects.filter(song_id = obj.id).count()
     
     def get_comments(self, obj):
-        print("$$$")
         return Comment.objects.filter(song_id = obj.id).count()
 
 # <! ---------- PLAYLIST SERIALIZERS -----------!> 
@@ -58,10 +56,15 @@ class SongsInPlaylistSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 class RecentSongsSerializer(serializers.ModelSerializer):     
+    song_info = serializers.SerializerMethodField(read_only = True)
     class Meta:
         model = RecentSongs
-        fields = '__all__'
-        read_only_fields = ['id', 'last_played_at']
+        fields = ['song_id', 'user_id']
+        extra_kwargs = {
+            'song_id': {'write_only': True},
+            'user_id': {'write_only': True},
+        }
+        
     
 # <! ---------- ALBUM SERIALIZERS -----------!> 
 class AlbumSerializer(serializers.ModelSerializer):
