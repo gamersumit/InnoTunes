@@ -29,8 +29,9 @@ class UserSerializer(serializers.ModelSerializer):
             'total_following',
             'followers',
             'following',
+            'status',
         ]
-        read_only_fields = ['id', 'is_deleted']
+        read_only_fields = ['id', 'is_deleted', 'status']
     
     def to_representation(self, obj):
         ret = super().to_representation(obj)
@@ -84,6 +85,7 @@ class ArtistSerializer(serializers.ModelSerializer):
             'followers',
             'following',
             'total_albums',
+            'status'
             'is_deleted',
             'albums', # list of albums
         ]
@@ -117,7 +119,6 @@ class ArtistSerializer(serializers.ModelSerializer):
     
     def get_total_albums(self, artist):
         return Album.objects.filter(artist_id = artist.id).count()
-
 
 
 class MailOTPSerializer(serializers.ModelSerializer):

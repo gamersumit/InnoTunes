@@ -24,13 +24,12 @@ class IsPlaylistOwnerOrReadOnly(permissions.DjangoModelPermissions):
         try :
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
-            id = request.data.get('playlist_id')
-            playlist_owner = Playlist.objects.get(id = id)
-            if not playlist_owner :
+            id = request.data.get('playlist_id') 
+            playlist = Playlist.objects.get(id = id)
+            if not playlist :
               raise Exception('Playlist does\'nt exist')
-            
             # Write permissions are only allowed to the owner of the playlist.
-            return playlist_owner.user_id == token_user
+            return playlist.user_id == token_user
         
         except Exception as e:
             return False
@@ -58,12 +57,12 @@ class IsAlbumOwnerOrReadOnly(permissions.DjangoModelPermissions):
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
             id = request.data.get('playlist_id')
-            album_owner = Album.objects.get(id = id)
-            if not album_owner :
+            album = Album.objects.get(id = id)
+            if not album :
               raise Exception('Playlist does\'nt exist')
             
             # Write permissions are only allowed to the owner of the playlist.
-            return album_owner.user_id == token_user
+            return album.user_id == token_user
         
         except Exception as e:
             return False        
