@@ -22,10 +22,8 @@ class IsUserOwnerOrReadOnly(permissions.DjangoModelPermissions):
         try :
             if request.method == 'GET':
                 return True
-            
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
-            
             data = request.data   
             request_user = data['user_id']
             

@@ -223,7 +223,7 @@ LOGGING = {
 # cron job
 CRONJOBS = [
     ('* */6 * * *', 'music.cron.remove_recent_songs'),
-    ('*/1 * * * *', 'user.cron.remove_inactive_users'),
+    ('* */6 * * *', 'user.cron.remove_inactive_users'),
 ]
 
 

@@ -12,8 +12,7 @@ def remove_inactive_users():
      # Calculate the datetime that was 30 days ago
     thirty_days_ago = datetime.now() - timedelta(days=30)
     # Filter users whose last deactivation date is before thirty_days_ago
-    users = User.objects.filter(is_deleted = True)
-    
+    users = User.objects.filter(is_deleted = True, last_deactivation__lt=thirty_days_ago)
     for user in  users:
         CommonUtils.delete_media_from_cloudinary(user.avatar)
     

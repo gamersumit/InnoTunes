@@ -56,7 +56,6 @@ class SongsInPlaylistSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 class RecentSongsSerializer(serializers.ModelSerializer):     
-    song_info = serializers.SerializerMethodField(read_only = True)
     class Meta:
         model = RecentSongs
         fields = ['song_id', 'user_id']
