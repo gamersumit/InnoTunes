@@ -1,3 +1,4 @@
+
 from .serializers import ColabSerializer
 from rest_framework import status, generics
 from rest_framework.generics import ListAPIView
@@ -31,7 +32,6 @@ class GetColabsView(ListAPIView):
 
     def get_queryset(self):
         try:
-
             field = self.kwargs.get('field', None)
             id = self.kwargs.get('id')
             if field == 'song':

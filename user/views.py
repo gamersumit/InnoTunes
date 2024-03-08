@@ -118,7 +118,7 @@ class UserListView(generics.ListAPIView) :
         if username:
             queryset = queryset.filter(username__icontains=username)
         return queryset
-    
+
         
 class CurrentUserDetailView(generics.GenericAPIView):
     serializer_class = UserSerializer
@@ -133,6 +133,7 @@ class CurrentUserDetailView(generics.GenericAPIView):
         
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
+
         
         
 class ArtistListView(generics.ListAPIView) :

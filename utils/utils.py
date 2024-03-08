@@ -109,7 +109,6 @@ class CommonUtils:
              
         except Exception as e:
             pass
-        
     
     @staticmethod
     def otp_generator():
@@ -133,3 +132,4 @@ class Mail:
             self.emails,
             fail_silently=False)
         
+
