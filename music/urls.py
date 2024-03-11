@@ -23,7 +23,7 @@ urlpatterns = [
     path('songs/recents/', views.RecentSongsListView.as_view(), name = 'list_recent_songs'),
     path('playlist/liked/',views.LikedPlaylistListView.as_view(), name='liked_playlists'),
     path('album/liked/',views.LikedAlbumListView.as_view(), name='liked_albums'),
-    path('songs/liked/<str:id>/',views.LikedSongsListView.as_view(), name='liked_songs'),
+    path('songs/liked/<str:id>/', views.LikedSongsListView.as_view(), name='liked_songs'),
     path('playlist/list/<str:id>/', views.ListUserPlaylistView.as_view(), name = 'user_playlist_songs'),
     path('router/', include(router.urls))
 ]

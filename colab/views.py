@@ -8,8 +8,11 @@ from user.permissions import *
 from utils.utils import  CommonUtils
 from user.permissions import *
 from .models import Colab
+from django.shortcuts import get_object_or_404
 # Create your views here.
 from music.models import *
+
+from colab import serializers
     
 class ColabView(generics.CreateAPIView):
     serializer_class = ColabSerializer
@@ -42,7 +45,20 @@ class GetColabsView(ListAPIView):
                 raise Exception('Invalid Url : /colab/!/!')
 
         except Exception as e:
-            return Response({'status': False, 'message': str(e)}, status=200)
+            return Colab.objects.none()
+    
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+            serializer = self.serializer_class(queryset, many=True)
+            if self.kwargs['field'] == 'song':
+                song = get_object_or_404(Song, id=self.kwargs['id'])
+                return Response({'song_info': {'song_name': song.song_name, 'song_id': song.id}, 'results': serializer.data}, status=200)
+            else:
+                return Response({'colabs': serializer.data}, status=200)
+        except Exception as e:
+            return Response({'status': False, 'message': str(e)}, status=400)
     
 class UserDeleteColabView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
