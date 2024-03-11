@@ -1,5 +1,3 @@
-from asyncio import mixins
-from cgitb import lookup
 from utils.utils import CommonUtils
 from .serializers import *
 from rest_framework import generics, viewsets
@@ -18,6 +16,7 @@ class CommentViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         try :
           user = self.request.data['user_id']
+          print(Comment.objects.filter(user_id = user), "queryset")
           return Comment.objects.filter(user_id = user)
   
         except :

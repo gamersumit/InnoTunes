@@ -1,5 +1,3 @@
-from email.policy import default
-from turtle import back
 from rest_framework import serializers
 from .models import Colab
 from user.models import User
@@ -12,6 +10,7 @@ class ColabSerializer(serializers.ModelSerializer):
         model = Colab
         fields = ['id', 'user_id', 'song_id', 'song_name', 'comments', 'likes','colab_name', 'audio', 'video', 'audio_duration', 'colab_picture', 'created_at']
         read_only_fields = ['id', 'created_at', 'song_name', 'comments', 'likes']
+
     
     def get_colab_picture(self, obj):
         return obj.user_id.avatar
@@ -24,3 +23,4 @@ class ColabSerializer(serializers.ModelSerializer):
     
     def get_comments(self, obj):
         return None
+
