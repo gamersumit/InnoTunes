@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'rest_framework',
     'rest_framework.authtoken',
-
+    'channels',
 
     # project apps
     'colab',
