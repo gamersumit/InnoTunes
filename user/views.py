@@ -147,7 +147,6 @@ class ArtistDetailView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
    
 
-
 class SendPasswordResetOTPView(generics.UpdateAPIView):
     serializer_class = MailOTPSerializer
     queryset = MailOTP.objects.all()
