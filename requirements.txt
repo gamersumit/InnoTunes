@@ -27,7 +27,6 @@ idna==3.6
 incremental==22.10.0
 isort==5.13.2
 mccabe==0.7.0
-Pillow==10.0.0
 platformdirs==4.2.0
 psycopg2==2.9.9
 pyasn1==0.5.1
