@@ -4,8 +4,10 @@ from rest_framework.authtoken.models import Token
 from cloudinary import uploader
 from rest_framework.response import Response
 import os
-import cloudinary.api
+import requests
 from user.models import User
+import cloudinary
+import cloudinary.api
 
 class UserUtils :
 
@@ -43,80 +45,119 @@ class UserUtils :
         except Exception as e :
             raise Exception(str(e))
         
-from django.shortcuts import render
+
 
 class CommonUtils:
-    
+
     @staticmethod
-    def UploadMediaToCloud(media, path):
+    def UploadToCloud(media, path):
         try : 
             ## song duration
             if path == 'audio':
                 upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)   
 
                 duration = upload['duration']
-                return [duration, upload['secure_url']]   
+                return [duration, upload['url']]   
             upload = uploader.upload_large(media, folder = path, use_filename = True)   
-           
-            return upload['secure_url']
-        
+            return upload['url']
+            
+            return upload['url']
+            
         except Exception as e:
-            raise Exception(str(e))
+            return Response(str(e))
 
-        
     @staticmethod
     def Update_Create(request, fields):
         try:
-            for field in fields :
-                if field == 'audio': 
-                    res = CommonUtils.UploadMediaToCloud(request.data[field], field)
-                    request.data['audio'] = res[1]
-                    request.data['audio_duration'] = int(res[0])
-                # elif field == 'colab_audio':
-                #     res = CommonUtils.UploadMediaToCloud(request.data[field], field)
-                #     request.data['colab_audio'] = res[1]
-                #     request.data['audio_duration'] = int(res[0])
-                elif request.data.get(field):
-                    request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], field)
+            for field in fields:
+                print("Field: ", field)
+                if request.data.get(field):
                     
+                    print(request.data[field])
+                    if field == 'song_audio':
+                        result = CommonUtils.UploadToCloud(request.data[field], field)
+                        request.data['song_duration'] = result[0]
+                        print("Duration: ", result[0])
+                        request.data[field] = result[1]
+                        print("song url: ", result[1])
+                        
+                    else:
+                        request.data[field] = CommonUtils.UploadToCloud(request.data[field], field)
+                        print("other urls: ", request.data[field])
+                                      
         except Exception as e:
             raise Exception(str(e))
+
+    @staticmethod
+    def Delete_Media(request, fields): 
+        if request.data.get(id):
+            print("id: ", request.data.get(id))
+            try:
+                for field in fields:
+                    url = request.data.get(field)
+                    public_id = cloudinary.utils.cloudinary_url(url)[0]
+                    deletion_response = cloudinary.uploader.destroy(public_id)
+                    if deletion_response.get('result') == 'ok':
+                        return Response({'message': f'{field} deleted successfully'})
+                    else:
+                        return Response({'error': f'Failed to delete {field}'}, status=400)
+            except Exception as e:
+                return Response({'error': str(e)}, status=400)
     
     @staticmethod
     def Serialize(data, serializer_class):
         try:
             serializer = serializer_class(data = data)
-            print("Serializer: ", serializer)
+            print(serializer)
+            
             serializer.is_valid(raise_exception=True)
             serializer.save()
             
-            return Response({'message' : 'request successful'}, status = 200)
+            return Response({'message' : serializer.data}, status = 200)
             
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)
 
+class GoogleUtils:
+    
     @staticmethod
-    def Delete_Media(request, fields): 
-        print("In method::::\n")
-        print("request: ", request.data)
-        print("Fields: ", fields)
-        if request.data.get(id):
-            print("id: ", request.data.get(id))
-            print("song_id: ", request.data.get('song_id'))
-            print("user id: ", request.data.get('user_id'))
-            try:
-                for field in fields:
-                    url = request.data[field]
-                    print("url: ", url)
-                    public_id = cloudinary.utils.cloudinary_url(url)[0]
-                    print("public_id: ", public_id)
-                    
-                    deletion_response = cloudinary.uploader.destroy(public_id, invalidate = True)
-                    print("deletion_response: ", deletion_response)
-                    if deletion_response.get('result') == 'ok':
-                        print(f'{field} deleted successfully')
-                        return Response({'message': f'{field} deleted successfully'})
+    def GetAccountInfo(request):
+        try:
+            code = request.GET.get('code')
+            if code:
+                client_id = os.getenv('CLIENT_ID')
+                client_secret = os.getenv('CLIENT_SECRET')
+                redirect_uri = 'http://localhost:8000/accounts/google/login/callback/'
+                token_endpoint = 'https://oauth2.googleapis.com/token'
+                # token_endpoint = 'https://accounts.google.com/o/oauth2/token'
+        
+                payload = {
+                    'code': code,
+                    'client_id': client_id,
+                    'client_secret': client_secret,
+                    'redirect_uri': redirect_uri,
+                    'grant_type': 'authorization_code'
+                }
+                print("Payload: ", payload)
+                print("code:", code)
+                
+                response = requests.post(token_endpoint, data = payload)
+                print("Response:", response)
+                print("response: ", response.json())
+                access_token = response.json().get('access_token')
+                
+                userinfo_endpoint = 'https://www.googleapis.com/oauth2/v1/userinfo'
+                
+                headers = {'Authorization': f'Bearer {access_token}'}
+                userinfo_response = requests.get(userinfo_endpoint, headers=headers)
+                print("userinfo_response: ", userinfo_response)
+                
+                userinfo = userinfo_response.json()
+                print("userinfo: ", userinfo)
 
-            except Exception as e:
-                return Response({'error': str(e)}, status=400)
-
+                # Check if user with the fetched email exists
+                user = User.objects.filter(email=userinfo.get('email'))
+                print("user: ", user)
+                return userinfo
+        except Exception as e:
+            return Response({'message': str(e)})

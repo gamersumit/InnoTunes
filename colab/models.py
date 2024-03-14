@@ -14,4 +14,4 @@ class Colab(models.Model):
     song_description = models.CharField(max_length=255, default = 'this is my colab')
     
     def __str__(self):
-        self.song_id
+        return self.song_id

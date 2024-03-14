@@ -28,7 +28,7 @@ from colab.models import Colab
 class SongCreateView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
     
     def post(self, request):
         try :
@@ -84,7 +84,7 @@ class PlaylistSongListView(ListAPIView):
     
 
 class AlbumSongListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request, **kwargs):
         try :
@@ -134,9 +134,9 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 # album Cruds(these cruds are not for songs inside album)
 class AlbumViewSet(viewsets.ModelViewSet):
     serializer_class = AlbumSerializer
-    permission_classes = permissions.IsAuthenticated, IsArtistOwnerOrReadOnly
+    # permission_classes = permissions.IsAuthenticated, IsArtistOwnerOrReadOnly
     lookup_field = 'pk'
-    http_method_names = ['get', 'post', 'put', 'delete']
+    http_method_names = ['post', 'put', 'delete']
 
     def get_queryset(self):
         try:
@@ -150,9 +150,13 @@ class AlbumViewSet(viewsets.ModelViewSet):
         
     def create(self, request):
         try :
+            print("in create")
             CommonUtils.Update_Create(request, ['album_picture'])
-            return CommonUtils.Serialize(request.data, AlbumSerializer)
-            
+            print("in create")
+            # return CommonUtils.Serialize(request.data, AlbumSerializer)
+            serialized_result = CommonUtils.Serialize(request.data, AlbumSerializer)
+            return serialized_result
+        
         except Exception as e:
             return Response({'message' : str(e)}, status = 400)    
     
@@ -199,7 +203,7 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
 class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
     queryset = SongsInAlbum.objects.all()
     serializer_class = SongsInAlbumSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
 
     def post(self, request):
         return CommonUtils.Serialize(request.data, self.serializer_class)

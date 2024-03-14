@@ -5,13 +5,55 @@ from .serializers import *
 from .models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
+from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from user.models import User
-from utils.utils import CommonUtils
+from utils.utils import CommonUtils, GoogleUtils
 from datetime import timezone, timedelta
 from comment.models import SongLikes, AlbumLikes, PlaylistLikes
 # Create your views here.
 
+class GoogleSignUpView(APIView):
+    def get(self, request):
+        try:
+            userinfo = GoogleUtils.GetAccountInfo(request)
+            print("userinfo: ", userinfo)
+
+            user = User.objects.filter(email=userinfo.get('email'))
+            print("user in fxn: ", user)
+            
+            print("user: ", user)
+            if user:
+                return Response({'message': 'User already registered'})
+            else:
+                data = {'username': userinfo.get('name'),'email' : userinfo.get('email'),'avatar': userinfo.get('picture'),'password': 'Test@123','is_artist': True}
+                serializer = UserSerializer(data=data)
+                print("Serializer: ", serializer)
+                if serializer.is_valid():
+                    serializer.save()
+                    print("saved")
+                    return Response({'message': 'User signed up successfully'}, status = 200)
+                else:
+                    print("else mai")
+                    return Response({'msg: ': serializer.errors}, status=400)
+        except Exception as e:
+            return Response({'msg': str(e)}, status = 400)
+    
+class GoogleSignInView(APIView):
+    def get(self, request):
+        try:
+            userinfo = GoogleUtils.GetAccountInfo(request)
+            print("userinfo: ", userinfo)
+            user = User.objects.get(email = userinfo.get('email'))
+            print("user in fxn: ", user)
+            if user:
+                token, created = Token.objects.get_or_create(user=user)
+                print("token: ", token)
+                data = UserSerializer(user).data
+                return Response({'token': token.key, 'user_info' : data, 'message': 'User signed in successfully'}, status = 200)
+            return Response({'message: ', 'User not registered'})
+        except Exception as e:
+            return Response({'message: ': str(e)})
 class RegisterView(generics.CreateAPIView) :
     serializer_class = UserSerializer
     queryset = User.objects.all()
