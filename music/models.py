@@ -15,8 +15,8 @@ class Album(models.Model):
 class Playlist(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     playlist_name = models.CharField(max_length=50)
-    playlist_picture = models.URLField(blank = True)
-
+    playlist_picture = models.URLField(blank=True, null=True)
+    
     class Meta:
         unique_together = ['user_id', 'playlist_name']
         
@@ -47,7 +47,7 @@ class Song(models.Model):
     song_picture = models.URLField(null = True, blank = True)
     song_description = models.TextField(max_length = 100000, null = True, blank = True)
     
-    audio = models.URLField(null = True, blank = True)
+    audio = models.URLField()
     video = models.URLField(null = True, blank = True)
     audio_duration = models.CharField(max_length = 200, null = True, blank = True)
     
@@ -69,12 +69,17 @@ class SongsInPlaylist(models.Model):
     song_id = models.ForeignKey(Song, on_delete = models.CASCADE)
 
 
+# songs Inside Playlist
+class RecentSongs(models.Model):
+    user_id = models.ForeignKey(User, on_delete = models.CASCADE)
+    song_id = models.ForeignKey(Song, on_delete = models.CASCADE)
+    last_played_at = models.DateTimeField(auto_now = True)
+    
+
 # Songs in Album Model   
 class SongsInAlbum(models.Model):
-    song_id = models.ForeignKey(Song, on_delete=models.CASCADE)
+    song_id = models.OneToOneField(Song, on_delete=models.CASCADE, unique=True)
     album_id = models.ForeignKey(Album, on_delete=models.CASCADE)
     
     class Meta :
         unique_together = ['album_id', 'song_id']
-        
-        

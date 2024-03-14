@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'rest_framework',
     'rest_framework.authtoken',
-
+    'channels',
 
     # project apps
     'colab',
@@ -91,6 +91,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://innotune.vercel.app',
     ]
 
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -107,8 +109,18 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'innotune.wsgi.application'
+# WSGI_APPLICATION = 'innotune.wsgi.application'
+ASGI_APPLICATION = 'innotune.asgi.application'
 
+# redis
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -175,14 +187,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
- # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'PAGE_SIZE': 5
-    
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
 
 }
 
-
+# cloudinary
 cloudinary.config(
     cloud_name=os.getenv('CLOUD_NAME'),
     api_key=os.getenv('API_KEY'),
@@ -198,3 +208,10 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
 }
+# MAIL
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAI_HOST = os.getenv('EMAI_HOST')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # this is temporary mail change it with ypur mail
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')

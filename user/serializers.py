@@ -1,15 +1,14 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from .models import User
+from .models import *
 from comment.serializers import FollowersDetailSerializer
 from music.models import Album
 from music.serializers import AlbumSerializer
 from comment.models import Followers
-from utils.utils import UserUtils
+from utils.utils import CommonUtils, UserUtils
 from rest_framework.serializers import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
-
     password = serializers.CharField(max_length=128, min_length = 8, write_only = True)
     total_followers = serializers.SerializerMethodField(read_only = True)
     total_following = serializers.SerializerMethodField(read_only = True)
@@ -25,12 +24,21 @@ class UserSerializer(serializers.ModelSerializer):
             'username',
             'avatar',
             'is_artist',
+            'is_deleted',
             'total_followers',
             'total_following',
             'followers',
             'following',
+            'status',
         ]
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'is_deleted', 'status']
+    
+    def to_representation(self, obj):
+        ret = super().to_representation(obj)
+        if ret['is_deleted'] : 
+            ret['username'] = 'innouser'
+        return ret
+        
     
     def get_total_followers(self, user):
         return Followers.get_total_followers(user)
@@ -45,10 +53,13 @@ class UserSerializer(serializers.ModelSerializer):
         return serializer.data
     
     def get_following(self, user):
-        users = [follower.artist_id for follower in Followers.objects.filter(artist_id = user)]
+        users = [follower.artist_id for follower in Followers.objects.filter(user_id = user)]
         
         serializer = FollowersDetailSerializer(users, many =True)
         return serializer.data
+    
+    def run_validation(self, data):
+        return super().to_internal_value(data)
     
     def validate_password(self, value):
        return UserUtils.validate_password(value)
@@ -73,8 +84,16 @@ class ArtistSerializer(serializers.ModelSerializer):
             'followers',
             'following',
             'total_albums',
+            'status',
+            'is_deleted',
             'albums', # list of albums
         ]
+    
+    def to_representation(self, obj):
+        ret = super().to_representation(obj)
+        if ret['is_deleted'] : 
+            ret['username'] = 'innouser'
+        return ret
     
     def get_total_followers(self, artist):
         return Followers.get_total_followers(artist)
@@ -88,7 +107,7 @@ class ArtistSerializer(serializers.ModelSerializer):
         return serializer.data
     
     def get_following(self, artist):
-        artists = [follower.artist_id for follower in Followers.objects.filter(artist_id = artist)]
+        artists = [follower.artist_id for follower in Followers.objects.filter(user_id = artist)]
         serializer = FollowersDetailSerializer(artists, many = True)
         return serializer.data
     
@@ -99,3 +118,11 @@ class ArtistSerializer(serializers.ModelSerializer):
     
     def get_total_albums(self, artist):
         return Album.objects.filter(artist_id = artist.id).count()
+
+
+class MailOTPSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = MailOTP
+        fields = '__all__'
+        read_only_fields = ['id', 'updated_at']

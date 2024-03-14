@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from user.views import GoogleSignInView, GoogleSignUpView
+from user import routing
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('user.urls')),

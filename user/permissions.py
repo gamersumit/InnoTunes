@@ -1,6 +1,7 @@
 from rest_framework import permissions
 
 from utils.utils import UserUtils
+import json
 
 # class for normal user / Audiance
 class IsUserOwnerOrReadOnly(permissions.DjangoModelPermissions):
@@ -18,19 +19,25 @@ class IsUserOwnerOrReadOnly(permissions.DjangoModelPermissions):
     }
 
     def has_permission(self, request, view):
-        if request.method == 'GET':
-            return True
-        
         try :
+            if request.method == 'GET':
+                return True
+            print("#########")
+            print(request.data)
             token = request.headers['Authorization'].split(' ')[1]
+            print(token)
             token_user = UserUtils.getUserFromToken(token)
-            request_user = request.data.get('user_id')
-            print(request_user == str(token_user.id))
+            print(token_user)
+            data = request.data   
+            print(data)
+            request_user = data['user_id']
+            print(request_user)
+            
             # Write permissions are only allowed to the owner of the playlist.
-            print(str(request_user))
             return str(request_user) == str(token_user.id)
         
         except Exception as e:
+            print(str(e))
             return False
         
 class IsArtistOwnerOrReadOnly(permissions.DjangoModelPermissions):
@@ -41,13 +48,16 @@ class IsArtistOwnerOrReadOnly(permissions.DjangoModelPermissions):
     def has_permission(self, request, view):
         # Read permissions are allowed to any request,
         # so we'll always allow GET
-        if request.method == 'GET':
-            return True
         
         try :
+            if request.method == 'GET':
+                return True
+            
+            
+            data = request.data
             token = request.headers['Authorization'].split(' ')[1]
             token_user = UserUtils.getUserFromToken(token)
-            request_user = request.data.get('artist_id')
+            request_user = data['artist_id']
     
             return token_user.is_artist and request_user == str(token_user.id)
         

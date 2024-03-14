@@ -125,25 +125,24 @@ from user.permissions import *
 ##### Comment Releated views ########
 class CommentViewset(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
-    serializer_class = UserCommentSerializer
+    serializer_class = SongCommentSerializer
     lookup_field = 'pk'
-    http_method_names = ['get', 'post', 'put', 'delete']
+    http_method_names = ['post', 'put', 'delete']
     
     def get_queryset(self):
         try :
           user = self.request.data['user_id']
+          print(Comment.objects.filter(user_id = user), "queryset")
           return Comment.objects.filter(user_id = user)
   
         except :
-          return {}
+          return []
 
 class CommentsListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SongCommentSerializer
    
     def get_queryset(self):
-      print(self.kwargs.get('id'))
-      print(Comment.objects.filter(song_id = self.kwargs.get('id')))
       return Comment.objects.filter(song_id = self.kwargs.get('id'))
         
 ##### FOllower Releated views ########
@@ -155,7 +154,6 @@ class FollowUnfollowView(generics.GenericAPIView):
     
     def post(self, request):
       try :
-        print(request.data)
         return CommonUtils.Serialize(request.data, self.serializer_class)
       except Exception as e:
         return Response({'message' : str(e)}, status = 400)

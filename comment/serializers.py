@@ -98,12 +98,13 @@ class FollowersDetailSerializer(serializers.ModelSerializer) :
             'id',
             'username',
             'avatar',
-            'is_active',
+            'is_deleted',
+            'status',
         ]
         
     def to_representation(self, obj):
         ret = super().to_representation(obj)
-        if not ret['is_active'] : 
+        if ret['is_deleted'] : 
             ret['username'] = 'innouser'
         return ret
     
@@ -157,5 +158,4 @@ class SongLikesSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
         
     def validate(self, attrs):
-        print("******", attrs)
         return attrs
