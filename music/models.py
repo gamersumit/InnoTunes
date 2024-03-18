@@ -25,24 +25,31 @@ class Playlist(models.Model):
         
     def __str__(self):
         return self.playlist_name
+    
+class Genre(models.Model):
+    genre = models.CharField(max_length = 20, primary_key=True)
+    genre_picture = models.URLField(null = True, blank = True)
 
-
+    def __str__(self):
+        return self.genre
+    
+    
 # Song structure
 class Song(models.Model):
-    genre_choices = [
-        ('Rock', 'Rock'),
-        ('Jazz', 'Jazz'),
-        ('EDM', 'EDM'),
-        ('Pop', 'Pop'),
-        ('Dubstep', 'Dubstep'),
-        ('Disco', 'Disco'),
-        ('Techno', 'Techno'),
-        ('Hard Rock', 'Hard Rock'),
-        ('Jungle Music', 'Jungle Music'),
-        ('Classical', 'Classical'),
-        ('Blues', 'Blues'),
-        ('Other', 'Other')
-    ]
+    # genre_choices = [
+    #     ('Rock', 'Rock'),
+    #     ('Jazz', 'Jazz'),
+    #     ('EDM', 'EDM'),
+    #     ('Pop', 'Pop'),
+    #     ('Dubstep', 'Dubstep'),
+    #     ('Disco', 'Disco'),
+    #     ('Techno', 'Techno'),
+    #     ('Hard Rock', 'Hard Rock'),
+    #     ('Jungle Music', 'Jungle Music'),
+    #     ('Classical', 'Classical'),
+    #     ('Blues', 'Blues'),
+    #     ('Other', 'Other')
+    # ]
     
     artist_id = models.ForeignKey(User, on_delete = models.CASCADE)
     
@@ -53,8 +60,8 @@ class Song(models.Model):
     audio = models.URLField()
     video = models.URLField(null = True, blank = True)
     audio_duration = models.PositiveIntegerField()
-    
-    genre = models.CharField(choices = genre_choices, null = False, blank=False)    
+      
+    genre = models.ForeignKey(Genre, default='Other', on_delete=models.SET_NULL, null=True, blank=True)    
     lyrics = models.TextField(max_length = 100000, null=True, blank=True)
     credits = models.CharField(max_length = 10000, null = True, blank = True)
     created_at = models.DateField(auto_now_add = True) 
