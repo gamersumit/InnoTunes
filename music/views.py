@@ -16,6 +16,7 @@ from utils.utils import CommonUtils, UserUtils
 from user.permissions import *
 from music import serializers
 import json
+import random
 
 
 
@@ -33,7 +34,7 @@ from colab.models import Colab
 class SongCreateView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
 
     def post(self, request):
         try:
@@ -50,14 +51,18 @@ class SongCreateView(generics.CreateAPIView):
 
 class AllSongListView(ListAPIView):
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
         try:
             queryset = Song.objects.all()
             song_name = self.request.query_params.get('song_name', None)
+            genre = self.request.query_params.get('genre', None)
             if song_name:
                 queryset = queryset.filter(song_name__icontains=song_name)
+            elif genre:
+                queryset = queryset.filter(genre__icontains = genre)
             return queryset
+            
         except Exception as e:
             return Song.objects.none()
 
@@ -75,14 +80,14 @@ class GuestUserSongListView(ListAPIView):
 
 class ArtistSongListView(ListAPIView):
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Song.objects.filter(artist_id=self.kwargs.get('id'))
 
 
 class PlaylistSongListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, **kwargs):
         try:
@@ -98,7 +103,7 @@ class PlaylistSongListView(ListAPIView):
             return Response({'message': str(e)})
         
 class LikedSongsListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     serializer_class = SongSerializer
     
     def get_queryset(self):
@@ -109,7 +114,7 @@ class LikedSongsListView(ListAPIView):
 
 
 class AlbumSongListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, **kwargs):
         try:
@@ -129,7 +134,7 @@ class AlbumSongListView(ListAPIView):
 #  playlist CRUDS(these cruds are not for songs inside playlist) view
 class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = 'pk'
     http_method_names = ['get', 'post', 'put', 'delete']
 
@@ -216,8 +221,8 @@ class AlbumViewSet(viewsets.ModelViewSet):
 class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
     queryset = SongsInPlaylist.objects.all()
     serializer_class = SongsInPlaylistSerializer
-    permission_classes = [
-        permissions.IsAuthenticated, IsPlaylistOwnerOrReadOnly]
+    # permission_classes = [
+    #     permissions.IsAuthenticated, IsPlaylistOwnerOrReadOnly]
 
     def post(self, request):
         return CommonUtils.Serialize(request.data, self.serializer_class)
@@ -245,7 +250,7 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
 class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
     queryset = SongsInAlbum.objects.all()
     serializer_class = SongsInAlbumSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
 
     def post(self, request):
         return CommonUtils.Serialize(request.data, self.serializer_class)
@@ -270,7 +275,7 @@ class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
 class AddToRecentsView(generics.UpdateAPIView):
     queryset = RecentSongs.objects.all()
     serializer_class = RecentSongsSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = None
 
     def put(self, request):
@@ -298,7 +303,7 @@ class AddToRecentsView(generics.UpdateAPIView):
 
 class RecentSongsListView(generics.ListCreateAPIView):
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = UserUtils.getUserFromToken(self.request.headers['Authorization'].split(' ')[1])
@@ -310,7 +315,7 @@ class RecentSongsListView(generics.ListCreateAPIView):
 
 class LikedPlaylistListView(generics.ListAPIView):
     serializer_class = PlaylistSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
 
     def get_queryset(self):
         token = self.request.headers['Authorization'].split(' ')[1]
@@ -322,7 +327,7 @@ class LikedPlaylistListView(generics.ListAPIView):
 
 class LikedAlbumListView(generics.ListAPIView):
     serializer_class = AlbumSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         token = self.request.headers['Authorization'].split(' ')[1]
@@ -334,7 +339,36 @@ class LikedAlbumListView(generics.ListAPIView):
 
 class ListUserPlaylistView(generics.ListAPIView):
     serializer_class = PlaylistSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Playlist.objects.filter(user_id = self.kwargs['id'])
+
+class RecentGenreListView(generics.ListCreateAPIView):
+    serializer_class = SongSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        user = UserUtils.getUserFromToken(self.request.headers['Authorization'].split(' ')[1])
+        recent_songs = RecentSongs.objects.filter(user_id = user.id).order_by(
+            '-last_played_at').values_list('song_id', flat = True)[:10]
+        print(recent_songs)
+        # recent_songs = [song.song_id for song in recent_songs]
+        print(user)
+        # print(recent_songs)
+        if len(Song.objects.filter(id__in = recent_songs).values_list('genre', flat = True).distinct()) > 3:
+            recent_songs_genres = Song.objects.filter(id__in = recent_songs).values_list('genre', flat = True).distinct()[:3]
+        else:
+            recent_songs_genres = Song.objects.filter(id__in = recent_songs).values_list('genre', flat = True).distinct()        
+        result = []
+        for genres in recent_songs_genres:
+            song_in_genre = Song.objects.filter(genre = genres)
+            if song_in_genre.exists():
+                result.append(random.choice(song_in_genre))     ## random song
+                # random_song = song_in_genre.order_by('?').first()
+                # result.append(random_song)
+            print(result)
+        return result
+        
+        
+        

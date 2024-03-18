@@ -103,7 +103,7 @@ class LoginView(generics.GenericAPIView) :
 
 # logout view // delete token       
 class LogoutView(generics.RetrieveAPIView) :
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
         try :
             auth_header = request.headers.get('Authorization')
@@ -143,14 +143,14 @@ class LogoutView(generics.RetrieveAPIView) :
 class UserDetailView(generics.RetrieveAPIView) :
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'id'
 
 
 # ArtistSerializer --- to provide list of all artist
 class UserListView(generics.ListAPIView) :
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         queryset = User.objects.all()
@@ -163,7 +163,7 @@ class UserListView(generics.ListAPIView) :
 class CurrentUserDetailView(generics.GenericAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated]  
+    # permission_classes = [permissions.IsAuthenticated]  
     
     def get(self, request):
         try:
@@ -179,12 +179,12 @@ class CurrentUserDetailView(generics.GenericAPIView):
 class ArtistListView(generics.ListAPIView) :
     serializer_class = ArtistSerializer
     queryset = User.objects.filter(is_artist = True)
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
 class ArtistDetailView(generics.RetrieveAPIView):   
     serializer_class = ArtistSerializer
     queryset = User.objects.filter(is_artist = True)
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
    
 
 class SendPasswordResetOTPView(generics.UpdateAPIView):
@@ -251,7 +251,7 @@ class resetPasswordTokenGenerationView(APIView):
         
 class resetPasswordView(generics.GenericAPIView):
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     
     def patch(self, request):
         try :
