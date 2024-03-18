@@ -1,3 +1,4 @@
+from functools import partial
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -24,6 +25,33 @@ class RegisterView(generics.CreateAPIView) :
             urls = []
             CommonUtils.Update_Create(request, ['avatar'], urls)    
             return CommonUtils.Serialize(request.data, UserSerializer)
+            
+        except Exception as e:
+            CommonUtils.delete_media_from_cloudinary(urls)
+            return Response({'message' : str(e)}, status = 400)
+        
+class UpdateUserProfileView(generics.GenericAPIView) :
+    serializer_class = UserProfileUpdateSerializer
+    queryset = User.objects.all()
+
+    def put(self, request):
+        try :
+            urls = []
+            
+            user = UserUtils.getUserFromToken(request.headers['Authorization'].split(' ')[1])
+            current_avatar = None    
+            if request.data.get('avatar', None):
+                CommonUtils.Update_Create(request, ['avatar'], urls) 
+                current_avatar =  user.avatar 
+                    
+            serializer = UserProfileUpdateSerializer(user, request.data, partial = True)  
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            
+            if current_avatar:
+                CommonUtils.delete_media_from_cloudinary([current_avatar])
+            
+            return Response({'message' : 'Profile Updated Succesfully'}, status = 200)
             
         except Exception as e:
             CommonUtils.delete_media_from_cloudinary(urls)
@@ -226,6 +254,7 @@ class resetPasswordView(generics.GenericAPIView):
             return Response({'message': str(e)}, status = 400)
         
 # SHORT NAMING :
+user_profile_edit_view = UpdateUserProfileView.as_view()
 user_register_view = RegisterView.as_view()
 user_logout_view = LogoutView.as_view()
 user_detail_view = UserDetailView.as_view()

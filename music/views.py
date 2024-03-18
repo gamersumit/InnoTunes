@@ -44,7 +44,7 @@ class SongCreateView(generics.CreateAPIView):
 
 class AllSongListView(ListAPIView):
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
         try:
             queryset = Song.objects.all()
