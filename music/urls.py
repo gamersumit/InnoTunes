@@ -11,6 +11,7 @@ router.register('album', views.AlbumViewSet, 'album')
 
 
 urlpatterns = [
+    path('genre/', views.GnereListView.as_view(), name='all_songs_list'),
     path('songs/add/', views.SongCreateView.as_view(), name='add_song_view'),
     path('songs/', views.AllSongListView.as_view(), name='all_songs_list'),
     path('songs/guest/', views.GuestUserSongListView.as_view(), name='guest_user_songs_list'),

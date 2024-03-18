@@ -332,3 +332,9 @@ class ListUserPlaylistView(generics.ListAPIView):
 
     def get_queryset(self):
         return Playlist.objects.filter(user_id = self.kwargs['id'])
+    
+ 
+class GnereListView(generics.ListAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GnereSerializer
+    permission_classes = [permissions.IsAuthenticated]
