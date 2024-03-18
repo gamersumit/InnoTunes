@@ -16,7 +16,7 @@ from colab import serializers
     
 class ColabView(generics.CreateAPIView):
     serializer_class = ColabSerializer
-    permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post']
     lookup_field = 'pk'
     
@@ -31,7 +31,7 @@ class ColabView(generics.CreateAPIView):
    
 class GetColabsView(ListAPIView):
     serializer_class = ColabSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         try:
@@ -61,7 +61,7 @@ class GetColabsView(ListAPIView):
             return Response({'status': False, 'message': str(e)}, status=400)
     
 class UserDeleteColabView(generics.DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = 'pk' 
     
     def get_queryset(self):
@@ -71,7 +71,7 @@ class UserDeleteColabView(generics.DestroyAPIView):
             return []        
 
 class ArtistDeleteColabView(generics.DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsArtistOwnerOrReadOnly]
+    # permission_classes = [IsAuthenticated, IsArtistOwnerOrReadOnly]
     lookup_field = 'pk'  
     
     def get_queryset(self):

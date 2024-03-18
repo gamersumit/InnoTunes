@@ -124,7 +124,7 @@ from user.permissions import *
 
 ##### Comment Releated views ########
 class CommentViewset(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
     serializer_class = SongCommentSerializer
     lookup_field = 'pk'
     http_method_names = ['post', 'put', 'delete']
@@ -139,7 +139,7 @@ class CommentViewset(viewsets.ModelViewSet):
           return []
 
 class CommentsListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     serializer_class = SongCommentSerializer
    
     def get_queryset(self):
@@ -149,7 +149,7 @@ class CommentsListView(generics.ListAPIView):
 class FollowUnfollowView(generics.GenericAPIView):
     queryset = Followers.objects.all()
     serializer_class = FollowerSerializer
-    permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post', 'delete']
     
     def post(self, request):
@@ -167,7 +167,7 @@ class FollowUnfollowView(generics.GenericAPIView):
       
 class ListAllFollowersView(generics.ListAPIView):
     serializer_class = FollowersDetailSerializer
-    permission_class = [permissions.IsAuthenticated]
+    # permission_class = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         id = self.kwargs.get('id')
@@ -175,7 +175,7 @@ class ListAllFollowersView(generics.ListAPIView):
 
 class ListAllFollowingView(generics.ListAPIView):
     serializer_class = FollowersDetailSerializer
-    permission_class = [permissions.IsAuthenticated]
+    # permission_class = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         id = self.kwargs.get('id')
@@ -185,7 +185,7 @@ class ListAllFollowingView(generics.ListAPIView):
 class AlbumLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     queryset = AlbumLikes.objects.all()
     serializer_class = AlbumLikesSerializer
-    permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post', 'delete']
     
     def delete(self, request):
@@ -202,7 +202,7 @@ class AlbumLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
 class PlaylistLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     queryset = PlaylistLikes.objects.all()
     serializer_class = PlaylistLikesSerializer
-    permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post', 'delete']
     
     def delete(self, request):
@@ -218,7 +218,7 @@ class PlaylistLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
 class SongLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     queryset = SongLikes.objects.all()
     serializer_class = SongLikesSerializer
-    permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post', 'delete']
     
     def delete(self, request):
