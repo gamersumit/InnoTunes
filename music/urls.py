@@ -26,5 +26,6 @@ urlpatterns = [
     path('album/liked/',views.LikedAlbumListView.as_view(), name='liked_albums'),
     path('songs/liked/<str:id>/', views.LikedSongsListView.as_view(), name='liked_songs'),
     path('playlist/list/<str:id>/', views.ListUserPlaylistView.as_view(), name = 'user_playlist_songs'),
+    path('playlist/all/list/', views.ListUserAndLikedPlaylist.as_view(), name = 'user_allplaylist_songs'),
     path('router/', include(router.urls))
 ]

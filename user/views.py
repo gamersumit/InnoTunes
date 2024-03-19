@@ -253,6 +253,8 @@ class resetPasswordView(generics.GenericAPIView):
         except Exception as e:
             return Response({'message': str(e)}, status = 400)
         
+
+        
 # SHORT NAMING :
 user_profile_edit_view = UpdateUserProfileView.as_view()
 user_register_view = RegisterView.as_view()
