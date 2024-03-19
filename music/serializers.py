@@ -6,6 +6,13 @@ from .models import *
 from comment.models import SongLikes, Comment
 from cloudinary import uploader
 from utils.utils import CommonUtils
+
+class GnereSerializer(serializers.ModelSerializer):
+    class Meta:
+        model  = Genre
+        fields = ['genre', 'genre_picture']
+
+
 # <! ---------- SONGS SERIALIZERS -----------!>
 class SongSerializer(serializers.ModelSerializer):
     album_name = serializers.SerializerMethodField(default = 'Single')

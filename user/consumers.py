@@ -7,52 +7,81 @@ from channels.exceptions import StopConsumer
 import json
 
 
+
+
    
         
 class UserConnectivityStatusConsumer(AsyncConsumer):
-    online_users = {}
+    
+    online_friends = set()
+    
     async def websocket_connect(self, event):
         try:
-            print('connecting ...')
-            print(event, "event")
             query_params = parse_qs(self.scope['query_string'].decode())
-            print(query_params)
             token = query_params.get('token', [None])[0]
-            print(token)
+           
             if not token:
                 raise ValueError("Token not provided")
             
             from utils.utils import UserUtils  # Adjust import as needed
-            print('fetching user')
             user = await sync_to_async(UserUtils.getUserFromToken)(token)
-            print(user)
+          
             if not user:
                 raise ValueError("Invalid token")
             
-            self.user = user
-            self.groupname = 'online_users_group'
-            
-            await self.channel_layer.group_add(
-                self.groupname, #static group name
-                self.channel_name
-                )
             
             await self.send({
                 'type': 'websocket.accept',
             })
             
+            self.user = user
+            self.groupname = f"group_{user.id}"
+            print(self.online_friends)
+            print('here0')
+            from comment.models import Followers
+            
+            print('here1')
+            friends = await sync_to_async(Followers.objects.filter)(artist_id = user.id)
+            print('here2')
+            friends = await sync_to_async(friends.values_list)('user_id', flat = True)
+            print('here3')
+            all_friends = await sync_to_async(list)(friends)
+            print('here4')
+ 
+            for friend in  all_friends :
+                await self.channel_layer.group_add(
+                    f"group_{friend}",
+                    self.channel_name
+                    )
+
+            
+            print('here7')
+
             self.user.status = 'online'
             await database_sync_to_async(self.user.save)()
-            self.online_users[self.user.id] = {'user_id' : self.user.id}
+            print('here8')
+            
             
             await self.channel_layer.group_send(self.groupname, {
             'type': 'connect.user.status',  
             'text' : self.user.id,
             'sender': self.channel_name,
-        })
+            
+                                            })
+        
+            print('here9')
+            from user.models import User
+            friends = await sync_to_async(User.objects.filter)(id__in = friends, status = 'online')
+            friends = await sync_to_async(friends.values_list)('id', flat = True)
+            friends = await sync_to_async(list)(friends)
+            
+            await self.send({
+                'type': 'websocket.send',
+                'text': json.dumps({'connected' : friends}),
+            })
             
         except Exception as e:
-            print("error:", str(e))
+            print("error0:", str(e))
             await self.close(code=4000, reason=str(e))   
 
     async def websocket_receive(self, event):
@@ -67,11 +96,7 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             'sender': self.channel_name,
         })
             
-        #     await self.send({
-        #     'type': message['type'],
-        #     'text' : message['text'], 
-        #     'sender': self.channel_name,
-        # })
+       
             
         except Exception as e:
             print(str(e))
@@ -82,18 +107,20 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
       
             
     async def connect_user_status(self, event):
-       
-        if(event['sender'] != self.channel_name):
-            await self.send({
-                'type': 'websocket.send',
-                'text':  json.dumps({'online' : event['text']}),
-            })
+        await self.send({
+            'type': 'websocket.send',
+            'text':  json.dumps({'online' : event['text']}),
+        })
+        
+        
+        
             
-        else:
-            await self.send({
-                'type': 'websocket.send',
-                'text': json.dumps({'connected' : self.online_users}),
-            })
+        # else:
+        #     channels = await self.channel_layer.group_channels(self.groupname)
+        #     await self.send({
+        #         'type': 'websocket.send',
+        #         'text': json.dumps({'connected' : channels}),
+        #     })
     
     async def disconnect_user_status(self, event): 
         if(event['sender'] != self.channel_name):
@@ -145,7 +172,6 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             
             self.user.status = 'offline'
             await database_sync_to_async(self.user.save)()
-            self.online_users.pop(self.user.id, None) 
             
             await self.channel_layer.group_send(self.groupname, {
                 'type': 'disconnect.user.status',  # event , now we have to write handler for this event
