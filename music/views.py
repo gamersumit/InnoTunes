@@ -14,7 +14,7 @@ from utils.utils import CommonUtils, UserUtils
 from user.permissions import *
 from music import serializers
 import json
-
+import random
 
 
 # Create your views here.
@@ -49,8 +49,11 @@ class AllSongListView(ListAPIView):
         try:
             queryset = Song.objects.all()
             song_name = self.request.query_params.get('song_name', None)
+            genre = self.request.query_params.get('genre', None)
             if song_name:
                 queryset = queryset.filter(song_name__icontains=song_name)
+            elif genre:
+                queryset = queryset.filter(genre__icontains = genre)
             return queryset
         except Exception as e:
             return Song.objects.none()
@@ -332,3 +335,30 @@ class ListUserPlaylistView(generics.ListAPIView):
 
     def get_queryset(self):
         return Playlist.objects.filter(user_id = self.kwargs['id'])
+    
+class RecentGenreListView(generics.ListCreateAPIView):
+    serializer_class = SongSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        user = UserUtils.getUserFromToken(self.request.headers['Authorization'].split(' ')[1])
+        recent_songs = RecentSongs.objects.filter(user_id = user.id).order_by(
+            '-last_played_at').values_list('song_id', flat = True)[:10]
+        print(recent_songs)
+        # recent_songs = [song.song_id for song in recent_songs]
+        print(user)
+        # print(recent_songs)
+        if len(Song.objects.filter(id__in = recent_songs).values_list('genre', flat = True).distinct()) > 3:
+            recent_songs_genres = Song.objects.filter(id__in = recent_songs).values_list('genre', flat = True).distinct()[:3]
+        else:
+            recent_songs_genres = Song.objects.filter(id__in = recent_songs).values_list('genre', flat = True).distinct()        
+        result = []
+        for genres in recent_songs_genres:
+            song_in_genre = Song.objects.filter(genre = genres)
+            if song_in_genre.exists():
+                result.append(random.choice(song_in_genre))     ## random song
+                # random_song = song_in_genre.order_by('?').first()
+                # result.append(random_song)
+            print(result)
+        return result
+        
