@@ -26,13 +26,13 @@ import json
 class SongCreateView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
 
     def post(self, request):
         try:
             urls = []
             CommonUtils.Update_Create(
-                request, ['song_picture', 'audio', 'video'], urls)
+                request, ['song_picture', 'audio', 'video'], urls) 
             return CommonUtils.Serialize(request.data, SongSerializer)
 
         except Exception as e:
