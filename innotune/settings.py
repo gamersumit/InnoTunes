@@ -18,7 +18,7 @@ import cloudinary.uploader
 import cloudinary.api
 from pathlib import Path
 import dj_database_url
-
+from channels.layers import get_channel_layer
 
 from dotenv import load_dotenv
 
@@ -116,7 +116,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [(os.getenv('REDIS_BACKEND_ENDPOINT'), os.getenv('REDIS_PORT'))],
-            "passwrod": os.getenv('REDIS_PASSWORD'),
+            "password": os.getenv('REDIS_PASSWORD'),
         },
     },
 }
