@@ -106,7 +106,7 @@ class LikedSongsListView(ListAPIView):
 
 
 class AlbumSongListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, **kwargs):
         try:
@@ -361,4 +361,32 @@ class RecentGenreListView(generics.ListCreateAPIView):
                 # result.append(random_song)
             print(result)
         return result
-        
+
+class GlobalPlaylistAPIView(APIView):
+    serializer_class = GlobalPlaylistSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            token = request.headers['Authorization'].split(' ')[1]
+            token_user = UserUtils.getUserFromToken(token)
+            if token_user.is_artist:
+                urls = []
+                CommonUtils.Update_Create(request, ['playlist_picture'], urls)
+                serializer = self.serializer_class(data = request.data)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                return serializer
+            return Response({'message': 'User does not have permission'}, status = status.HTTP_403_FORBIDDEN)                
+        except Exception as e:
+            return Response({'status': False, 'message': str(e)}, status=400)
+    def get_queryset(self, request, pk = None):
+        queryset = Playlist.objects.filter(is_global = True)  
+        # if request.data:
+        #     queryset = Playlist.objects.get
+        return queryset
+class AddGlobalPlaylistAPIView(generics.CreateAPIView):
+    serializer_class = GlobalPlaylistSerializer
+    permission_classes = [permissions.IsAuthenticated, IsPlaylistArtistOwnerOrReadOnly]
+    
+    

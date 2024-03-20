@@ -101,3 +101,9 @@ class SongsInAlbumSerializer(serializers.ModelSerializer):
                 raise ValidationError("SONG and ALBUM must belong to same artist")
         except Exception as e:
             raise ValidationError(str(e))
+
+class GlobalPlaylistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Playlist
+        fields = ['playlist_picture', 'playlist_name', 'user_id']
+        # read_only_fields = ['user_id']

@@ -26,5 +26,7 @@ urlpatterns = [
     path('songs/liked/<str:id>/', views.LikedSongsListView.as_view(), name='liked_songs'),
     path('playlist/list/<str:id>/', views.ListUserPlaylistView.as_view(), name = 'user_playlist_songs'),
     path('genre/recents/', views.RecentGenreListView.as_view(), name = 'recent_genres'),
+    path('playlist/global/', views.GlobalPlaylistAPIView.as_view(), name = 'global_playlist_details'),
+    path('playlist/global/create/', views.AddGlobalPlaylistAPIView.as_view(), name = 'add_gloabal_playlist'),
     path('router/', include(router.urls))
 ]
