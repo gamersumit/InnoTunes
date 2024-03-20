@@ -37,13 +37,14 @@ class UpdateUserProfileView(generics.GenericAPIView) :
     def put(self, request):
         try :
             urls = []
-            
+            print(request.data)
             user = UserUtils.getUserFromToken(request.headers['Authorization'].split(' ')[1])
             current_avatar = None    
             if request.data.get('avatar', None):
+                print('avatar')
                 CommonUtils.Update_Create(request, ['avatar'], urls) 
                 current_avatar =  user.avatar 
-                    
+                        
             serializer = UserProfileUpdateSerializer(user, request.data, partial = True)  
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -51,9 +52,11 @@ class UpdateUserProfileView(generics.GenericAPIView) :
             if current_avatar:
                 CommonUtils.delete_media_from_cloudinary([current_avatar])
             
-            return Response({'message' : 'Profile Updated Succesfully'}, status = 200)
+            print(serializer.data)
+            return Response({'message' : 'Profile Updated Succesfully', 'data' : serializer.data}, status = 200)
             
         except Exception as e:
+            print(str(e))
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message' : str(e)}, status = 400)
         
