@@ -101,3 +101,36 @@ class SongsInAlbumSerializer(serializers.ModelSerializer):
                 raise ValidationError("SONG and ALBUM must belong to same artist")
         except Exception as e:
             raise ValidationError(str(e))
+        
+class GlobalPlaylistSerializer(serializers.ModelSerializer):
+    total_songs = serializers.SerializerMethodField(default = 0)
+    playlist_duration = serializers.SerializerMethodField(default = 0)
+    class Meta:
+        model = Playlist
+        fields = ['id', 'playlist_name', 'playlist_picture', 'total_songs', 'playlist_duration', 'is_global']
+        
+    def validate(self, data):   ## validates playlist name
+        if data.get('is_global'):
+            # If the playlist is global, ensure that the playlist_name is unique globally
+            if Playlist.objects.filter(playlist_name=data['playlist_name']).exists():
+                raise serializers.ValidationError("Playlist with this name already exists globally.")
+        return data
+    def get_total_songs(self, obj):
+        return SongsInPlaylist.objects.filter(playlist_id = obj.id).count()
+    
+    def get_playlist_duration(self, obj):
+        duration = sum([song.song_id.audio_duration for song in (SongsInPlaylist.objects.filter(playlist_id = obj.id))])
+        return duration   
+        
+
+class GlobalSongsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Song
+        fields = ['id','artist_id', 'title', 'credits', 'song_picture', 'song_duration']
+class SongsInGlobalPlaylistSerializer(serializers.ModelSerializer):
+    songs = GlobalSongsSerializer(many = True, read_only = True)
+    class Meta:
+        model = SongsInPlaylist
+        fields = '__all__'
+        read_only_fields = ['id', 'songs']
+        

@@ -88,14 +88,14 @@ class CommonUtils:
                     
                     print(request.data[field])
                     if field == 'song_audio':
-                        result = CommonUtils.UploadToCloud(request.data[field], field)
+                        result = CommonUtils.UploadMediaToCloud(request.data[field], field, urls)
                         request.data['song_duration'] = result[0]
                         print("Duration: ", result[0])
                         request.data[field] = result[1]
                         print("song url: ", result[1])
                         
                     else:
-                        request.data[field] = CommonUtils.UploadToCloud(request.data[field], field)
+                        request.data[field] = CommonUtils.UploadMediaToCloud(request.data[field], field, urls)
                         print("other urls: ", request.data[field])
                                       
         except Exception as e:

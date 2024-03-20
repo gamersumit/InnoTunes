@@ -371,4 +371,35 @@ class RecentGenreListView(generics.ListCreateAPIView):
         return result
         
         
-        
+class GlobalPlaylistAPIView(APIView):
+    serializer_class = GlobalPlaylistSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):        ## for me
+        try:
+            # token = request.headers['Authorization'].split(' ')[1]
+            # token_user = UserUtils.getUserFromToken(token)
+            # if token_user.is_artist:
+            urls = []
+            CommonUtils.Update_Create(request, ['playlist_picture'], urls)
+            print("heylo")
+            serializer = self.serializer_class(data = request.data)
+            serializer.is_valid(raise_exception=True)
+            user_id = request.data.get('user_id')
+            user = User.objects.get(pk = user_id)
+            # request.data['user_id'] = user
+            serializer.validated_data['user_id'] = user
+            print('heylo')
+            serializer.save()
+            print("heylo")
+            # return serializer
+            return Response({'data': serializer.data}, status = status.HTTP_201_CREATED)                
+        except Exception as e:
+            return Response({'status': False, 'message': str(e)}, status=400)
+    
+    def get(self, request, pk = None):
+        queryset = Playlist.objects.filter(is_global = True)  
+        # if request.data:
+        #     queryset = Playlist.objects.get
+        serializer = self.serializer_class(queryset, many = True)
+        return Response(serializer.data, status = status.HTTP_200_OK)
