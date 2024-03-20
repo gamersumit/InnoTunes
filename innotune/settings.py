@@ -116,7 +116,6 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [(os.getenv('REDIS_BACKEND_ENDPOINT'), os.getenv('REDIS_PORT'))],
-            "password": os.getenv('REDIS_PASSWORD'),
         },
     },
 }
