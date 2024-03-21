@@ -79,7 +79,7 @@ class ArtistSongListView(ListAPIView):
 
 
 class PlaylistSongListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, **kwargs):
         try:
@@ -364,7 +364,7 @@ class RecentGenreListView(generics.ListCreateAPIView):
 
 class GlobalPlaylistAPIView(APIView):
     serializer_class = GlobalPlaylistSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):        ## for me
         try:
