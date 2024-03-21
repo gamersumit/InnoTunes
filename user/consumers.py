@@ -41,9 +41,9 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             from comment.models import Followers
             
             print('here1')
-            friends = await sync_to_async(Followers.objects.filter)(artist_id = user.id)
+            friends = await sync_to_async(Followers.objects.filter)(user_id = user.id)
             print('here2')
-            friends = await sync_to_async(friends.values_list)('user_id', flat = True)
+            friends = await sync_to_async(friends.values_list)('artist_id', flat = True)
             print('here3')
             all_friends = await sync_to_async(list)(friends)
             print('here4')
