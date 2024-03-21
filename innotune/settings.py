@@ -113,10 +113,10 @@ ASGI_APPLICATION = 'innotune.asgi.application'
 # redis
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [(os.getenv('REDIS_BACKEND_ENDPOINT'), os.getenv('REDIS_PORT'))],
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        # "CONFIG": {
+        #     "hosts": [(os.getenv('REDIS_BACKEND_ENDPOINT'), os.getenv('REDIS_PORT'))],
+        # },
     },
 }
 
