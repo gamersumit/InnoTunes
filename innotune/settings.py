@@ -116,15 +116,6 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [(os.getenv('REDIS_BACKEND_ENDPOINT'), os.getenv('REDIS_PORT'))],
-            "passwords": { "default": os.getenv('REDIS_PASSWORD') },  # Use 'passwords' instead of 'password'
-            "channel_capacity": {
-                "http.request": 1000,
-                "http.response!*": 1000,
-                "http.response?*": 1000,
-                "websocket.receive": 1000,
-                "websocket.send": 1000,
-            },
-        
         },
     },
 }
