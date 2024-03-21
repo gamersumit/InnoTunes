@@ -133,3 +133,8 @@ class SongsInGlobalPlaylistSerializer(serializers.ModelSerializer):
         model = SongsInPlaylist
         fields = '__all__'
         read_only_fields = ['id', 'songs']
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = '__all__'

@@ -26,7 +26,7 @@ import random
 class SongCreateView(generics.CreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
-    permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
 
     def post(self, request):
         try:
@@ -394,3 +394,31 @@ class GlobalPlaylistAPIView(APIView):
         #     queryset = Playlist.objects.get
         serializer = self.serializer_class(queryset, many = True)
         return Response(serializer.data, status = status.HTTP_200_OK)
+    
+class GenreFilterAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        random_genres = Genre.objects.order_by('?').distinct()[:3]
+    
+        data = []
+        for genre in random_genres:
+            genre_data = {}
+            genre_serializer = GenreSerializer(genre)
+            genre_data['genre'] = genre_serializer.data
+            
+            songs = Song.objects.filter(genre=genre)[:5]  
+            song_data = []
+            
+            for song in songs:
+                song_serializer = SongSerializer(song)
+                song_data.append(song_serializer.data)
+            
+            genre_data['songs'] = song_data 
+            data.append(genre_data)
+        
+        return Response(data)
+
+# class GenreDetailsAPI(APIView):
+#     def get(self, request):
+#         genre = request.data.get('genre')
+        

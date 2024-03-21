@@ -201,22 +201,35 @@ APP_LOG_FILENAME = os.path.join(BASE_DIR, 'log/app.log')
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {
-        "app_log_file": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": APP_LOG_FILENAME,
+    # "handlers": {
+    #     "app_log_file": {
+    #         "level": "INFO",
+    #         "class": "logging.FileHandler",
+    #         "filename": APP_LOG_FILENAME,
+    #     },
+    # },
+    # "root": {
+    #     "handlers": ["app_log_file"],
+    #     "level": "INFO",
+    # },
+    # "loggers": {
+    #     "django": {
+    #         "handlers": ["app_log_file"],
+    #         "level": "INFO",
+    #         "propagate": False,
+    #     },
+    # },
+    'handlers': {
+        'console': {
+            'level': 'INFO',  # Adjust log level as needed
+            'class': 'logging.StreamHandler',
         },
     },
-    "root": {
-        "handlers": ["app_log_file"],
-        "level": "INFO",
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["app_log_file"],
-            "level": "INFO",
-            "propagate": False,
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',  # Adjust log level as needed
+            'propagate': True,
         },
     },
 }
