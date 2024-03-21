@@ -47,7 +47,7 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             print('here3')
             all_friends = await sync_to_async(list)(friends)
             print('here4')
- 
+            print(all_friends)
             for friend in  all_friends :
                 print("*")
                 print(friend)
