@@ -16,16 +16,22 @@ from colab import serializers
     
 class ColabView(generics.CreateAPIView):
     serializer_class = ColabSerializer
-    permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post']
     lookup_field = 'pk'
     
     def create(self, request):
         try:  
+            print("request: ", request.data)
             urls = []
+            print("heylo")
             CommonUtils.Update_Create(request, ['audio', 'video', 'colab_picture'], urls)
-            return CommonUtils.Serialize(request.data, self.serializer_class)
+            print("heylo")
+            serialized_data = CommonUtils.Serialize(request.data, self.serializer_class)
+            print(serialized_data.data)
+            return Response({'message': "Colab Created Successfully"}, status = status.HTTP_201_CREATED)
         except Exception as e:
+            print("heylo")
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
    
