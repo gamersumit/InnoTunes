@@ -41,18 +41,21 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             from comment.models import Followers
             
             print('here1')
-            friends = await sync_to_async(Followers.objects.filter)(artist_id = user.id)
+            friends = await sync_to_async(Followers.objects.filter)(user_id = user.id)
             print('here2')
-            friends = await sync_to_async(friends.values_list)('user_id', flat = True)
+            friends = await sync_to_async(friends.values_list)('artist_id', flat = True)
             print('here3')
             all_friends = await sync_to_async(list)(friends)
             print('here4')
             print(all_friends)
             for friend in  all_friends :
                 print("*")
+
                 print(friend)
                 groupname = f"group_{friend}"
                 print(groupname)
+
+
                 await self.channel_layer.group_add(
                     groupname,
                     self.channel_name
@@ -68,7 +71,7 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             
             await self.channel_layer.group_send(self.groupname, {
             'type': 'connect.user.status',  
-            'text' : self.user.id,
+            'text' : self.user.id
             'sender': self.channel_name,
             
                                             })
