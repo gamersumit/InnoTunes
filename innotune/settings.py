@@ -18,7 +18,7 @@ import cloudinary.uploader
 import cloudinary.api
 from pathlib import Path
 import dj_database_url
-
+from channels.layers import get_channel_layer
 
 from dotenv import load_dotenv
 
@@ -113,10 +113,10 @@ ASGI_APPLICATION = 'innotune.asgi.application'
 # redis
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("localhost", 6379)],
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        # "CONFIG": {
+        #     "hosts": [(os.getenv('REDIS_BACKEND_ENDPOINT'), os.getenv('REDIS_PORT'))],
+        # },
     },
 }
 
