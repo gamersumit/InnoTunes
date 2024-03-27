@@ -71,7 +71,7 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             
             await self.channel_layer.group_send(self.groupname, {
             'type': 'connect.user.status',  
-            'text' : self.user.id
+            'text' : self.user.id,
             'sender': self.channel_name,
             
                                             })
