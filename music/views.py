@@ -350,3 +350,5 @@ class GnereListView(generics.ListAPIView):
     queryset = Genre.objects.all()
     serializer_class = GnereSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+

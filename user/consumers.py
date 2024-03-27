@@ -1,3 +1,4 @@
+from calendar import c
 from email import message
 from channels.consumer import SyncConsumer, AsyncConsumer
 from urllib.parse import parse_qs
@@ -6,10 +7,6 @@ from asgiref.sync import sync_to_async
 from channels.exceptions import StopConsumer
 import json
 
-
-
-
-   
         
 class UserConnectivityStatusConsumer(AsyncConsumer):
     
@@ -79,10 +76,29 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             friends = await sync_to_async(friends.values_list)('id', flat = True)
             friends = await sync_to_async(list)(friends)
             
+            from music.models import CurrentlyPlaying
+            from music.serializers import CurrentlyPlayingSerializer
+            
+            print('here10')
+            currently_playing = await sync_to_async(CurrentlyPlaying.objects.filter)(pk__in = friends)
+            await sync_to_async(print)(currently_playing)
+            print('here11')
+            data = []
+            if await sync_to_async(currently_playing.exists)():
+                print('here ##')
+                await sync_to_async(print)(currently_playing)
+                serializer = await sync_to_async(CurrentlyPlayingSerializer)(currently_playing, many = True)
+                print('here12')
+                await sync_to_async(print)(serializer)
+                data = serializer.data
+                
+            
+            print('here A')
             await self.send({
                 'type': 'websocket.send',
-                'text': json.dumps({'connected' : friends}),
+                'text': json.dumps({'connected' : friends, 'listening' : data}),
             })
+            print('here B')
             
         except Exception as e:
             print("error0:", str(e))
@@ -136,6 +152,7 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
     
     
     async def currently_playing(self, event):
+        from music.models import CurrentlyPlaying
         try : 
             print('current') 
             from music.models import Song
@@ -147,6 +164,32 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             'text' : json.dumps({'currently_playing' : data, 'user_id' : self.user.id}), 
             'sender': self.channel_name,
              })
+            
+            print('here14')
+            currently_playing = None
+            print('here15')
+            is_listening = await sync_to_async(CurrentlyPlaying.objects.filter)(user_id=self.user.id)
+            is_listening = await sync_to_async(is_listening.exists)()
+
+            print('here16')
+            if is_listening :
+                print('here17')
+                currently_playing = await sync_to_async(CurrentlyPlaying.objects.filter)(user_id = self.user.id)
+                currently_playing = await sync_to_async(currently_playing.first)()
+                print('here18')
+                currently_playing.song_id = song 
+                print('here19')
+                
+                
+            else :
+                print('here20')
+                currently_playing = await sync_to_async(CurrentlyPlaying)(user_id = self.user, song_id = song)   
+                print('here21')
+            
+            print('here22')
+            await sync_to_async(currently_playing.save)()
+            print('here23')
+            
             
         
         except Exception as e:
@@ -166,7 +209,7 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
                  
 
     async def websocket_disconnect(self, event):
-        
+        from music.models import CurrentlyPlaying
         try : 
             print('websocket Disconnected...', event)
             await self.channel_layer.group_discard(
@@ -182,7 +225,11 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
                 'text':  self.user.id,
                 'sender': self.channel_name,
             })
-                
+            currently_playing = await sync_to_async(CurrentlyPlaying.objects.filter)(user_id = self.user.id)
+            is_currently_playing = await sync_to_async(currently_playing.exists)()
+            
+            if is_currently_playing:
+                await sync_to_async(currently_playing.delete)()
             raise StopConsumer()
         
         except Exception as e:

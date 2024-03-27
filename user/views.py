@@ -169,6 +169,7 @@ class ArtistListView(generics.ListAPIView) :
     serializer_class = ArtistSerializer
     queryset = User.objects.filter(is_artist = True)
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None
 
 class ArtistDetailView(generics.RetrieveAPIView):   
     serializer_class = ArtistSerializer
