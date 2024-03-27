@@ -47,11 +47,14 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             print('here3')
             all_friends = await sync_to_async(list)(friends)
             print('here4')
- 
+            
             for friend in  all_friends :
                 print("*")
+                groupname = f"group_{friend}"
+                print(groupname)
+                print(self.channel_layer)
                 await self.channel_layer.group_add(
-                    f"group_{friend}",
+                    groupname,
                     self.channel_name
                     )
 
