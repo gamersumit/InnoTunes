@@ -44,8 +44,14 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             friends = await sync_to_async(friends.values_list)('artist_id', flat = True)
             all_friends = await sync_to_async(list)(friends)
             
+            print(all_friends)
             for friend in  all_friends :
+
+
+                print(friend)
                 groupname = f"group_{friend}"
+                print(groupname)
+
                 await self.channel_layer.group_add(
                     groupname,
                     self.channel_name
