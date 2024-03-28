@@ -2,6 +2,7 @@ from functools import partial
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from django.utils import timezone
 from music.serializers import SongSerializer
@@ -172,7 +173,8 @@ class ArtistListView(generics.ListAPIView) :
     serializer_class = ArtistSerializer
     queryset = User.objects.filter(is_artist = True)
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = None
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 30
 
 class ArtistDetailView(generics.RetrieveAPIView):   
     serializer_class = ArtistSerializer
