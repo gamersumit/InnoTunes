@@ -87,6 +87,35 @@ class LoginView(generics.GenericAPIView) :
         except Exception as e:
                 return Response({'status': False, 'message': str(e)}, status=400)
 
+class LoginNativeView(generics.GenericAPIView) :
+    serializer_class = UserSerializer
+    def post(self, request, *args, **kwargs) :
+        try :
+            username = request.data['email']
+            password = request.data['password']
+            if not User.objects.filter(email = username).exists() :
+               return Response({'status': False, 'message': 'New User'}, status=400)
+                
+            user = authenticate(password = password, username = username)
+            
+            if user:
+                user.is_deleted = False
+                user.save()
+                token, created = Token.objects.get_or_create(user=user)
+                data = UserSerializer(user).data
+                liked_songs = {'id': [song.song_id.id for song in SongLikes.objects.filter(user_id = user.id)]}
+                liked_album = {'id': [album.album_id.id for album in AlbumLikes.objects.filter(user_id = user.id)]} 
+                liked_playlist = {'id': [playlist.playlist_id.id for playlist in PlaylistLikes.objects.filter(user_id = user.id)]} 
+                user.is_active = True
+                user.save()
+                return Response({'token': token.key, 'user_info' : data, 'liked_songs' : liked_songs, 'liked_album' : liked_album, 'liked_playlist' : liked_playlist}, status = 200)
+        
+            else:
+                return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
+        
+        except Exception as e:
+                return Response({'status': False, 'message': str(e)}, status=400)
+
 # logout view // delete token       
 class LogoutView(generics.RetrieveAPIView) :
     permission_classes = [permissions.IsAuthenticated]
