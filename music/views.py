@@ -1,3 +1,4 @@
+from os import stat
 from django.utils import timezone
 from pydoc import plain
 from rest_framework.views import APIView
@@ -125,7 +126,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
     permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = 'pk'
-    http_method_names = ['get', 'post', 'put', 'delete']
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_queryset(self):
         try:
@@ -158,11 +159,19 @@ class PlaylistViewSet(viewsets.ModelViewSet):
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=400)
 
-    def update(self, request):
+    def update(self, request, **kwargs):
         try:
+            id = kwargs['pk']
             urls = []
+            if not Playlist.objects.filter(id = id).exists():
+                raise Exception('Playlist not found')
+            
             CommonUtils.Update_Create(request, ['playlist_picture'], urls)
-            return CommonUtils.Serialize(request.data, PlaylistSerializer)
+            playlist = Playlist.objects.get(id = id)
+            serializer = PlaylistSerializer(playlist, request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response({'message': 'playlist updated successfully'}, status = 200)
 
         except Exception as e:
             CommonUtils.delete_media_from_cloudinary(urls)
