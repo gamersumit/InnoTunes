@@ -129,15 +129,15 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'), conn_max_age=600),
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': os.getenv('DB_NAME'),
-    #     'HOST': os.getenv('DB_HOST'),
-    #     'USER': os.getenv('DB_USER'),
-    #     'PORT': os.getenv('DB_PORT'),
-    #     'PASSWORD': os.getenv('DB_PASSWORD')
-    # }
+    # 'default': dj_database_url.parse(os.environ.get('DATABASE_URL'), conn_max_age=600),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'HOST': os.getenv('DB_HOST'),
+        'USER': os.getenv('DB_USER'),
+        'PORT': os.getenv('DB_PORT'),
+        'PASSWORD': os.getenv('DB_PASSWORD')
+    }
 }
 
 # Password validation
@@ -204,6 +204,60 @@ cloudinary.config(
     secure=True
 )
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+APP_LOG_FILENAME = os.path.join(BASE_DIR, 'log/app.log')
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    # "handlers": {
+    #     "app_log_file": {
+    #         "level": "INFO",
+    #         "class": "logging.FileHandler",
+    #         "filename": APP_LOG_FILENAME,
+    #     },
+    # },
+    # "root": {
+    #     "handlers": ["app_log_file"],
+    #     "level": "INFO",
+    # },
+    # "loggers": {
+    #     "django": {
+    #         "handlers": ["app_log_file"],
+    #         "level": "INFO",
+    #         "propagate": False,
+    #     },
+    # },
+    'handlers': {
+        'console': {
+            'level': 'INFO',  # Adjust log level as needed
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',  # Adjust log level as needed
+            'propagate': True,
+        },
+    },
+}
+
+# cron job
+CRONJOBS = [
+    ('* */6 * * *', 'music.cron.remove_recent_songs'),
+    ('* */6 * * *', 'user.cron.remove_inactive_users'),
+]
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
+
 
 # MAIL
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
