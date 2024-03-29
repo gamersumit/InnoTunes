@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('music', '0015_playlist_is_global'),
+        ('music', '0014_alter_song_genre'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
