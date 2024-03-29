@@ -206,49 +206,49 @@ cloudinary.config(
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
-APP_LOG_FILENAME = os.path.join(BASE_DIR, 'log/app.log')
+# APP_LOG_FILENAME = os.path.join(BASE_DIR, 'log/app.log')
+# 
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     # "handlers": {
+#     #     "app_log_file": {
+#     #         "level": "INFO",
+#     #         "class": "logging.FileHandler",
+#     #         "filename": APP_LOG_FILENAME,
+#     #     },
+#     # },
+#     # "root": {
+#     #     "handlers": ["app_log_file"],
+#     #     "level": "INFO",
+#     # },
+#     # "loggers": {
+#     #     "django": {
+#     #         "handlers": ["app_log_file"],
+#     #         "level": "INFO",
+#     #         "propagate": False,
+#     #     },
+#     # },
+#     'handlers': {
+#         'console': {
+#             'level': 'INFO',  # Adjust log level as needed
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'INFO',  # Adjust log level as needed
+#             'propagate': True,
+#         },
+#     },
+# }
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    # "handlers": {
-    #     "app_log_file": {
-    #         "level": "INFO",
-    #         "class": "logging.FileHandler",
-    #         "filename": APP_LOG_FILENAME,
-    #     },
-    # },
-    # "root": {
-    #     "handlers": ["app_log_file"],
-    #     "level": "INFO",
-    # },
-    # "loggers": {
-    #     "django": {
-    #         "handlers": ["app_log_file"],
-    #         "level": "INFO",
-    #         "propagate": False,
-    #     },
-    # },
-    'handlers': {
-        'console': {
-            'level': 'INFO',  # Adjust log level as needed
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',  # Adjust log level as needed
-            'propagate': True,
-        },
-    },
-}
-
-# cron job
-CRONJOBS = [
-    ('* */6 * * *', 'music.cron.remove_recent_songs'),
-    ('* */6 * * *', 'user.cron.remove_inactive_users'),
-]
+# # cron job
+# CRONJOBS = [
+#     ('* */6 * * *', 'music.cron.remove_recent_songs'),
+#     ('* */6 * * *', 'user.cron.remove_inactive_users'),
+# ]
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Your Project API',
