@@ -11,6 +11,7 @@ router.register('album', views.AlbumViewSet, 'album')
 
 
 urlpatterns = [
+    path('genre/', views.GnereListView.as_view(), name='all_songs_list'),
     path('songs/add/', views.SongCreateView.as_view(), name='add_song_view'),
     path('songs/', views.AllSongListView.as_view(), name='all_songs_list'),
     path('songs/guest/', views.GuestUserSongListView.as_view(), name='guest_user_songs_list'),
@@ -30,5 +31,6 @@ urlpatterns = [
     # path('global/playlist/songs/<str:id>/', views.GetSongsInGlobalPlaylist.as_view(), name = 'get_songs_in_global_playlist'),
     # path('playlist/global/songs/<str:id>/', views.AddSongsInGlobalPlaylistAPIView.as_view(), name = 'add_gloabal_playlist'),
     path('genre/', views.GenreFilterAPIView.as_view(), name = 'top_three_genres'),
+    path('playlist/all/list/', views.ListUserAndLikedPlaylist.as_view(), name = 'user_allplaylist_songs'),
     path('router/', include(router.urls))
 ]

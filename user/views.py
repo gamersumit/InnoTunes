@@ -2,6 +2,7 @@ from functools import partial
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from django.utils import timezone
 from music.serializers import SongSerializer
@@ -22,6 +23,7 @@ class RegisterView(generics.CreateAPIView) :
 
     def post(self, request):
         try :
+            print(request.data)
             urls = []
             CommonUtils.Update_Create(request, ['avatar'], urls)    
             return CommonUtils.Serialize(request.data, UserSerializer)
@@ -33,17 +35,18 @@ class RegisterView(generics.CreateAPIView) :
 class UpdateUserProfileView(generics.GenericAPIView) :
     serializer_class = UserProfileUpdateSerializer
     queryset = User.objects.all()
-
+    permission_classes = [permissions.IsAuthenticated]
     def put(self, request):
         try :
             urls = []
-            
+
             user = UserUtils.getUserFromToken(request.headers['Authorization'].split(' ')[1])
             current_avatar = None    
             if request.data.get('avatar', None):
+                print('avatar')
                 CommonUtils.Update_Create(request, ['avatar'], urls) 
                 current_avatar =  user.avatar 
-                    
+                        
             serializer = UserProfileUpdateSerializer(user, request.data, partial = True)  
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -51,9 +54,11 @@ class UpdateUserProfileView(generics.GenericAPIView) :
             if current_avatar:
                 CommonUtils.delete_media_from_cloudinary([current_avatar])
             
-            return Response({'message' : 'Profile Updated Succesfully'}, status = 200)
+
+            return Response({'message' : 'Profile Updated Succesfully', 'data' : serializer.data}, status = 200)
             
         except Exception as e:
+            print(str(e))
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message' : str(e)}, status = 400)
         
@@ -197,6 +202,8 @@ class ArtistListView(generics.ListAPIView) :
     serializer_class = ArtistSerializer
     queryset = User.objects.filter(is_artist = True)
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 30
 
 class ArtistDetailView(generics.RetrieveAPIView):   
     serializer_class = ArtistSerializer
@@ -281,6 +288,8 @@ class resetPasswordView(generics.GenericAPIView):
             return Response({'message' : 'password reset successfully'}, status = 200)
         except Exception as e:
             return Response({'message': str(e)}, status = 400)
+        
+
         
 # SHORT NAMING :
 user_profile_edit_view = UpdateUserProfileView.as_view()

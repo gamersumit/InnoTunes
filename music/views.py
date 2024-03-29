@@ -481,3 +481,23 @@ class GenreFilterAPIView(APIView):
 #     def get(self, request):
 #         genre = request.data.get('genre')
         
+
+class ListUserAndLikedPlaylist(generics.ListAPIView): 
+    serializer_class = PlaylistSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        token = self.request.headers['Authorization'].split(' ')[1]
+        user = UserUtils.getUserFromToken(token)
+        queryset =  Playlist.objects.filter(user_id = user.id)   
+        queryset.extend([playlist.playlist_id for playlist in PlaylistLikes.objects.filter(
+            user_id=user.id)])
+        
+        return queryset
+        
+class GnereListView(generics.ListAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GnereSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+

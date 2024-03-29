@@ -37,6 +37,9 @@ class UserSerializer(serializers.ModelSerializer):
         ret = super().to_representation(obj)
         if ret['is_deleted'] : 
             ret['username'] = 'innouser'
+            
+        if not ret['avatar']:
+            ret['avatar'] = 'https://cdn.vectorstock.com/i/1000v/43/94/default-avatar-photo-placeholder-icon-grey-vector-38594394.jpg'
         return ret
         
     
@@ -102,6 +105,8 @@ class ArtistSerializer(serializers.ModelSerializer):
         ret = super().to_representation(obj)
         if ret['is_deleted'] : 
             ret['username'] = 'innouser'
+        if not ret['avatar']:
+            ret['avatar'] = 'https://cdn.vectorstock.com/i/1000v/43/94/default-avatar-photo-placeholder-icon-grey-vector-38594394.jpg'
         return ret
     
     def get_total_followers(self, artist):
