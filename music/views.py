@@ -178,7 +178,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
     # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = 'pk'
-    http_method_names = ['get', 'post', 'put', 'delete']
+    http_method_names = ['get', 'post', 'put', 'delete', 'patch']
 
     def get_queryset(self):
         try:
@@ -217,17 +217,34 @@ class PlaylistViewSet(viewsets.ModelViewSet):
             print("message", str(e))
             return Response({'message': str(e)}, status=400)
 
-    def update(self, request):
+    def partial_update(self, request, pk = None):
         try:
             urls = []
+            print("data", request.data)
             CommonUtils.Update_Create(request, ['playlist_picture'], urls)
+            print("yo")
+            # instance = self.get_object()
+            # # print("instance:", instance)
+            playlist = Playlist.objects.get(id = pk)
+            print("playlist: ", playlist)
+            
+            serializer = self.get_serializer(playlist, data=request.data, partial=True)
+            print("yo1")
+            serializer.is_valid(raise_exception=True)
+            print("yo2")
+            self.perform_update(serializer)
+            print("yo3")
+            # return Response(serializer.data)
+            return Response({"message": "Playlist Updated Successfully", "status": status.HTTP_202_ACCEPTED})
             return CommonUtils.Serialize(request.data, PlaylistSerializer)
-
+        except ValidationError as e:
+        # Handle validation errors
+            print("there")
+            return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             CommonUtils.delete_media_from_cloudinary(urls)
+            print("here")
             return Response({'message': str(e)}, status=400)
-        
-
 
 # album Cruds(these cruds are not for songs inside album)
 class AlbumViewSet(viewsets.ModelViewSet):
@@ -254,7 +271,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=400)
 
-    def update(self, request):
+    def partial_update(self, request):
         try:
             urls = []
             CommonUtils.Update_Create(request, ['album_picture'], urls)
