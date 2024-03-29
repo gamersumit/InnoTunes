@@ -220,27 +220,12 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, pk = None):
         try:
             urls = []
-            print("data", request.data)
             CommonUtils.Update_Create(request, ['playlist_picture'], urls)
-            print("yo")
-            # instance = self.get_object()
-            # # print("instance:", instance)
             playlist = Playlist.objects.get(id = pk)
-            print("playlist: ", playlist)
-            
             serializer = self.get_serializer(playlist, data=request.data, partial=True)
-            print("yo1")
             serializer.is_valid(raise_exception=True)
-            print("yo2")
             self.perform_update(serializer)
-            print("yo3")
-            # return Response(serializer.data)
             return Response({"message": "Playlist Updated Successfully", "status": status.HTTP_202_ACCEPTED})
-            return CommonUtils.Serialize(request.data, PlaylistSerializer)
-        except ValidationError as e:
-        # Handle validation errors
-            print("there")
-            return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             CommonUtils.delete_media_from_cloudinary(urls)
             print("here")
