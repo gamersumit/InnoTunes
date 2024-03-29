@@ -66,3 +66,35 @@ class IsAlbumOwnerOrReadOnly(permissions.DjangoModelPermissions):
         
         except Exception as e:
             return False        
+
+
+class IsPlaylistArtistOwnerOrReadOnly(permissions.DjangoModelPermissions):
+    permission_queryset = None
+
+    perms_map = {
+       # 'GET': [],   // original
+        'OPTIONS': [],
+        'HEAD': [],
+        'GET': ['%(app_label)s.view_%(model_name)s'],
+        'POST': ['%(app_label)s.add_%(model_name)s'],
+        'PUT': ['%(app_label)s.change_%(model_name)s'],
+        'PATCH': ['%(app_label)s.change_%(model_name)s'],
+        'DELETE': ['%(app_label)s.delete_%(model_name)s'],
+    }
+
+    def has_permission(self, request, view):
+        if request.method == 'GET':
+            return True
+        
+        try :
+            token = request.headers['Authorization'].split(' ')[1]
+            token_user = UserUtils.getUserFromToken(token)
+            id = request.data.get('playlist_id') 
+            playlist = Playlist.objects.get(id = id)
+            if not playlist :
+              raise Exception('Playlist does\'nt exist')
+            # Write permissions are only allowed to the owner of the playlist.
+            return playlist.user_id == token_user and playlist.user_id.is_artist
+        
+        except Exception as e:
+            return False

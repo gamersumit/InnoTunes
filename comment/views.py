@@ -102,14 +102,20 @@ class PlaylistLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
 class SongLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     queryset = SongLikes.objects.all()
     serializer_class = SongLikesSerializer
-    permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_class = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     http_method_names = ['post', 'delete']
     
     def delete(self, request):
       try :
+        print("hey")
         if SongLikes.objects.filter(song_id = request.data['song_id'], user_id = request.data['user_id']).exists():
+          print("hey")
           SongLikes.objects.get(song_id = request.data['song_id'], user_id = request.data['user_id']).delete()
+          print("hey")
           return Response({'message' : 'request successful'}, status = 200)
+        print("hey")
         return Response({'message' : 'already disliked'}, status = 201)
+      
       except Exception as e:
+        print("message: ", str(e))
         return Response({'message' : str(e)}, status = 400)

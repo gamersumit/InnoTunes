@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # third party apps
+    'drf_spectacular',
     'cloudinary',
     'cloudinary_storage',
     'rest_framework',
@@ -186,6 +187,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'user.User'
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
@@ -202,6 +204,60 @@ cloudinary.config(
     secure=True
 )
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+APP_LOG_FILENAME = os.path.join(BASE_DIR, 'log/app.log')
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    # "handlers": {
+    #     "app_log_file": {
+    #         "level": "INFO",
+    #         "class": "logging.FileHandler",
+    #         "filename": APP_LOG_FILENAME,
+    #     },
+    # },
+    # "root": {
+    #     "handlers": ["app_log_file"],
+    #     "level": "INFO",
+    # },
+    # "loggers": {
+    #     "django": {
+    #         "handlers": ["app_log_file"],
+    #         "level": "INFO",
+    #         "propagate": False,
+    #     },
+    # },
+    'handlers': {
+        'console': {
+            'level': 'INFO',  # Adjust log level as needed
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',  # Adjust log level as needed
+            'propagate': True,
+        },
+    },
+}
+
+# cron job
+CRONJOBS = [
+    ('* */6 * * *', 'music.cron.remove_recent_songs'),
+    ('* */6 * * *', 'user.cron.remove_inactive_users'),
+]
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
+
 
 # MAIL
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')

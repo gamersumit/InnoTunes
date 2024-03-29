@@ -14,7 +14,7 @@ from utils.utils import CommonUtils, UserUtils
 from user.permissions import *
 from music import serializers
 import json
-
+import random
 
 
 # Create your views here.
@@ -29,28 +29,81 @@ class SongCreateView(generics.CreateAPIView):
     # permission_classes = [permissions.IsAuthenticated, IsArtistOwnerOrReadOnly]
 
     def post(self, request):
+        print("here")
         try:
             urls = []
+            # CommonUtils.Update_urls(request, ['song_picture','audio','video'],urls)
             CommonUtils.Update_Create(
-                request, ['song_picture', 'audio', 'video'], urls) 
-            return CommonUtils.Serialize(request.data, SongSerializer)
+                request, ['song_picture', 'audio', 'video'], urls)
+            serialized_data = CommonUtils.Serialize(request.data, SongSerializer)
+            return Response(serialized_data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=400)
+    
+
+    def put(self, request):
+        urls = []
+        try:
+            print("there")
+            song_id = request.data.get('id')
+            # print("request: ", request.data)
+            instance = Song.objects.get(id = song_id)
+            print("instance: ", instance)
+            if 'song_picture' in request.data:
+                CommonUtils.Update_Create(
+                    request, ['song_picture'], urls)
+                print("here")
+            if 'audio' in request.data:
+                CommonUtils.Update_Create(
+                    request, ['audio'], urls)
+                print("here")
+            if 'video' in request.data:
+                CommonUtils.Update_Create(
+                    request, ['audio'], urls)
+                print("here")
+            serializer = self.get_serializer(instance, data=request.data, partial=True)
+            print("yo")
+            serializer.is_valid(raise_exception=True)
+            # if 'audio' not in request.data:
+            #     song = Song.objects.get(id = request.data['id'])
+            #     print("song: ", song)
+            #     print("audio: ", song.audio)
+            #     serializer.validated_data['audio'] = song.audio
+            #     serializer.save()
+            serializer.save()
+            print("done")
+            return Response(serializer.data, status= status.HTTP_202_ACCEPTED)
+            # print("here")
+        except Exception as e:
+            CommonUtils.delete_media_from_cloudinary(urls)
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            
 
 # list all songs
+
+from rest_framework import viewsets
+from .models import Song
+from .serializers import SongSerializer
 
 
 class AllSongListView(ListAPIView):
     serializer_class = SongSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
         try:
             queryset = Song.objects.all()
             song_name = self.request.query_params.get('song_name', None)
+            print("song_name: ", song_name)
+            genre = self.request.query_params.get('genre', None)
+            print("genre: ", genre)
             if song_name:
+                print("neh1")
                 queryset = queryset.filter(song_name__icontains=song_name)
+            elif genre:
+                print("neh")
+                queryset = queryset.filter(genre__genre__icontains = genre)
             return queryset
         except Exception as e:
             return Song.objects.none()
@@ -76,7 +129,7 @@ class ArtistSongListView(ListAPIView):
 
 
 class PlaylistSongListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, **kwargs):
         try:
@@ -103,7 +156,7 @@ class LikedSongsListView(ListAPIView):
 
 
 class AlbumSongListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, **kwargs):
         try:
@@ -123,9 +176,9 @@ class AlbumSongListView(ListAPIView):
 #  playlist CRUDS(these cruds are not for songs inside playlist) view
 class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsUserOwnerOrReadOnly]
     lookup_field = 'pk'
-    http_method_names = ['get', 'post', 'put', 'delete']
+    http_method_names = ['get', 'post', 'put', 'delete', 'patch']
 
     def get_queryset(self):
         try:
@@ -137,6 +190,8 @@ class PlaylistViewSet(viewsets.ModelViewSet):
             return []
 
     def create(self, request):
+        print("in create")
+        print("request: ", request.data)
         try: 
             urls = []
             CommonUtils.Update_Create(request, ['playlist_picture'], urls)
@@ -145,29 +200,36 @@ class PlaylistViewSet(viewsets.ModelViewSet):
             serializer.save()
             data = serializer.data
             playlist_id = data['id']
-            songs = json.loads(request.data.get('songs', None))
-            if songs :
-                for song in  songs :
-                    temp = {'playlist_id' : playlist_id, 'song_id' : int(song)}
-                    serial = SongsInPlaylistSerializer(data = temp)
-                    serial.is_valid(raise_exception=True)
-                    serial.save()
-                    
-            return Response({'message': {'id' : playlist_id}}, status = 200)
+            print("hey1")
+            if request.data.get('songs'):
+                songs = json.loads(request.data.get('songs', None))
+                if songs :
+                    for song in  songs :
+                        temp = {'playlist_id' : playlist_id, 'song_id' : int(song)}
+                        serial = SongsInPlaylistSerializer(data = temp)
+                        serial.is_valid(raise_exception=True)
+                        print("hey")
+                        serial.save()       
+            return Response({'message': {'id' : playlist_id}}, status = status.HTTP_201_CREATED)
         except Exception as e:
-            CommonUtils.delete_media_from_cloudinary(urls)
+            print("hey")
+            # CommonUtils.delete_media_from_cloudinary(urls)
+            print("message", str(e))
             return Response({'message': str(e)}, status=400)
 
-    def update(self, request):
+    def partial_update(self, request, pk = None):
         try:
             urls = []
             CommonUtils.Update_Create(request, ['playlist_picture'], urls)
-            return CommonUtils.Serialize(request.data, PlaylistSerializer)
-
+            playlist = Playlist.objects.get(id = pk)
+            serializer = self.get_serializer(playlist, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            return Response({"message": "Playlist Updated Successfully", "status": status.HTTP_202_ACCEPTED})
         except Exception as e:
             CommonUtils.delete_media_from_cloudinary(urls)
+            print("here")
             return Response({'message': str(e)}, status=400)
-
 
 # album Cruds(these cruds are not for songs inside album)
 class AlbumViewSet(viewsets.ModelViewSet):
@@ -194,7 +256,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=400)
 
-    def update(self, request):
+    def partial_update(self, request):
         try:
             urls = []
             CommonUtils.Update_Create(request, ['album_picture'], urls)
@@ -210,8 +272,8 @@ class AlbumViewSet(viewsets.ModelViewSet):
 class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
     queryset = SongsInPlaylist.objects.all()
     serializer_class = SongsInPlaylistSerializer
-    permission_classes = [
-        permissions.IsAuthenticated, IsPlaylistOwnerOrReadOnly]
+    # permission_classes = [
+    #     permissions.IsAuthenticated, IsPlaylistOwnerOrReadOnly]
 
     def post(self, request):
         return CommonUtils.Serialize(request.data, self.serializer_class)
@@ -239,7 +301,7 @@ class AddDeleteSongsFromPlaylistView(generics.GenericAPIView):
 class AddDeleteSongsFromAlbumView(generics.GenericAPIView):
     queryset = SongsInAlbum.objects.all()
     serializer_class = SongsInAlbumSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsAlbumOwnerOrReadOnly]
 
     def post(self, request):
         return CommonUtils.Serialize(request.data, self.serializer_class)
@@ -352,3 +414,90 @@ class GnereListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     
 
+    
+class RecentGenreListView(generics.ListCreateAPIView):
+    serializer_class = SongSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        user = UserUtils.getUserFromToken(self.request.headers['Authorization'].split(' ')[1])
+        recent_songs = RecentSongs.objects.filter(user_id = user.id).order_by(
+            '-last_played_at').values_list('song_id', flat = True)[:10]
+        print(recent_songs)
+        # recent_songs = [song.song_id for song in recent_songs]
+        print(user)
+        # print(recent_songs)
+        if len(Song.objects.filter(id__in = recent_songs).values_list('genre', flat = True).distinct()) > 3:
+            recent_songs_genres = Song.objects.filter(id__in = recent_songs).values_list('genre', flat = True).distinct()[:3]
+        else:
+            recent_songs_genres = Song.objects.filter(id__in = recent_songs).values_list('genre', flat = True).distinct()        
+        result = []
+        for genres in recent_songs_genres:
+            song_in_genre = Song.objects.filter(genre = genres)
+            if song_in_genre.exists():
+                result.append(random.choice(song_in_genre))     ## random song
+                # random_song = song_in_genre.order_by('?').first()
+                # result.append(random_song)
+            print(result)
+        return result
+
+class GlobalPlaylistAPIView(APIView):
+    serializer_class = GlobalPlaylistSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):        ## for me
+        try:
+            # token = request.headers['Authorization'].split(' ')[1]
+            # token_user = UserUtils.getUserFromToken(token)
+            # if token_user.is_artist:
+            urls = []
+            CommonUtils.Update_Create(request, ['playlist_picture'], urls)
+            print("heylo")
+            serializer = self.serializer_class(data = request.data)
+            serializer.is_valid(raise_exception=True)
+            user_id = request.data.get('user_id')
+            user = User.objects.get(pk = user_id)
+            # request.data['user_id'] = user
+            serializer.validated_data['user_id'] = user
+            print('heylo')
+            serializer.save()
+            print("heylo")
+            # return serializer
+            return Response({'data': serializer.data}, status = status.HTTP_201_CREATED)                
+        except Exception as e:
+            return Response({'status': False, 'message': str(e)}, status=400)
+    
+    def get(self, request, pk = None):
+        queryset = Playlist.objects.filter(is_global = True)  
+        # if request.data:
+        #     queryset = Playlist.objects.get
+        serializer = self.serializer_class(queryset, many = True)
+        return Response(serializer.data, status = status.HTTP_200_OK)
+    
+class GenreFilterAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        random_genres = Genre.objects.order_by('?').distinct()[:3]
+    
+        data = []
+        for genre in random_genres:
+            genre_data = {}
+            genre_serializer = GenreSerializer(genre)
+            genre_data['genre'] = genre_serializer.data
+            
+            songs = Song.objects.filter(genre=genre)[:5]  
+            song_data = []
+            
+            for song in songs:
+                song_serializer = SongSerializer(song)
+                song_data.append(song_serializer.data)
+            
+            genre_data['songs'] = song_data 
+            data.append(genre_data)
+        
+        return Response(data)
+
+# class GenreDetailsAPI(APIView):
+#     def get(self, request):
+#         genre = request.data.get('genre')
+        

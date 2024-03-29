@@ -52,8 +52,9 @@ class UserUtils :
         
         except Exception as e :
             raise Exception(str(e))
-        
-
+from django.db.models import Q, F, Value
+from music.models import Song
+from django.db.models.functions import Replace
 class CommonUtils:
     
     @staticmethod
@@ -64,7 +65,7 @@ class CommonUtils:
             if path == 'public/audio':
                 upload = uploader.upload_large(media, folder = path, use_filename = True, resource_type = 'video', video_metadata = True)   
                 duration = upload['duration']
-                return [duration, upload['url']]   
+                return [duration, upload['secure_url']]   
             
             upload = uploader.upload_large(media, folder = path, use_filename = True)   
             urls.append(upload['secure_url'])
@@ -72,7 +73,21 @@ class CommonUtils:
         
         except Exception as e:
             raise Exception(str(e))
-      
+    
+    @staticmethod
+    def Update_urls(request, fields, urls):
+        try:
+            Song.objects.filter(audio__contains='http://').update(
+            audio=Replace(F('audio'), Value('http://'), Value('https://'))
+            )
+            # Update video URLs from 'http://' to 'https://'
+            Song.objects.filter(video__contains='http://').update(
+            video=Replace(F('video'), Value('http://'), Value('https://'))
+            )
+            print("urls updated successfully")
+        except Exception as e:
+            raise Exception(str(e))
+        
     @staticmethod
     def Update_Create(request, fields, urls):
         try:
