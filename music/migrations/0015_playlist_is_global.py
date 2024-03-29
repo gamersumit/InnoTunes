@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('music', '0016_remove_currentlyplaying_id_and_more'),
+        ('music', '0014_alter_song_genre'),
     ]
 
     operations = [
