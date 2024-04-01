@@ -14,7 +14,7 @@ constantly==23.10.4
 cryptography==42.0.5
 daphne==4.1.0
 dill==0.3.8
-dj-database-url==1.2.0
+dj-database-url==2.1.0
 Django==5.0.2
 django-cloudinary-storage==0.3.0
 django-cors-headers==4.3.1
