@@ -111,19 +111,23 @@ TEMPLATES = [
 ASGI_APPLICATION = 'innotune.asgi.application'
 
 # redis
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [(os.getenv('REDIS_BACKEND_ENDPOINT'), 6379)],
-#         },
-#     },
-# }
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+"CONFIG": {
+        "hosts":[{
+            "address": os.getenv('REDIS_BACKEND_ENDPOINT'),  # "REDIS_TLS_URL"
+            "ssl_cert_reqs": None,
+        }]
+    }
     },
 }
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer",
+#     },
+# }
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
