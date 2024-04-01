@@ -343,7 +343,6 @@ class AddToRecentsView(generics.UpdateAPIView):
                 serializer = self.serializer_class(data=request.data)
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
-
             return Response({'message': 'Updated recents'}, status=200)
 
         except Exception as e:
@@ -353,16 +352,23 @@ class AddToRecentsView(generics.UpdateAPIView):
 
 
 class RecentSongsListView(generics.ListCreateAPIView):
-    serializer_class = SongSerializer
+    serializer_class = RecentSongsSerializer
     permission_classes = [permissions.IsAuthenticated]
-
     def get_queryset(self):
         user = UserUtils.getUserFromToken(self.request.headers['Authorization'].split(' ')[1])
         recent_songs = RecentSongs.objects.filter(user_id = user.id).order_by(
             '-last_played_at')[:10]
         recent_songs = [song.song_id for song in recent_songs]
         return recent_songs
-
+    
+    def post(self, request):
+        print("request: ", request.data)
+        serializer = RecentSongsSerializer(data = request.data)
+        print("here")
+        serializer.is_valid(raise_exception= True)
+        serializer.save()
+        return Response({"message": "Recent song added"}, status = status.HTTP_201_CREATED)
+        
 
 class LikedPlaylistListView(generics.ListAPIView):
     serializer_class = PlaylistSerializer
