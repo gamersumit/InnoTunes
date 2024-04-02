@@ -88,7 +88,8 @@ class RecentSongs(models.Model):
     song_id = models.ForeignKey(Song, on_delete = models.CASCADE)
     last_played_at = models.DateTimeField(auto_now = True)
     
-
+    def __str__(self):
+        return f"{self.song_id} - {self.user_id}"
 # Songs in Album Model   
 class SongsInAlbum(models.Model):
     song_id = models.OneToOneField(Song, on_delete=models.CASCADE, unique=True)

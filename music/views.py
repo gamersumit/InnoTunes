@@ -352,15 +352,23 @@ class AddToRecentsView(generics.UpdateAPIView):
 
 
 class RecentSongsListView(generics.ListCreateAPIView):
-    serializer_class = RecentSongsSerializer
+    # serializer_class = RecentSongsSerializer
     permission_classes = [permissions.IsAuthenticated]
-    def get_queryset(self):
-        user = UserUtils.getUserFromToken(self.request.headers['Authorization'].split(' ')[1])
-        recent_songs = RecentSongs.objects.filter(user_id = user.id).order_by(
-            '-last_played_at')[:10]
-        recent_songs = [song.song_id for song in recent_songs]
-        return recent_songs
     
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return SongSerializer
+        elif self.request.method == 'POST':
+            return RecentSongsSerializer
+    
+    def list(self, request, *args, **kwargs):
+        user = UserUtils.getUserFromToken(request.headers['Authorization'].split(' ')[1])
+        recent_song_ids = RecentSongs.objects.filter(user_id=user.id).order_by('last_played_at')[:10].values_list('song_id', flat=True)
+        recent_songs = Song.objects.filter(id__in=recent_song_ids)
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(recent_songs, many=True)
+        return Response(serializer.data)
+
     def post(self, request):
         print("request: ", request.data)
         serializer = RecentSongsSerializer(data = request.data)

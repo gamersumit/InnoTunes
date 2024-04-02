@@ -66,10 +66,10 @@ class RecentSongsSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecentSongs
         fields = ['song_id', 'user_id']
-        extra_kwargs = {
-            'song_id': {'write_only': True},
-            'user_id': {'write_only': True},
-        }
+        # extra_kwargs = {
+        #     'song_id': {'write_only': True},
+        #     'user_id': {'write_only': True},
+        # }
         
     
 # <! ---------- ALBUM SERIALIZERS -----------!> 
