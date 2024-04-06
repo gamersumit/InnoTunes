@@ -1,3 +1,4 @@
+
 """
 Django settings for innotune project.
 
@@ -201,36 +202,7 @@ cloudinary.config(
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
-APP_LOG_FILENAME = os.path.join(BASE_DIR, 'log/app.log')
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "app_log_file": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": APP_LOG_FILENAME,
-        },
-    },
-    "root": {
-        "handlers": ["app_log_file"],
-        "level": "INFO",
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["app_log_file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-    },
-}
-
-# cron job
-CRONJOBS = [
-    ('* */6 * * *', 'music.cron.remove_recent_songs'),
-    ('* */6 * * *', 'user.cron.remove_inactive_users'),
-]
 
 
 
@@ -239,5 +211,5 @@ EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
 EMAI_HOST = os.getenv('EMAI_HOST')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # this is temporary mail change it with ypur mail
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') 
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
