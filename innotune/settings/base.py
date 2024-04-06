@@ -210,7 +210,7 @@ LOGGING = {
         "app_log_file": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": APP_LOG_FILENAME,
+            "filename": 'logs/info.log',
         },
     },
     "root": {
@@ -239,5 +239,5 @@ EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
 EMAI_HOST = os.getenv('EMAI_HOST')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # this is temporary mail change it with ypur mail
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') 
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')

@@ -1,4 +1,3 @@
-import resource
 from django.contrib.auth.hashers import make_password
 import random
 from rest_framework.authtoken.models import Token
