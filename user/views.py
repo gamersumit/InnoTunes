@@ -15,6 +15,7 @@ from user.models import User
 from utils.utils import CommonUtils, Mail
 from comment.models import SongLikes, AlbumLikes, PlaylistLikes
 from django.core.mail import send_mail
+from django.contrib.auth.views import LogoutView as DRFLogoutView
 # Create your views here.
 
 class RegisterView(generics.CreateAPIView) :
@@ -259,7 +260,18 @@ class resetPasswordView(generics.GenericAPIView):
             return Response({'message' : 'password reset successfully'}, status = 200)
         except Exception as e:
             return Response({'message': str(e)}, status = 400)
-        
+
+
+class PatchLogoutView(DRFLogoutView):
+    """
+    Djano 5 does not have GET logout route anymore, so Django Rest Framework UI can't log out.
+    This is a workaround until Django Rest Framework implements POST logout.
+    Details: https://github.com/encode/django-rest-framework/issues/9206
+    """
+    http_method_names = ["get", "post", "options"]
+
+    def get(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)        
 
         
 # SHORT NAMING :
