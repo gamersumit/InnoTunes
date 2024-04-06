@@ -17,6 +17,7 @@ daphne==4.1.0
 dill==0.3.8
 dj-database-url==1.2.0
 Django==5.0.2
+django-crontab==0.7.1
 django-cloudinary-storage==0.3.0
 django-cors-headers==4.3.1
 djangorestframework==3.14.0
