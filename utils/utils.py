@@ -27,7 +27,7 @@ class UserUtils :
         if len(value) < 8:
             raise serializers.ValidationError("Password must be at least 8 characters long.")
         
-        if  not re.search("\d", value) :
+        if  not re.search(r"\d", value) :
             raise serializers.ValidationError("Password must contains a number 0 to 9")
         
         if not re.search("[a-z]", value) :
