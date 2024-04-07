@@ -91,7 +91,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://192.168.1.106:3000',
     'http://192.168.1.87:3000',
     'https://innotune.vercel.app',
-    ''
     
                         ]
 
