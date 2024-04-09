@@ -23,7 +23,7 @@ load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_ENDPOINT = os.getenv('BASE_ENDPOINT')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -223,7 +223,6 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # SWAGGER
 SWAGGER_SETTINGS = {
-    'SCHEMES': ['https'],
     'REFETCH_SCHEMA_WITH_AUTH': True,
     'REFETCH_SCHEMA_ON_LOGOUT' : True,
     'DISPLAY_OPERATION_ID' : False,

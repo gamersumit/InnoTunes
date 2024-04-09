@@ -32,6 +32,7 @@ schema_view = get_schema_view(
         title="Mock Test APIs",
         default_version="v1",
     ),
+    url = settings.BASE_ENDPOINT,
     public = False, # shows views which can be accessed by current user
     # permission_classes= [permissions.IsAuthenticated],
     # authentication_classes = [authentication.SessionAuthentication,authentication.TokenAuthentication]
