@@ -1,12 +1,30 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import *
-from comment.serializers import FollowersDetailSerializer
 from music.models import Album
 from music.serializers import AlbumSerializer
 from comment.models import Followers
 from utils.utils import CommonUtils, UserUtils
 from rest_framework.serializers import ValidationError
+
+
+
+class UserMiniProfileSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'avatar',
+            'is_deleted',
+            'status',
+        ]
+        
+    def to_representation(self, obj):
+        ret = super().to_representation(obj)
+        if ret['is_deleted'] : 
+            ret['username'] = 'innouser'
+        return ret
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128, min_length = 8, write_only = True)
@@ -23,15 +41,16 @@ class UserSerializer(serializers.ModelSerializer):
             'password',
             'username',
             'avatar',
+            'status',
             'is_artist',
             'is_deleted',
             'total_followers',
             'total_following',
             'followers',
             'following',
-            'status',
         ]
         read_only_fields = ['id', 'is_deleted', 'status']
+        
     
     def to_representation(self, obj):
         ret = super().to_representation(obj)
@@ -50,15 +69,15 @@ class UserSerializer(serializers.ModelSerializer):
         return Followers.get_total_following(user)
     
     def get_followers(self, user):
-        users = [follower.user_id for follower in Followers.objects.filter(artist_id = user)]
-        serializer = FollowersDetailSerializer(users, many = True)
-        
+        users = user.following.values_list('user_id', flat=True)
+        users = User.objects.filter(id__in=users)
+        serializer = UserMiniProfileSerializer(users, many = True)
         return serializer.data
     
     def get_following(self, user):
-        users = [follower.artist_id for follower in Followers.objects.filter(user_id = user)]
-        
-        serializer = FollowersDetailSerializer(users, many =True)
+        users = user.follower.values_list('artist_id', flat=True)
+        users = User.objects.filter(id__in=users)
+        serializer = UserMiniProfileSerializer(users, many =True)
         return serializer.data
     
     def run_validation(self, data):
@@ -116,13 +135,15 @@ class ArtistSerializer(serializers.ModelSerializer):
         return Followers.get_total_following(artist)
     
     def get_followers(self, artist):
-        artists = [follower.user_id for follower in Followers.objects.filter(artist_id = artist)]
-        serializer = FollowersDetailSerializer(artists, many = True)
+        users = artist.following.values_list('user_id', flat=True)
+        users = User.objects.filter(id__in=users)
+        serializer = UserMiniProfileSerializer(users, many = True)
         return serializer.data
     
     def get_following(self, artist):
-        artists = [follower.artist_id for follower in Followers.objects.filter(user_id = artist)]
-        serializer = FollowersDetailSerializer(artists, many = True)
+        users = artist.follower.values_list('artist_id', flat=True)
+        users = User.objects.filter(id__in=users)
+        serializer = UserMiniProfileSerializer(users, many =True)
         return serializer.data
     
     def get_albums(self, artist):
