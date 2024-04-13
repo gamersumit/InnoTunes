@@ -17,14 +17,13 @@ from colab import serializers
 class ColabView(generics.CreateAPIView):
     serializer_class = ColabSerializer
     permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
-    http_method_names = ['post']
-    lookup_field = 'pk'
     
-    def create(self, request):
+    def post(self, request):
         try:  
             urls = []
             CommonUtils.Update_Create(request, ['audio', 'video', 'colab_picture'], urls)
             return CommonUtils.Serialize(request.data, self.serializer_class)
+        
         except Exception as e:
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)

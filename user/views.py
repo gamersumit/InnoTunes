@@ -16,6 +16,8 @@ from utils.utils import CommonUtils, Mail
 from comment.models import SongLikes, AlbumLikes, PlaylistLikes
 from django.core.mail import send_mail
 from django.contrib.auth.views import LogoutView as DRFLogoutView
+from drf_yasg.utils import swagger_auto_schema
+
 # Create your views here.
 
 class RegisterView(generics.CreateAPIView) :
@@ -153,15 +155,19 @@ class UserListView(generics.ListAPIView) :
             queryset = queryset.filter(username__icontains=username)
         return queryset
 
-        
+    def get(self, request):
+        return super().get(request)
+
+
 class CurrentUserDetailView(generics.GenericAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]  
     
+    @swagger_auto_schema(operation_summary= "Authenticated User\'s Detail", operation_description = 'Provides details of current user with mini profile details of its follower and following')       
     def get(self, request):
         try:
-            user = UserUtils.getUserFromToken(request.headers['Authorization'].split(" ")[1])
+            user = request.user
             serializer = self.serializer_class(user)
             return Response(serializer.data, status = 200)
         
@@ -172,16 +178,23 @@ class CurrentUserDetailView(generics.GenericAPIView):
         
 class ArtistListView(generics.ListAPIView) :
     serializer_class = ArtistSerializer
-    queryset = User.objects.filter(is_artist = True)
+    queryset = User.objects.filter(is_artist = True).order_by('id')
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = PageNumberPagination
     pagination_class.page_size = 30
+
+    @swagger_auto_schema(tags = ['Artist'], operation_summary= "All Singers Details", operation_description = 'Provides details of all the artists with their released Albums details and mini profile details of their follower and following')
+    def get(self, request):
+        return super().get(request)
 
 class ArtistDetailView(generics.RetrieveAPIView):   
     serializer_class = ArtistSerializer
     queryset = User.objects.filter(is_artist = True)
     permission_classes = [permissions.IsAuthenticated]
    
+    @swagger_auto_schema(tags = ['Artist'], operation_summary= "Artist Details by Artist id", operation_description = 'Provides details of single artists with his/her released Albums details and mini profile details of their follower and following')
+    def get(self, request, pk):
+        return super().get(request, pk)
 
 class SendPasswordResetOTPView(generics.UpdateAPIView):
     serializer_class = MailOTPSerializer
