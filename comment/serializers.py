@@ -3,6 +3,7 @@ from rest_framework.serializers import ValidationError
 from .models import *
 from user.models import User
 
+
 class UserCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -24,26 +25,10 @@ class SongCommentSerializer(serializers.ModelSerializer):
     
     def get_user_info(self, obj):
         user = obj.user_id
-        return FollowersDetailSerializer(user).data
+        from user.serializers import UserMiniProfileSerializer
+        return UserMiniProfileSerializer(user).data
         
-        
-class FollowersDetailSerializer(serializers.ModelSerializer) :
-    class Meta:
-        model = User
-        fields = [
-            'id',
-            'username',
-            'avatar',
-            'is_deleted',
-            'status',
-        ]
-        
-    def to_representation(self, obj):
-        ret = super().to_representation(obj)
-        if ret['is_deleted'] : 
-            ret['username'] = 'innouser'
-        return ret
-    
+
 class FollowerSerializer(serializers.ModelSerializer):
     followers_detail = serializers.SerializerMethodField(read_only=True)
     class Meta:
@@ -57,8 +42,9 @@ class FollowerSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'followers_detail']
         
     def get_followers_detail(self, obj):
-        user = obj.user_id.id
-        serializer = FollowersDetailSerializer(user)
+        user = obj.user_id
+        from user.serializers import UserMiniProfileSerializer
+        serializer = UserMiniProfileSerializer(user)
         return serializer.data
     
     def validate(self, attrs):

@@ -23,14 +23,13 @@ load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
+BASE_ENDPOINT = os.getenv('BASE_ENDPOINT')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG')
+DEBUG = bool(int(os.getenv('DEBUG')))
 
 ALLOWED_HOSTS = ['*']
 
@@ -56,6 +55,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_crontab',
     'channels',
+    'drf_yasg',
+
     
     
     # project apps
@@ -77,6 +78,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'innotune.urls'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://innotunes.onrender.com',
+]
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173',
@@ -173,7 +178,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -185,6 +190,7 @@ AUTH_USER_MODEL = 'user.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
@@ -213,3 +219,24 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') 
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+
+# SWAGGER
+SWAGGER_SETTINGS = {
+    'REFETCH_SCHEMA_WITH_AUTH': True,
+    'REFETCH_SCHEMA_ON_LOGOUT' : True,
+    'DISPLAY_OPERATION_ID' : False,
+    # 'OPERATIONS_SORTER' : 'method',
+    # 'TAGS_SORTER': 'alpha',
+    'DEFAULT_API_URL': None,
+    'LOGIN_URL' : 'rest_framework:login',
+    'LOGOUT_URL' : 'rest_framework:logout',
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization (must append Keyword "Token")'
+        }
+    },
+    
+}

@@ -5,6 +5,8 @@ from .models import *
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from user.permissions import *
+from user.models import User
+from user.serializers import UserMiniProfileSerializer
 
 ##### Comment Releated views ########
 class CommentViewset(viewsets.ModelViewSet):
@@ -50,20 +52,25 @@ class FollowUnfollowView(generics.GenericAPIView):
         return Response({'message' : str(e)}, status = 400)
       
 class ListAllFollowersView(generics.ListAPIView):
-    serializer_class = FollowersDetailSerializer
+    serializer_class = UserMiniProfileSerializer
     permission_class = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         id = self.kwargs.get('id')
-        return [follower.user_id for follower in Followers.objects.filter(artist_id = id)]
+        user = User.objects.get(id = id)
+        users =  user.following.values_list('user_id', flat=True)
+        return User.objects.filter(id__in=users)
+
 
 class ListAllFollowingView(generics.ListAPIView):
-    serializer_class = FollowersDetailSerializer
+    serializer_class = UserMiniProfileSerializer
     permission_class = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         id = self.kwargs.get('id')
-        return [follower.artist_id for follower in Followers.objects.filter(user_id = id)]
+        user = User.objects.get(id = id)
+        users =  user.following.values_list('artist_id', flat=True)
+        return User.objects.filter(id__in=users)
 
 ##### Likes Releated views ########
 class AlbumLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):

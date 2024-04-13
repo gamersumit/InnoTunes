@@ -16,7 +16,7 @@ class Comment(models.Model):
 # Follower pattern
 class Followers(models.Model) :
     artist_id = models.ForeignKey(User, related_name = 'following', on_delete = models.CASCADE)
-    user_id = models.ForeignKey(User,related_name = 'follower', on_delete = models.CASCADE)
+    user_id = models.ForeignKey(User, related_name = 'follower', on_delete = models.CASCADE)
     
     class Meta:
         unique_together = ['artist_id', 'user_id']
