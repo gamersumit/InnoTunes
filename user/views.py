@@ -155,6 +155,9 @@ class UserListView(generics.ListAPIView) :
             queryset = queryset.filter(username__icontains=username)
         return queryset
 
+    def get(self, request):
+        return super().get(request)
+
 
 class CurrentUserDetailView(generics.GenericAPIView):
     serializer_class = UserSerializer
