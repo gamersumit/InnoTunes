@@ -33,7 +33,7 @@ class RegisterView(generics.CreateAPIView) :
     )       
     def post(self, request):
         try :
-            print(request.data)
+            (request.data)
             urls = []
             CommonUtils.Update_Create(request, ['avatar'], urls)    
             return CommonUtils.Serialize(request.data, UserSerializer)
@@ -74,7 +74,6 @@ class UpdateUserProfileView(generics.GenericAPIView) :
             return Response({'message' : 'Profile Updated Succesfully', 'data' : serializer.data}, status = 200)
             
         except Exception as e:
-            print(str(e))
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message' : str(e)}, status = 400)
         
@@ -231,19 +230,20 @@ class ArtistDetailView(generics.RetrieveAPIView):
         return super().get(request, pk)
 
 class SendPasswordResetOTPView(generics.UpdateAPIView):
-    serializer_class = EmailSerializer
+    serializer_class = MailOTPSerializer
     queryset = MailOTP.objects.all()
     http_method_names = ['put']
     
     @swagger_auto_schema(tags = ['Auth'], 
     operation_summary= "OTP FOR PASSWORD RESET", operation_description = 'Sends OTP to the provided email in request body', 
+    request_body = EmailSerializer,
     responses={200: openapi.Response('OTP sent to your mail succesfully')})       
     def put(self, request):
         try:
+            email = request.data['email']
             subject = 'Passwrod Reset Verfication Mail'
             body = CommonUtils.otp_generator()
-            email = request.data['email']
-            mail = Mail(subject,f'OTP: {str(body)}', [email])
+            mail = Mail(subject, f'OTP: {str(body)}', [email])
             
             if User.objects.filter(email = email).exists():
                 user = User.objects.get(email = email)
@@ -256,10 +256,8 @@ class SendPasswordResetOTPView(generics.UpdateAPIView):
                     data = {'otp' : body, 'user_id' : user.id}
                     serializer = self.serializer_class(data = data)
                     serializer.is_valid(raise_exception=True)
-                
                 mail.send()
                 serializer.save()
-            
                 return Response({'message' : 'OTP sent to your mail succesfully'}, status=200)
             
             else :
