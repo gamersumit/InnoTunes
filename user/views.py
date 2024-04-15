@@ -17,13 +17,22 @@ from comment.models import SongLikes, AlbumLikes, PlaylistLikes
 from django.core.mail import send_mail
 from django.contrib.auth.views import LogoutView as DRFLogoutView
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # Create your views here.
 
 class RegisterView(generics.CreateAPIView) :
-    serializer_class = UserSerializer
+    serializer_class = RegisterSerializer
     queryset = User.objects.all()
+    parser_classes = (MultiPartParser, FormParser)
 
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "REGISTER", operation_description = 'REGISTER YOURSELF TO USE OUR APPLICATION AND APIS', 
+    responses={200: openapi.Response('Registeration Successfull')},
+    
+    )       
+    
     def post(self, request):
         try :
             print(request.data)
@@ -67,7 +76,11 @@ class UpdateUserProfileView(generics.GenericAPIView) :
         
 #Login View
 class LoginView(generics.GenericAPIView) :
-    serializer_class = UserSerializer
+    serializer_class = LoginSerializer
+
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "LOGIN", operation_description = 'GET LOGIN TOKEN AND USER DASHBOARD DETAILS ON LOGIN VIA EMAIL & PASSWORD', 
+    responses={200: openapi.Response('Login Successfull', LoginResponseSerializer)})       
     def post(self, request, *args, **kwargs) :
         try :
             username = request.data['email']
@@ -98,6 +111,10 @@ class LoginView(generics.GenericAPIView) :
 # logout view // delete token       
 class LogoutView(generics.RetrieveAPIView) :
     permission_classes = [permissions.IsAuthenticated]
+
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "LOGOUT", operation_description = 'Token Deletion', 
+    responses={200: openapi.Response('User Logout Successfully')})       
     def get(self, request):
         try :
             auth_header = request.headers.get('Authorization')
@@ -115,6 +132,9 @@ class LogoutView(generics.RetrieveAPIView) :
             return Response({'status': False, 'message': str(e)}, status = 400)
     
     
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "DELETE ACCOUNT", operation_description = 'Account will not be deleted immediately but will be marked as inactive and an inactive account will be deleted automatically after 30 DAYS if not activated again', 
+    responses={200: openapi.Response('Account is inactive and will be deleted after 30 days')})  
     def delete(self, request, *args, **kwargs) :
         try :
             username = request.data['email']
@@ -128,7 +148,7 @@ class LogoutView(generics.RetrieveAPIView) :
                     user.is_deleted = True
                     user.last_deactivation = timezone.now()
                     user.save()
-                    return Response({'message': 'User is inactive and will deleted after 30 days'}, status = 200)
+                    return Response({'message': 'Account is inactive and will be deleted after 30 days'}, status = 200)
                 return Response({'message': 'User is already inactive'}, status = 400)
             else:
                 return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
@@ -197,9 +217,13 @@ class ArtistDetailView(generics.RetrieveAPIView):
         return super().get(request, pk)
 
 class SendPasswordResetOTPView(generics.UpdateAPIView):
-    serializer_class = MailOTPSerializer
+    serializer_class = EmailSerializer
     queryset = MailOTP.objects.all()
+    http_method_names = ['put']
     
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "OTP FOR PASSWORD RESET", operation_description = 'Sends OTP to the provided email in request body', 
+    responses={200: openapi.Response('OTP sent to your mail succesfully')})       
     def put(self, request):
         try:
             subject = 'Passwrod Reset Verfication Mail'
@@ -222,7 +246,7 @@ class SendPasswordResetOTPView(generics.UpdateAPIView):
                 mail.send()
                 serializer.save()
             
-                return Response({'message' : 'mail sent succesfully'}, status=200)
+                return Response({'message' : 'OTP sent to your mail succesfully'}, status=200)
             
             else :
                 raise Exception('EMAIL NOT FOUND')
@@ -233,6 +257,22 @@ class SendPasswordResetOTPView(generics.UpdateAPIView):
 
 class resetPasswordTokenGenerationView(APIView):
     http_method_names = ['post']
+
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "Get Reset Password Token", operation_description = 'Generates a Token for the User from email and otp sent to their email to allow password resetting', 
+    request_body= EmailAndOTPSerializer,
+    responses={
+            200: openapi.Response(
+                description="Token generated successfully",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'token': openapi.Schema(type=openapi.TYPE_STRING)
+                    }
+                )
+            )
+        }) 
+
     def post(self, request):
         try :
             otp = request.data['otp']
@@ -259,9 +299,14 @@ class resetPasswordTokenGenerationView(APIView):
             return Response({'message': str(e)}, status = 400)
         
 class resetPasswordView(generics.GenericAPIView):
-    serializer_class = UserSerializer
+    serializer_class = PasswordSerializer
     permission_classes = [permissions.IsAuthenticated]
     
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "RESET PASSWORD", operation_description = 'JUST SEND YOUR NEW PASSWORD WITH THE TOKEN IN AUTHORIZATION HEADERS', 
+    responses={
+            200: 'password reset successfully'
+        })
     def patch(self, request):
         try :
             user = UserUtils.getUserFromToken(request.headers['Authorization'].split(" ")[1])
