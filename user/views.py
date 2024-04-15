@@ -30,9 +30,7 @@ class RegisterView(generics.CreateAPIView) :
     @swagger_auto_schema(tags = ['Auth'], 
     operation_summary= "REGISTER", operation_description = 'REGISTER YOURSELF TO USE OUR APPLICATION AND APIS', 
     responses={200: openapi.Response('Registeration Successfull')},
-    
     )       
-    
     def post(self, request):
         try :
             print(request.data)
@@ -48,6 +46,13 @@ class UpdateUserProfileView(generics.GenericAPIView) :
     serializer_class = UserProfileUpdateSerializer
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
+
+    @swagger_auto_schema(
+    operation_summary= "EDIT PROFILE", operation_description = '', 
+    responses={200: openapi.Response('Profile Updated Succesfully', UserProfileUpdateSerializer)},
+    
+    ) 
     def put(self, request):
         try :
             urls = []
@@ -55,7 +60,6 @@ class UpdateUserProfileView(generics.GenericAPIView) :
             user = UserUtils.getUserFromToken(request.headers['Authorization'].split(' ')[1])
             current_avatar = None    
             if request.data.get('avatar', None):
-                print('avatar')
                 CommonUtils.Update_Create(request, ['avatar'], urls) 
                 current_avatar =  user.avatar 
                         
@@ -162,6 +166,12 @@ class UserDetailView(generics.RetrieveAPIView) :
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'id'
 
+    @swagger_auto_schema(
+    operation_summary= "USER DETAILS WITH USER ID", operation_description = 'Provides User\'s details expecting User Id IN URL', 
+    responses={200: openapi.Response('', UserSerializer)})       
+    def get(self, request):
+        return super().get(request)
+
 
 # ArtistSerializer --- to provide list of all artist
 class UserListView(generics.ListAPIView) :
@@ -174,7 +184,11 @@ class UserListView(generics.ListAPIView) :
         if username:
             queryset = queryset.filter(username__icontains=username)
         return queryset
+    
 
+    @swagger_auto_schema(
+    operation_summary= "SEARCH OR ALL USER\'S DETAILS", operation_description = 'Results in User\'s detailed list based on serach with username or select all with pagination', 
+    responses={200: openapi.Response('LIST OF USER\'S', UserSerializer)})       
     def get(self, request):
         return super().get(request)
 
@@ -184,7 +198,7 @@ class CurrentUserDetailView(generics.GenericAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]  
     
-    @swagger_auto_schema(operation_summary= "Authenticated User\'s Detail", operation_description = 'Provides details of current user with mini profile details of its follower and following')       
+    @swagger_auto_schema(operation_summary= "AUTHENTICATED USER\'S DETAILS", operation_description = 'Provides details of current user with mini profile details of its follower and following')       
     def get(self, request):
         try:
             user = request.user
@@ -259,7 +273,7 @@ class resetPasswordTokenGenerationView(APIView):
     http_method_names = ['post']
 
     @swagger_auto_schema(tags = ['Auth'], 
-    operation_summary= "Get Reset Password Token", operation_description = 'Generates a Token for the User from email and otp sent to their email to allow password resetting', 
+    operation_summary= "GET RESET PASSWORD TOKEN", operation_description = 'Generates a Token for the User from email and otp sent to their email to allow password resetting', 
     request_body= EmailAndOTPSerializer,
     responses={
             200: openapi.Response(

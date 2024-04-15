@@ -87,6 +87,7 @@ class UserSerializer(serializers.ModelSerializer):
        return UserUtils.validate_password(value)
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length = 50, required=False)
     class Meta:
         model = User
         fields = [
