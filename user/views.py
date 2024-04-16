@@ -17,16 +17,23 @@ from comment.models import SongLikes, AlbumLikes, PlaylistLikes
 from django.core.mail import send_mail
 from django.contrib.auth.views import LogoutView as DRFLogoutView
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # Create your views here.
 
 class RegisterView(generics.CreateAPIView) :
-    serializer_class = UserSerializer
+    serializer_class = RegisterSerializer
     queryset = User.objects.all()
+    parser_classes = (MultiPartParser, FormParser)
 
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "REGISTER", operation_description = 'REGISTER YOURSELF TO USE OUR APPLICATION AND APIS', 
+    responses={200: openapi.Response('Registeration Successfull')},
+    )       
     def post(self, request):
         try :
-            print(request.data)
+            (request.data)
             urls = []
             CommonUtils.Update_Create(request, ['avatar'], urls)    
             return CommonUtils.Serialize(request.data, UserSerializer)
@@ -39,6 +46,13 @@ class UpdateUserProfileView(generics.GenericAPIView) :
     serializer_class = UserProfileUpdateSerializer
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
+
+    @swagger_auto_schema(
+    operation_summary= "EDIT PROFILE", operation_description = '', 
+    responses={200: openapi.Response('Profile Updated Succesfully', UserProfileUpdateSerializer)},
+    
+    ) 
     def put(self, request):
         try :
             urls = []
@@ -46,7 +60,6 @@ class UpdateUserProfileView(generics.GenericAPIView) :
             user = UserUtils.getUserFromToken(request.headers['Authorization'].split(' ')[1])
             current_avatar = None    
             if request.data.get('avatar', None):
-                print('avatar')
                 CommonUtils.Update_Create(request, ['avatar'], urls) 
                 current_avatar =  user.avatar 
                         
@@ -61,13 +74,16 @@ class UpdateUserProfileView(generics.GenericAPIView) :
             return Response({'message' : 'Profile Updated Succesfully', 'data' : serializer.data}, status = 200)
             
         except Exception as e:
-            print(str(e))
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message' : str(e)}, status = 400)
         
 #Login View
 class LoginView(generics.GenericAPIView) :
-    serializer_class = UserSerializer
+    serializer_class = LoginSerializer
+
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "LOGIN", operation_description = 'GET LOGIN TOKEN AND USER DASHBOARD DETAILS ON LOGIN VIA EMAIL & PASSWORD', 
+    responses={200: openapi.Response('Login Successfull', LoginResponseSerializer)})       
     def post(self, request, *args, **kwargs) :
         try :
             username = request.data['email']
@@ -98,6 +114,10 @@ class LoginView(generics.GenericAPIView) :
 # logout view // delete token       
 class LogoutView(generics.RetrieveAPIView) :
     permission_classes = [permissions.IsAuthenticated]
+
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "LOGOUT", operation_description = 'Token Deletion', 
+    responses={200: openapi.Response('User Logout Successfully')})       
     def get(self, request):
         try :
             auth_header = request.headers.get('Authorization')
@@ -115,6 +135,9 @@ class LogoutView(generics.RetrieveAPIView) :
             return Response({'status': False, 'message': str(e)}, status = 400)
     
     
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "DELETE ACCOUNT", operation_description = 'Account will not be deleted immediately but will be marked as inactive and an inactive account will be deleted automatically after 30 DAYS if not activated again', 
+    responses={200: openapi.Response('Account is inactive and will be deleted after 30 days')})  
     def delete(self, request, *args, **kwargs) :
         try :
             username = request.data['email']
@@ -128,7 +151,7 @@ class LogoutView(generics.RetrieveAPIView) :
                     user.is_deleted = True
                     user.last_deactivation = timezone.now()
                     user.save()
-                    return Response({'message': 'User is inactive and will deleted after 30 days'}, status = 200)
+                    return Response({'message': 'Account is inactive and will be deleted after 30 days'}, status = 200)
                 return Response({'message': 'User is already inactive'}, status = 400)
             else:
                 return Response({'status': False, 'message': 'Invalid credentials'}, status=400)
@@ -142,6 +165,12 @@ class UserDetailView(generics.RetrieveAPIView) :
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'id'
 
+    @swagger_auto_schema(
+    operation_summary= "USER DETAILS WITH USER ID", operation_description = 'Provides User\'s details expecting User Id IN URL', 
+    responses={200: openapi.Response('', UserSerializer)})       
+    def get(self, request):
+        return super().get(request)
+
 
 # ArtistSerializer --- to provide list of all artist
 class UserListView(generics.ListAPIView) :
@@ -154,7 +183,11 @@ class UserListView(generics.ListAPIView) :
         if username:
             queryset = queryset.filter(username__icontains=username)
         return queryset
+    
 
+    @swagger_auto_schema(
+    operation_summary= "SEARCH OR ALL USER\'S DETAILS", operation_description = 'Results in User\'s detailed list based on serach with username or select all with pagination', 
+    responses={200: openapi.Response('LIST OF USER\'S', UserSerializer)})       
     def get(self, request):
         return super().get(request)
 
@@ -164,7 +197,7 @@ class CurrentUserDetailView(generics.GenericAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]  
     
-    @swagger_auto_schema(operation_summary= "Authenticated User\'s Detail", operation_description = 'Provides details of current user with mini profile details of its follower and following')       
+    @swagger_auto_schema(operation_summary= "AUTHENTICATED USER\'S DETAILS", operation_description = 'Provides details of current user with mini profile details of its follower and following')       
     def get(self, request):
         try:
             user = request.user
@@ -199,13 +232,18 @@ class ArtistDetailView(generics.RetrieveAPIView):
 class SendPasswordResetOTPView(generics.UpdateAPIView):
     serializer_class = MailOTPSerializer
     queryset = MailOTP.objects.all()
+    http_method_names = ['put']
     
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "OTP FOR PASSWORD RESET", operation_description = 'Sends OTP to the provided email in request body', 
+    request_body = EmailSerializer,
+    responses={200: openapi.Response('OTP sent to your mail succesfully')})       
     def put(self, request):
         try:
+            email = request.data['email']
             subject = 'Passwrod Reset Verfication Mail'
             body = CommonUtils.otp_generator()
-            email = request.data['email']
-            mail = Mail(subject,f'OTP: {str(body)}', [email])
+            mail = Mail(subject, f'OTP: {str(body)}', [email])
             
             if User.objects.filter(email = email).exists():
                 user = User.objects.get(email = email)
@@ -218,11 +256,9 @@ class SendPasswordResetOTPView(generics.UpdateAPIView):
                     data = {'otp' : body, 'user_id' : user.id}
                     serializer = self.serializer_class(data = data)
                     serializer.is_valid(raise_exception=True)
-                
                 mail.send()
                 serializer.save()
-            
-                return Response({'message' : 'mail sent succesfully'}, status=200)
+                return Response({'message' : 'OTP sent to your mail succesfully'}, status=200)
             
             else :
                 raise Exception('EMAIL NOT FOUND')
@@ -233,6 +269,22 @@ class SendPasswordResetOTPView(generics.UpdateAPIView):
 
 class resetPasswordTokenGenerationView(APIView):
     http_method_names = ['post']
+
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "GET RESET PASSWORD TOKEN", operation_description = 'Generates a Token for the User from email and otp sent to their email to allow password resetting', 
+    request_body= EmailAndOTPSerializer,
+    responses={
+            200: openapi.Response(
+                description="Token generated successfully",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'token': openapi.Schema(type=openapi.TYPE_STRING)
+                    }
+                )
+            )
+        }) 
+
     def post(self, request):
         try :
             otp = request.data['otp']
@@ -259,9 +311,14 @@ class resetPasswordTokenGenerationView(APIView):
             return Response({'message': str(e)}, status = 400)
         
 class resetPasswordView(generics.GenericAPIView):
-    serializer_class = UserSerializer
+    serializer_class = PasswordSerializer
     permission_classes = [permissions.IsAuthenticated]
     
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "RESET PASSWORD", operation_description = 'JUST SEND YOUR NEW PASSWORD WITH THE TOKEN IN AUTHORIZATION HEADERS', 
+    responses={
+            200: 'password reset successfully'
+        })
     def patch(self, request):
         try :
             user = UserUtils.getUserFromToken(request.headers['Authorization'].split(" ")[1])
@@ -275,16 +332,16 @@ class resetPasswordView(generics.GenericAPIView):
             return Response({'message': str(e)}, status = 400)
 
 
-class PatchLogoutView(DRFLogoutView):
-    """
-    Djano 5 does not have GET logout route anymore, so Django Rest Framework UI can't log out.
-    This is a workaround until Django Rest Framework implements POST logout.
-    Details: https://github.com/encode/django-rest-framework/issues/9206
-    """
-    http_method_names = ["get", "post", "options"]
+# class PatchLogoutView(DRFLogoutView):
+#     """
+#     Djano 5 does not have GET logout route anymore, so Django Rest Framework UI can't log out.
+#     This is a workaround until Django Rest Framework implements POST logout.
+#     Details: https://github.com/encode/django-rest-framework/issues/9206
+#     """
+#     http_method_names = ["get", "post", "options"]
 
-    def get(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)        
+#     def get(self, request, *args, **kwargs):
+#         return super().post(request, *args, **kwargs)        
 
         
 # SHORT NAMING :

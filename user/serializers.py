@@ -87,6 +87,7 @@ class UserSerializer(serializers.ModelSerializer):
        return UserUtils.validate_password(value)
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length = 50, required=False)
     class Meta:
         model = User
         fields = [
@@ -161,3 +162,26 @@ class MailOTPSerializer(serializers.ModelSerializer):
         model = MailOTP
         fields = '__all__'
         read_only_fields = ['id', 'updated_at']
+
+
+class RegisterSerializer(UserSerializer):
+    avatar = serializers.ImageField(required=False)
+
+class EmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+class PasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(required=True, max_length = 128)
+class EmailAndOTPSerializer(serializers.Serializer):    
+    email = serializers.EmailField(required=True)
+    otp = serializers.IntegerField(required=True)
+class LoginSerializer(serializers.Serializer):
+    email = serializers.CharField(required=True, max_length = 100)
+    password = serializers.CharField(required=True, max_length = 128)
+
+class LoginResponseSerializer(serializers.Serializer):
+    token = serializers.CharField(max_length = 128)
+    user_info = UserSerializer()
+    liked_songs = serializers.ListField(child=serializers.CharField(max_length=100))  
+    liked_albums = serializers.ListField(child=serializers.CharField(max_length=100))  
+    liked_playlists = serializers.ListField(child=serializers.CharField(max_length=100)) 

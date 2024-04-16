@@ -122,13 +122,7 @@ class CurrentlyPlayingSerializer(serializers.ModelSerializer):
     
     
     def get_song_name(self, obj):
-        print("song name")
-        print(obj)
-        print(obj.song_id.song_name)
         return obj.song_id.song_name
         
     def get_song_picture(self, obj):
-        print("song picture")
-        print(obj)
-        print(obj.song_id.song_picture)
         return obj.song_id.song_picture

@@ -44,13 +44,13 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             friends = await sync_to_async(friends.values_list)('artist_id', flat = True)
             all_friends = await sync_to_async(list)(friends)
             
-            print(all_friends)
+
             for friend in  all_friends :
 
 
-                print(friend)
+
                 groupname = f"group_{friend}"
-                print(groupname)
+                
 
                 await self.channel_layer.group_add(
                     groupname,
@@ -77,7 +77,6 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             
             currently_playing = await sync_to_async(CurrentlyPlaying.objects.filter)(pk__in = friends)
             currently_playing = await sync_to_async(list)(currently_playing)
-            await sync_to_async(print)(currently_playing)
             data = []
             
             for music in currently_playing:
@@ -161,7 +160,6 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
             
         
         except Exception as e:
-            print(str(e))
             await self.send({
                     'type': 'websocket.send',
                     'text': json.dumps({'error' : str(e)}),
@@ -178,26 +176,23 @@ class UserConnectivityStatusConsumer(AsyncConsumer):
 
     async def websocket_disconnect(self, event):
         from music.models import CurrentlyPlaying
-        try : 
-            await self.channel_layer.group_discard(
-                self.groupname,
-                self.channel_name
-            )
-            
-            self.user.status = 'offline'
-            await database_sync_to_async(self.user.save)()
-            
-            await self.channel_layer.group_send(self.groupname, {
-                'type': 'disconnect.user.status',  # event , now we have to write handler for this event
-                'text':  self.user.id,
-                'sender': self.channel_name,
-            })
-            currently_playing = await sync_to_async(CurrentlyPlaying.objects.filter)(user_id = self.user.id)
-            is_currently_playing = await sync_to_async(currently_playing.exists)()
-            
-            if is_currently_playing:
-                await sync_to_async(currently_playing.delete)()
-            raise StopConsumer()
         
-        except Exception as e:
-            print('error: ', str(e))
+        await self.channel_layer.group_discard(
+            self.groupname,
+            self.channel_name
+        )
+        
+        self.user.status = 'offline'
+        await database_sync_to_async(self.user.save)()
+        
+        await self.channel_layer.group_send(self.groupname, {
+            'type': 'disconnect.user.status',  # event , now we have to write handler for this event
+            'text':  self.user.id,
+            'sender': self.channel_name,
+        })
+        currently_playing = await sync_to_async(CurrentlyPlaying.objects.filter)(user_id = self.user.id)
+        is_currently_playing = await sync_to_async(currently_playing.exists)()
+        
+        if is_currently_playing:
+            await sync_to_async(currently_playing.delete)()
+        raise StopConsumer()
