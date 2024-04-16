@@ -332,16 +332,16 @@ class resetPasswordView(generics.GenericAPIView):
             return Response({'message': str(e)}, status = 400)
 
 
-class PatchLogoutView(DRFLogoutView):
-    """
-    Djano 5 does not have GET logout route anymore, so Django Rest Framework UI can't log out.
-    This is a workaround until Django Rest Framework implements POST logout.
-    Details: https://github.com/encode/django-rest-framework/issues/9206
-    """
-    http_method_names = ["get", "post", "options"]
+# class PatchLogoutView(DRFLogoutView):
+#     """
+#     Djano 5 does not have GET logout route anymore, so Django Rest Framework UI can't log out.
+#     This is a workaround until Django Rest Framework implements POST logout.
+#     Details: https://github.com/encode/django-rest-framework/issues/9206
+#     """
+#     http_method_names = ["get", "post", "options"]
 
-    def get(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)        
+#     def get(self, request, *args, **kwargs):
+#         return super().post(request, *args, **kwargs)        
 
         
 # SHORT NAMING :

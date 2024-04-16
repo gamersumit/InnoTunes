@@ -25,7 +25,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
-from user.views import PatchLogoutView
+# from user.views import PatchLogoutView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -47,7 +47,7 @@ urlpatterns = [
 
 
     # rest framework overridden logout
-    path('rest/logout/', PatchLogoutView.as_view(), name="logout"),
+    # path('rest/logout/', PatchLogoutView.as_view(), name="logout"),
     # rest framework inbuilt
     path('rest/', include('rest_framework.urls', namespace='rest_framework')),
    
