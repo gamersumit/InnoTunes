@@ -29,7 +29,7 @@ BASE_ENDPOINT = os.getenv('BASE_ENDPOINT')
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = bool(int(os.getenv('DEBUG')))
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 

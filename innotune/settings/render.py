@@ -1,6 +1,7 @@
 from .base import *
 import dj_database_url
 
+DEBUG = False
 
 DATABASES = {
     'default': dj_database_url.parse(os.environ.get('DATABASE_URL'), conn_max_age=600),
@@ -17,3 +18,5 @@ MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+SECURE_SSL_REDIRECT = True
