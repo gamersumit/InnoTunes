@@ -165,10 +165,10 @@ class UserDetailView(generics.RetrieveAPIView) :
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'id'
 
-    @swagger_auto_schema(
-    operation_summary= "USER DETAILS WITH USER ID", operation_description = 'Provides User\'s details expecting User Id IN URL', 
-    responses={200: openapi.Response('', UserSerializer)})       
-    def get(self, request):
+    # @swagger_auto_schema(
+    # operation_summary= "USER DETAILS WITH USER ID", operation_description = 'Provides User\'s details expecting User Id IN URL', 
+    # responses={200: openapi.Response('', UserSerializer)})       
+    def get(self, request, id):
         return super().get(request)
 
 
