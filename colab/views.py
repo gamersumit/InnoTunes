@@ -27,6 +27,7 @@ class ColabView(generics.CreateAPIView):
         try:  
             urls = []
             CommonUtils.Update_Create(request, ['audio', 'video', 'colab_picture'], urls)
+            request.data['user_id'] = request.user.id
             return CommonUtils.Serialize(request.data, self.serializer_class)
         
         except Exception as e:

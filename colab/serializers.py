@@ -6,7 +6,7 @@ class ColabSerializer(serializers.ModelSerializer):
     song_name = serializers.SerializerMethodField()
     likes = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
-    user_id = serializers.CurrentUserDefault()
+    # user_id = serializers.CurrentUserDefault()
     
     class Meta:
         model = Colab
