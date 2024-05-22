@@ -1,3 +1,4 @@
+from math import perm
 from rest_framework import permissions
 
 from utils.utils import UserUtils
@@ -58,3 +59,12 @@ class IsArtistOwnerOrReadOnly(permissions.DjangoModelPermissions):
         
         except Exception as e:
             return False
+
+
+class IsArtistUser(permissions.IsAuthenticated):
+    """
+    Custom permission to only allow Artist to perform actions.
+    """
+    
+    def has_permission(self, request, view):
+        return super().has_permission(request, view) and request.user.is_artist

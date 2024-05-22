@@ -13,11 +13,16 @@ from django.shortcuts import get_object_or_404
 from music.models import *
 
 from colab import serializers
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
     
 class ColabView(generics.CreateAPIView):
     serializer_class = ColabSerializer
-    permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
     
+    @swagger_auto_schema( 
+    operation_summary= "POST A COLAB", operation_description = 'A INNOTUNE FEATURE: Where User can create/a colab with any song') 
+    # responses={200: openapi.Response('Login Successfull', LoginResponseSerializer)})
     def post(self, request):
         try:  
             urls = []

@@ -6,10 +6,12 @@ class ColabSerializer(serializers.ModelSerializer):
     song_name = serializers.SerializerMethodField()
     likes = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
+    user_id = serializers.CurrentUserDefault()
+    
     class Meta:
         model = Colab
         fields = ['id', 'user_id', 'song_id', 'song_name', 'comments', 'likes','colab_name', 'audio', 'video', 'audio_duration', 'colab_picture', 'created_at']
-        read_only_fields = ['id', 'created_at', 'song_name', 'comments', 'likes']
+        read_only_fields = ['id', 'created_at', 'song_name', 'user_id', 'comments', 'likes']
 
     
     def get_colab_picture(self, obj):
