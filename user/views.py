@@ -29,7 +29,7 @@ class RegisterView(generics.CreateAPIView) :
 
     @swagger_auto_schema(tags = ['Auth'], 
     operation_summary= "REGISTER", operation_description = 'REGISTER YOURSELF TO USE OUR APPLICATION AND APIS', 
-    responses={200: openapi.Response('Registeration Successfull')},
+    responses={200: openapi.Response('Registeration Successful')},
     )       
     def post(self, request):
         try :
@@ -83,7 +83,7 @@ class LoginView(generics.GenericAPIView) :
 
     @swagger_auto_schema(tags = ['Auth'], 
     operation_summary= "LOGIN", operation_description = 'GET LOGIN TOKEN AND USER DASHBOARD DETAILS ON LOGIN VIA EMAIL & PASSWORD', 
-    responses={200: openapi.Response('Login Successfull', LoginResponseSerializer)})       
+    responses={200: openapi.Response('Login Successful', LoginResponseSerializer)})       
     def post(self, request, *args, **kwargs) :
         try :
             username = request.data['email']

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Colab
 from user.models import User
 
+
 class ColabSerializer(serializers.ModelSerializer):
     song_name = serializers.SerializerMethodField()
     likes = serializers.SerializerMethodField()
@@ -26,3 +27,10 @@ class ColabSerializer(serializers.ModelSerializer):
     def get_comments(self, obj):
         return None
 
+
+class PostCollabSerializer(serializers.Serializer):
+    song_id = serializers.CharField(max_length = 32, required = True)
+    audio = serializers.FileField(required = True)
+    video = serializers.FileField(required = False)
+    colab_picture = serializers.ImageField(required = False)
+    colab_name = serializers.CharField(max_length = 32, required = False)

@@ -61,7 +61,7 @@ class IsArtistOwnerOrReadOnly(permissions.DjangoModelPermissions):
             return False
 
 
-class IsArtistUser(permissions.IsAuthenticated):
+class IsArtist(permissions.IsAuthenticated):
     """
     Custom permission to only allow Artist to perform actions.
     """

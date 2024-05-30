@@ -38,10 +38,29 @@ class SongSerializer(serializers.ModelSerializer):
     def get_comments(self, obj):
         return Comment.objects.filter(song_id = obj.id).count()
 
+
+
+
+class PostSongSerializer(serializers.Serializer):
+    # genre choices
+    genre_choices = Genre.objects.all().values_list('genre', 'genre')
+
+
+    song_name = serializers.CharField(max_length = 500, required = True)
+    song_discription = serializers.CharField(max_length = 100000, required = False)
+    song_pitcure = serializers.ImageField(required = False)
+    audio = serializers.FileField(required = True)
+    video = serializers.FileField(required = False)
+    genre = serializers.ChoiceField(choices = genre_choices, required = True)
+    lyrics = serializers.CharField(required = False, max_length = 100000)
+    credits = serializers.CharField(required = False, max_length = 10000)
+
+
+
 # <! ---------- PLAYLIST SERIALIZERS -----------!> 
 class PlaylistSerializer(serializers.ModelSerializer):
-    total_songs = serializers.SerializerMethodField(default = 0)
-    playlist_duration = serializers.SerializerMethodField(default = 0)
+    total_songs = serializers.SerializerMethodField(read_only = True)
+    playlist_duration = serializers.SerializerMethodField(read_only = True)
     
     class Meta:
         model = Playlist
@@ -53,7 +72,23 @@ class PlaylistSerializer(serializers.ModelSerializer):
     
     def get_playlist_duration(self, obj):
         duration = sum([song.song_id.audio_duration for song in (SongsInPlaylist.objects.filter(playlist_id = obj.id))])
-        return duration   
+        return duration if duration is not None else 0
+
+
+
+class PostPlaylistSerializer(serializers.Serializer):
+    playlist_name = serializers.CharField(max_length = 50)
+    playlist_picture = serializers.FileField(required = False)
+    is_global = serializers.BooleanField(default = False, required = False)
+    songs = serializers.ListField(
+        child=serializers.CharField(max_length = 32),
+        allow_empty=True,
+        required=False
+        )
+
+class EditPlaylistSerializer(PostPlaylistSerializer):
+    playlist_name = serializers.CharField(max_length = 50, required = False)
+    
 
 class SongsInPlaylistSerializer(serializers.ModelSerializer):
    
@@ -71,11 +106,12 @@ class RecentSongsSerializer(serializers.ModelSerializer):
             'user_id': {'write_only': True},
         }
         
-    
+class EditRecentSongsSeriailizer(serializers.Serializer):
+    song_id = serializers.CharField(max_length = 32)
 # <! ---------- ALBUM SERIALIZERS -----------!> 
 class AlbumSerializer(serializers.ModelSerializer):
     total_songs = serializers.SerializerMethodField(read_only = True)
-    album_duration = serializers.SerializerMethodField(default = 0)
+    album_duration = serializers.SerializerMethodField(read_only = True)
     
     class Meta:
         model = Album
@@ -87,8 +123,19 @@ class AlbumSerializer(serializers.ModelSerializer):
 
     def get_album_duration(self, obj):
         duration = sum([song.song_id.audio_duration for song in (SongsInAlbum.objects.filter(album_id = obj.id))])
-        return duration
+        return duration if duration is not None else 0
     
+
+
+class PostAlbumSerializer(serializers.Serializer):
+    album_name = serializers.CharField(max_length = 200)
+    album_description = serializers.CharField(max_length = 50000, required = False)
+    album_picture = serializers.FileField(required = False)
+    
+
+class EditAlbumSerializer(PostAlbumSerializer):
+    album_name = serializers.CharField(max_length = 200, required = False)
+
 
 class SongsInAlbumSerializer(serializers.ModelSerializer):
 
