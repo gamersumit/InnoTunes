@@ -22,6 +22,7 @@ class PostColabView(generics.CreateAPIView):
     parser_classes = (MultiPartParser, FormParser)
 
     @swagger_auto_schema( 
+    tags = ['Colab'],
     operation_summary= "POST A COLAB", 
     operation_description 
     = 'A INNOTUNE FEATURE: Where User can collaborate with any song',
@@ -59,6 +60,7 @@ class GetColabsView(ListAPIView):
         
     
     @swagger_auto_schema( 
+    tags = ['Colab'],
     operation_summary= "VIEW COLABS", 
     operation_description 
     = 'Get all the collabs for a user or get all the collabs for a song. Just specify your choice in "field" parameter',
@@ -93,6 +95,7 @@ class UserDeleteColabView(generics.DestroyAPIView):
         return Colab.objects.filter(user_id=self.request.user.id)
        
     @swagger_auto_schema( 
+    tags = ['Colab'],
     operation_summary= "OWN COLLAB DELETION", 
     operation_description 
     = 'A User can delete its own collab and also the song artist can delete the collabs but this api only allows users to delete their own collabs'
@@ -116,7 +119,8 @@ class ArtistDeleteColabView(generics.DestroyAPIView):
         except :
             return Colab.objects.none()
         
-    @swagger_auto_schema( 
+    @swagger_auto_schema(
+    tags = ['Colab'],         
     operation_summary= "COLAB DELETION FOR SONG's ARTIST", 
     operation_description 
     = 'A User can delete its own collab and also the song artist can delete the collabs and this api  allows artists to delete collabs on their songs'

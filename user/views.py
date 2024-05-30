@@ -49,6 +49,7 @@ class UpdateUserProfileView(generics.GenericAPIView) :
     parser_classes = (MultiPartParser, FormParser)
 
     @swagger_auto_schema(
+    tags = ['User'],
     operation_summary= "EDIT PROFILE", operation_description = '', 
     responses={200: openapi.Response('Profile Updated Succesfully', UserProfileUpdateSerializer)},
     
@@ -166,6 +167,7 @@ class UserDetailView(generics.RetrieveAPIView) :
     lookup_field = 'id'
 
     @swagger_auto_schema(
+    tags = ['User'],
     operation_summary= "USER DETAILS WITH USER ID", operation_description = 'Provides User\'s details expecting User Id IN URL', 
     responses={200: openapi.Response('', UserSerializer)})       
     def get(self, request, id):
@@ -186,6 +188,7 @@ class UserListView(generics.ListAPIView) :
     
 
     @swagger_auto_schema(
+    tags = ['User'],
     operation_summary= "SEARCH OR ALL USER\'S DETAILS", operation_description = 'Results in User\'s detailed list based on serach with username or select all with pagination', 
     responses={200: openapi.Response('LIST OF USER\'S', UserSerializer)})       
     def get(self, request):
@@ -197,7 +200,10 @@ class CurrentUserDetailView(generics.GenericAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]  
     
-    @swagger_auto_schema(operation_summary= "AUTHENTICATED USER\'S DETAILS", operation_description = 'Provides details of current user with mini profile details of its follower and following')       
+    @swagger_auto_schema(
+            tags = ['User'],
+            operation_summary= "AUTHENTICATED USER\'S DETAILS", 
+            operation_description = 'Provides details of current user with mini profile details of its follower and following')       
     def get(self, request):
         try:
             user = request.user
