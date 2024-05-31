@@ -33,7 +33,6 @@ class RegisterView(generics.CreateAPIView) :
     )       
     def post(self, request):
         try :
-            (request.data)
             urls = []
             CommonUtils.Update_Create(request, ['avatar'], urls)    
             return CommonUtils.Serialize(request.data, UserSerializer)
@@ -56,7 +55,6 @@ class UpdateUserProfileView(generics.GenericAPIView) :
     def put(self, request):
         try :
             urls = []
-
             user = UserUtils.getUserFromToken(request.headers['Authorization'].split(' ')[1])
             current_avatar = None    
             if request.data.get('avatar', None):
