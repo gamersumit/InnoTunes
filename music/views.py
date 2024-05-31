@@ -87,7 +87,7 @@ class GuestUserSongListView(ListAPIView):
         = 'RETURNS A LIST OF FEW SPECIFIC SONGS AVAILABLE FOR EVERYONE',
    )       
     def get(self, request, *args, **kwargs):
-        return super().get(self, request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 # list all songs
 
@@ -105,7 +105,7 @@ class ArtistSongListView(ListAPIView):
         = 'RETURNS A PAGINATED LIST OF ALL SONGS BELONGS TO AN ARTIST',
    )    
     def get(self, request, *args, **kwargs):
-        return super().get(self, request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 class PlaylistSongListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -144,7 +144,7 @@ class LikedSongsListView(ListAPIView):
         = 'RETURNS A PAGINATED LIST OF ALL SONGS LIKED BY A USER. ANYONE CAN VIEW ANYONES LIKED SONGS.',
    )    
     def get(self, request, *args, **kwargs):
-        return super().get(self, request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 class AlbumSongListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -510,7 +510,7 @@ class RecentSongsListView(generics.ListAPIView):
     responses={200: openapi.Response('Album Deatils', AlbumSerializer)},
    )
     def get(self, request, *args, **kwargs):
-        return super().get(self, request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 class LikedPlaylistListView(generics.ListAPIView):
     serializer_class = PlaylistSerializer
@@ -528,7 +528,7 @@ class LikedPlaylistListView(generics.ListAPIView):
         = 'RETURNS A PAGINATED LIST OF ALL THE PLAYLISTS LIKED BY THE USER',
    )  
     def get(self, request, *args, **kwargs):
-        return super().get(self, request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 class LikedAlbumListView(generics.ListAPIView):
     serializer_class = AlbumSerializer
@@ -547,7 +547,7 @@ class LikedAlbumListView(generics.ListAPIView):
         = 'RETURNS A PAGINATED LIST OF ALL THE ALBUMS LIKED BY THE USER',
    )  
     def get(self, request, *args, **kwargs):
-        return super().get(self, request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
 class ListUserPlaylistView(generics.ListAPIView):
@@ -563,7 +563,7 @@ class ListUserPlaylistView(generics.ListAPIView):
         = 'RETURNS A PAGINATED LIST OF ALL THE PLAYLISTS WITH USER\'s ID IN URL',
    )  
     def get(self, request, *args, **kwargs):
-        return super().get(self, request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 class ListUserAndLikedPlaylist(generics.ListAPIView): 
     serializer_class = PlaylistSerializer
@@ -583,7 +583,7 @@ class ListUserAndLikedPlaylist(generics.ListAPIView):
         = 'RETURNS A PAGINATED LIST OF ALL THE PLAYLISTS OF CURRENT USER (LIKED + CREATED)',
    )  
     def get(self, request, *args, **kwargs):
-        return super().get(self, request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
         
 class GnereListView(generics.ListAPIView):
@@ -598,4 +598,4 @@ class GnereListView(generics.ListAPIView):
         = 'RETURNS A PAGINATED LIST OF ALL THE GENRES',
    )  
     def get(self, request, *args, **kwargs):
-        return super().get(self, request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)

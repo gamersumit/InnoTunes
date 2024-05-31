@@ -66,7 +66,7 @@ class SongCommentsListView(generics.ListAPIView):
     @swagger_auto_schema(tags = ['Reach'], 
     operation_summary= "VIEW COMMENTS ON A SONG", operation_description = 'Return a paginated list of all the comments on a single song.')
     def get(self, request, *args, **kwargs):
-       return  super().get(self, request, *args, **kwargs)
+       return  super().get(request, *args, **kwargs)
 ##### FOllower Releated views ########
 class FollowUnfollowView(generics.GenericAPIView):
     queryset = Followers.objects.all()
@@ -124,7 +124,7 @@ class ListAllFollowersView(generics.ListAPIView):
     @swagger_auto_schema(tags = ['Reach'], 
     operation_summary= "FOLLOWERS LIST", operation_description = 'Return a paginated list of all the followers of a user by its user-id')
     def get(self, request, *args, **kwargs):
-       return  super().get(self, request, *args, **kwargs)
+       return  super().get(request, *args, **kwargs)
 
 class ListAllFollowingView(generics.ListAPIView):
     serializer_class = UserMiniProfileSerializer
@@ -140,7 +140,7 @@ class ListAllFollowingView(generics.ListAPIView):
     @swagger_auto_schema(tags = ['Reach'], 
     operation_summary= "FOLLOWING LIST", operation_description = 'Return a paginated list of all the user, followed a user by user-id')
     def get(self, request, *args, **kwargs):
-       return  super().get(self, request, *args, **kwargs)
+       return  super().get( request, *args, **kwargs)
 
 ##### Likes Releated views ########
 class AlbumLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
@@ -183,7 +183,7 @@ class AlbumLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     )
     def post(self, request, *args, **kwargs):
       request.data['user_id'] = request.user.id
-      return super().post(self, request, *args, **kwargs)
+      return super().post(request, *args, **kwargs)
 
 class PlaylistLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     queryset = PlaylistLikes.objects.all()
@@ -226,7 +226,7 @@ class PlaylistLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     )
     def post(self, request, *args, **kwargs):
       request.data['user_id'] = request.user.id
-      return super().post(self, request, *args, **kwargs)
+      return super().post(request, *args, **kwargs)
       
       
 class SongLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
@@ -270,4 +270,4 @@ class SongLikeDislikeView(generics.CreateAPIView, generics.DestroyAPIView):
     )
     def post(self, request, *args, **kwargs):
       request.data['user_id'] = request.user.id
-      return super().post(self, request, *args, **kwargs)
+      return super().post(request, *args, **kwargs)
