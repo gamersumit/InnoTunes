@@ -33,7 +33,6 @@ class RegisterView(generics.CreateAPIView) :
     )       
     def post(self, request):
         try :
-            (request.data)
             urls = []
             CommonUtils.Update_Create(request, ['avatar'], urls)    
             return CommonUtils.Serialize(request.data, UserSerializer)
