@@ -30,6 +30,7 @@ from django.conf.urls.static import static
 schema_view = get_schema_view(
     openapi.Info(
         title="Innotune Music APIs",
+        description='These are all the apis available to work with innotune. The backend also includes websockets to provide real-time updates on friends activities, such as their online/offline status and the songs they are currently listening to. However, since swagger does not support websocket documentation, these websocket endpoints are not included here. the apis cover various functionalities, including song management, user interactions, and playlist operations.\n\nSUPPORT: sumitaggarwal12022002@gmail.com',  
         default_version="v1",
     ),
     url = settings.BASE_ENDPOINT,
