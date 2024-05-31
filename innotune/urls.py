@@ -29,7 +29,7 @@ from django.conf.urls.static import static
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Mock Test APIs",
+        title="Innotune Music APIs",
         default_version="v1",
     ),
     url = settings.BASE_ENDPOINT,

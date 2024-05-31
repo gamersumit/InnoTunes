@@ -222,7 +222,7 @@ class ArtistListView(generics.ListAPIView) :
     pagination_class = PageNumberPagination
     pagination_class.page_size = 30
 
-    @swagger_auto_schema(tags = ['Artist'], operation_summary= "All Singers Details", operation_description = 'Provides details of all the artists with their released Albums details and mini profile details of their follower and following')
+    @swagger_auto_schema(tags = ['Artist'], operation_summary= "ALL SINGER DETAILS", operation_description = 'Provides details of all the artists with their released Albums details and mini profile details of their follower and following')
     def get(self, request):
         return super().get(request)
 
@@ -231,7 +231,7 @@ class ArtistDetailView(generics.RetrieveAPIView):
     queryset = User.objects.filter(is_artist = True)
     permission_classes = [permissions.IsAuthenticated]
    
-    @swagger_auto_schema(tags = ['Artist'], operation_summary= "Artist Details by Artist id", operation_description = 'Provides details of single artists with his/her released Albums details and mini profile details of their follower and following')
+    @swagger_auto_schema(tags = ['Artist'], operation_summary= "ARTIST DETAILS BY ID", operation_description = 'Provides details of single artists with his/her released Albums details and mini profile details of their follower and following')
     def get(self, request, pk):
         return super().get(request, pk)
 
