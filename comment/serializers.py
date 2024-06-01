@@ -27,7 +27,14 @@ class SongCommentSerializer(serializers.ModelSerializer):
         user = obj.user_id
         from user.serializers import UserMiniProfileSerializer
         return UserMiniProfileSerializer(user).data
-        
+
+
+class EditCommentSerializer(serializers.Serializer):
+    description = serializers.CharField(max_length = 1000000)
+    
+class PostCommentSerializer(EditCommentSerializer):
+    song_id = serializers.CharField(max_length = 32)
+
 
 class FollowerSerializer(serializers.ModelSerializer):
     followers_detail = serializers.SerializerMethodField(read_only=True)

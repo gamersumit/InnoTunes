@@ -16,4 +16,6 @@ urlpatterns = [
     path('mail/password/otp/', views.send_otp_password_reset_view, name = 'reset_password_otp_mail'),
     path('reset/password/token/', views.reset_password_token_generation_view, name = 'reset_password_token'),
     path('reset/password/', views.reset_password, name = 'reset_password'),
+    path('verify/mail/', views.mail_verification, name = 'verify-mail'),
+    path('verification/link/', views.resend_mail_verification_link, name = 'send-verification-link'),
 ]

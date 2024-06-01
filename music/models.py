@@ -18,6 +18,7 @@ class Playlist(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     playlist_name = models.CharField(max_length=50)
     playlist_picture = models.URLField(blank=True, null=True)
+    is_global = models.BooleanField(default=False)
     
     class Meta:
         unique_together = ['user_id', 'playlist_name']

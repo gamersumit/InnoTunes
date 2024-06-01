@@ -29,7 +29,7 @@ BASE_ENDPOINT = os.getenv('BASE_ENDPOINT')
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = bool(int(os.getenv('DEBUG')))
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -226,16 +226,16 @@ SWAGGER_SETTINGS = {
     'REFETCH_SCHEMA_WITH_AUTH': True,
     'REFETCH_SCHEMA_ON_LOGOUT' : True,
     'DISPLAY_OPERATION_ID' : False,
-    # 'OPERATIONS_SORTER' : 'method',
-    # 'TAGS_SORTER': 'alpha',
+    'OPERATIONS_SORTER' : 'method',
+    'TAGS_SORTER': 'alpha',
     'DEFAULT_API_URL': None,
     'LOGIN_URL' : 'rest_framework:login',
     'LOGOUT_URL' : 'rest_framework:logout',
     'SECURITY_DEFINITIONS': {
-        'api_key': {
+        'token': {
             'type': 'apiKey',
             'in': 'header',
-            'name': 'Authorization (must append Keyword "Token")'
+            'name': 'Authorization'
         }
     },
     

@@ -1,5 +1,5 @@
 
-from .serializers import ColabSerializer
+from .serializers import ColabSerializer, PostCollabSerializer
 from rest_framework import status, generics
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
@@ -13,16 +13,28 @@ from django.shortcuts import get_object_or_404
 from music.models import *
 
 from colab import serializers
-    
-class ColabView(generics.CreateAPIView):
-    serializer_class = ColabSerializer
-    permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
-    
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework.parsers import MultiPartParser, FormParser
+class PostColabView(generics.CreateAPIView):
+    serializer_class = PostCollabSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
+
+    @swagger_auto_schema( 
+    tags = ['Colab'],
+    operation_summary= "POST A COLAB", 
+    operation_description 
+    = 'A INNOTUNE FEATURE: Where User can collaborate with any song',
+    responses={200: openapi.Response(
+        'Login Successfull', ColabSerializer)}
+    ) 
     def post(self, request):
         try:  
             urls = []
             CommonUtils.Update_Create(request, ['audio', 'video', 'colab_picture'], urls)
-            return CommonUtils.Serialize(request.data, self.serializer_class)
+            request.data['user_id'] = request.user.id
+            return CommonUtils.Serialize(request.data, ColabSerializer)
         
         except Exception as e:
             CommonUtils.delete_media_from_cloudinary(urls)
@@ -45,8 +57,23 @@ class GetColabsView(ListAPIView):
 
         except Exception as e:
             return Colab.objects.none()
+        
     
-    
+    @swagger_auto_schema( 
+    tags = ['Colab'],
+    operation_summary= "VIEW COLABS", 
+    operation_description 
+    = 'Get all the collabs for a user or get all the collabs for a song. Just specify your choice in "field" parameter',
+    manual_parameters=[
+            openapi.Parameter(
+                'field',
+                openapi.IN_PATH,
+                description="Field parameter",
+                type=openapi.TYPE_STRING,
+                enum=["song", "user"],  # Specify your choices here
+            ),
+        ]
+    ) 
     def get(self, request, *args, **kwargs):
         try:
             queryset = self.get_queryset()
@@ -60,22 +87,43 @@ class GetColabsView(ListAPIView):
             return Response({'status': False, 'message': str(e)}, status=400)
     
 class UserDeleteColabView(generics.DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsUserOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
     lookup_field = 'pk' 
     
+
     def get_queryset(self):
-        try:
-            return Colab.objects.filter(user_id=self.request.data['user_id'])
-        except Exception as e:
-            return []        
+        return Colab.objects.filter(user_id=self.request.user.id)
+       
+    @swagger_auto_schema( 
+    tags = ['Colab'],
+    operation_summary= "OWN COLLAB DELETION", 
+    operation_description 
+    = 'A User can delete its own collab and also the song artist can delete the collabs but this api only allows users to delete their own collabs'
+    ) 
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)        
 
 class ArtistDeleteColabView(generics.DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsArtistOwnerOrReadOnly]
+
+    permission_classes = [IsAuthenticated]
     lookup_field = 'pk'  
     
     def get_queryset(self):
-        if Colab.objects.filter(id = self.kwargs['pk']).exists():
+        try :
             song = Colab.objects.get(id = self.kwargs['pk']).song_id
-            if song.artist_id == self.request.data['artist_id'] :
-                return Colab.objects.filter(song_id = song.id)
-        return []
+            if self.request.user != song.artist_id :
+                return Colab.objects.none()
+        
+            return Colab.objects.filter(song_id = song.id)
+        
+        except :
+            return Colab.objects.none()
+        
+    @swagger_auto_schema(
+    tags = ['Colab'],         
+    operation_summary= "COLAB DELETION FOR SONG's ARTIST", 
+    operation_description 
+    = 'A User can delete its own collab and also the song artist can delete the collabs and this api  allows artists to delete collabs on their songs'
+    ) 
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
