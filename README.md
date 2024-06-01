@@ -42,8 +42,8 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 <p align="center">
   <img src="https://static.djangoproject.com/img/logos/django-logo-positive.svg" alt="Django" width="50"/>
   <img src="https://www.postgresql.org/media/img/about/press/elephant.png" alt="PostgreSQL" width="50"/>
-  <img src="https://www.vectorlogo.zone/logos/websockets/websockets-icon.svg" alt="WebSockets" width="50"/>
-  <img src="https://res.cloudinary.com/cloudinary/image/upload/v1627981345/logo/cloudinary_icon_blue_2020_rgb_1x_c4d9129ca4.svg" alt="Cloudinary" width="50"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/WebSockets_Logo.svg" alt="WebSockets" width="50"/>
+  <img src="https://res.cloudinary.com/cloudinary/image/upload/v1531592180/cloudinary_icon.png" alt="Cloudinary" width="50"/>
   <img src="https://static1.smartbear.co/swagger/media/assets/swagger_logo.svg" alt="Swagger" width="50"/>
 </p>
 
@@ -53,10 +53,10 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 - **Version Control**: Git, GitHub, GitDesktop
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/vscode/vscode.png" alt="VSCode" width="50"/>
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/git/git.png" alt="Git" width="50"/>
-  <img src="https://avatars.githubusercontent.com/u/9919?s=200&v=4" alt="GitHub" width="50"/>
-  <img src="https://avatars.githubusercontent.com/u/16530019?s=200&v=4" alt="GitHub Desktop" width="50"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Visual_Studio_Code_logo.png" alt="VSCode" width="50"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Git-logo.svg" alt="Git" width="50"/>
+  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" width="50"/>
+  <img src="https://desktop.github.com/images/desktop-icon.svg" alt="GitHub Desktop" width="50"/>
 </p>
 
 
