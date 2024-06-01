@@ -93,14 +93,18 @@ The API is documented using Swagger. Once the server is running, you can access 
 
 Here are some screenshots to give you a visual overview of the InnoTune backend.
 
-![Screenshot 1](screenshots/Screenshot1.png)
-![Screenshot 2](screenshots/Screenshot2.png)
-![Screenshot 3](screenshots/Screenshot3.png)
-![Screenshot 4](screenshots/Screenshot4.png)
-![Screenshot 5](screenshots/Screenshot5.png)
-![Screenshot 6](screenshots/Screenshot6.png)
-![Screenshot 7](screenshots/Screenshot7.png)
-![Screenshot 8](screenshots/Screenshot8.png)
+<p align="center">
+  <img src="screenshots/Screenshot1.png" alt="Screenshot 1" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot2.png" alt="Screenshot 2" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot3.png" alt="Screenshot 3" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot4.png" alt="Screenshot 4" width="200" style="margin: 10px;"/>
+</p>
+<p align="center">
+  <img src="screenshots/Screenshot5.png" alt="Screenshot 5" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot6.png" alt="Screenshot 6" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot7.png" alt="Screenshot 7" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot8.png" alt="Screenshot 8" width="200" style="margin: 10px;"/>
+</p>
 
 ## Frontend Link
 
