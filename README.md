@@ -86,4 +86,21 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 
 ## API Documentation
 
-The API is documented using Swagger. Once the server is running, you can access the documentation at:
+The API is documented using Swagger. Once the server is running, you can access the documentation at BASE_ENDPOINT.
+
+
+## Screenshots
+
+Here are some screenshots to give you a visual overview of the InnoTune backend.
+
+![Screenshot 1](screenshots/screenshot1.png)
+![Screenshot 2](screenshots/screenshot2.png)
+
+## Frontend Link
+
+The frontend of the InnoTune project is handled by another team and can be accessed [here](https://innotune.vercel.app).
+
+## Mobile APK
+
+You can download the InnoTune mobile application APK [here](link-to-your-apk-file).
+
