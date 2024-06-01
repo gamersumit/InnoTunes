@@ -1,12 +1,14 @@
+import secrets
 from django.contrib.auth.hashers import make_password
 import random
+from django.urls import reverse
 from rest_framework.authtoken.models import Token
 from cloudinary import uploader
 from rest_framework.response import Response
 import os
 import cloudinary
 import cloudinary.api
-from user.models import User
+from user.models import MailVerificationToken, User
 import logging 
 from  rest_framework import serializers
 from django.core.mail import send_mail
@@ -52,7 +54,50 @@ class UserUtils :
         except Exception as e :
             raise Exception(str(e))
         
+    @staticmethod
+    def sendMailVerificationLink(email):
+        token = secrets.token_urlsafe(32)
+        user = User.objects.get(email = email)
+        base_endpoint = os.getenv('BASE_ENDPOINT')
+        print(os.getenv('BASE_ENDPOINT'))
+        verification_link = base_endpoint+'user/verify/mail/'+f'?token={token}'
+        print("link ======>", verification_link)
+        body = f"""
+Dear {user.username},
 
+Thank you for registering with Innotune. Please click the link below to verify your email address:
+
+{verification_link}
+
+If you did not create an account with us, please ignore this email.
+
+Thank you,
+Innotune Team
+        """         
+        try :
+            print("link ===>", verification_link)
+            obj = MailVerificationToken.objects.filter(user_id = user).first()
+            
+            print("obj ===>", obj)
+            if obj:
+                obj.token = token  
+                
+            else:    
+                obj = MailVerificationToken(user_id = user, token=token)
+            
+            obj.save()
+            print("send =======")
+
+            message = Mail(
+                subject = 'Please Verify Your Email Address',
+                body = body,
+                emails = [email]
+                )
+            message.send()
+            
+        except Exception as e:
+            print("error ===> ", str(e))
+            pass
 class CommonUtils:
     
     @staticmethod

@@ -35,12 +35,46 @@ class RegisterView(generics.CreateAPIView) :
         try :
             urls = []
             CommonUtils.Update_Create(request, ['avatar'], urls)    
-            return CommonUtils.Serialize(request.data, UserSerializer)
-            
+            response = CommonUtils.Serialize(request.data, UserSerializer)
+            if response.status_code == 200 :
+                UserUtils.sendMailVerificationLink(email = request.data['email'])
+            return response    
+        
         except Exception as e:
             CommonUtils.delete_media_from_cloudinary(urls)
             return Response({'message' : str(e)}, status = 400)
+
+class ResendEmailVerificationLink(generics.CreateAPIView):
+    # serializer_class = None
+    queryset = User.objects.all()
+
+    @swagger_auto_schema(tags = ['Auth'], 
+    operation_summary= "SEND VERIFICATION LINK", operation_description = 'RESEND ACCOUNT VERIFICATION LINK', 
+    responses={200: 'Link Sent to Registered email.'},
+    request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        )
+    ) 
+    def post(self, request):
+        try : 
+            email = request.data['email']
+
+            user = User.objects.filter(email = email).first() 
+           
+            if not user:    
+                raise Exception('Invalid Email ID')
+            
+            if user.is_verified:
+                raise Exception('User Already Verified')
+
+            UserUtils.sendMailVerificationLink(email = email)
+            return Response({'message' : 'Link Sent to Registered email.'}, status=200)
         
+        except Exception as e:
+            return Response({'message' : str(e)}, status=400)
 class UpdateUserProfileView(generics.GenericAPIView) :
     serializer_class = UserProfileUpdateSerializer
     queryset = User.objects.all()
@@ -337,6 +371,45 @@ class resetPasswordView(generics.GenericAPIView):
             return Response({'message': str(e)}, status = 400)
 
 
+
+class MailVerifyView(generics.GenericAPIView):
+    http_method_names = ['get']
+    queryset = None
+    pagination_class = None
+    @swagger_auto_schema(
+        tags = ['Auth'], 
+        operation_summary= "VERIFY EMAIL",
+        operation_description = 'VERIFY YOUR MAIL BY CLICKING LINK SENT TO YOUR REGISTERED EMAIL', 
+        responses={200: 'Verification Successful'},
+        manual_parameters=[
+            openapi.Parameter(
+                'token',
+                openapi.IN_QUERY,
+                description="Verification Token",
+                type=openapi.TYPE_STRING,  # Specify your choices here
+            ),
+        ],
+        ) 
+    def get(self, request, *args, **kwargs):
+        try : 
+            token = request.GET['token']
+            token = MailVerificationToken.objects.filter(token = token).first()
+            if not token:
+                raise Exception("Invalid Link")
+
+            if token.isExpired():
+                raise Exception("Link Expired")  
+
+            user = token.user_id
+            user.is_verified = True
+            user.save()
+            token.delete()
+            return  Response({'message' : 'Verification Successful'}, status=200)
+        
+        except Exception as e:
+            return Response({'message' : str(e)}, status=400)
+
+        
 # class PatchLogoutView(DRFLogoutView):
 #     """
 #     Djano 5 does not have GET logout route anymore, so Django Rest Framework UI can't log out.
@@ -347,6 +420,7 @@ class resetPasswordView(generics.GenericAPIView):
 
 #     def get(self, request, *args, **kwargs):
 #         return super().post(request, *args, **kwargs)        
+
 
         
 # SHORT NAMING :
@@ -362,5 +436,7 @@ artist_detail_view = ArtistDetailView.as_view()
 send_otp_password_reset_view = SendPasswordResetOTPView.as_view()
 reset_password_token_generation_view = resetPasswordTokenGenerationView.as_view()
 reset_password = resetPasswordView.as_view()
+mail_verification = MailVerifyView.as_view()
+resend_mail_verification_link = ResendEmailVerificationLink.as_view()
 
 
