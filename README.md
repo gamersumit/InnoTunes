@@ -64,13 +64,13 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 
 1. **Clone the Repository**
     ```sh
-    git clone https://github.com/yourusername/innotune-backend.git
-    cd innotune-backend
+    git clone https://github.com/gamersumit/InnoTunes.git
+    cd innotune
     ```
 
 2. **Set Up Virtual Environment**
     ```sh
-    python -m venv env
+    python3 -m venv env
     source env/bin/activate  # On Windows use `env\Scripts\activate`
     ```
 
@@ -82,7 +82,7 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 4. **Set Up Database**
     - Make sure PostgreSQL is installed and running.
     - Create a database and update the `DATABASES` setting in `settings.py`.
-
+  
 5. **Run Migrations**
     ```sh
     python manage.py migrate
@@ -95,7 +95,7 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 
 ## API Documentation
 
-The API is documented using Swagger. Once the server is running, you can access the documentation at BASE_ENDPOINT.
+The API is documented using Swagger. Once the server is running, you can access the documentation at your BASE_ENDPOINT or [here](https://innotunes.onrender.com).
 
 
 ## Screenshots
@@ -106,7 +106,7 @@ Here are some screenshots to give you a visual overview of the InnoTune backend.
   <img src="screenshots/Screenshot1.png" alt="Screenshot 1" width="200" style="margin: 10px;"/>
   <img src="screenshots/Screenshot2.png" alt="Screenshot 2" width="200" style="margin: 10px;"/>
   <img src="screenshots/Screenshot3.png" alt="Screenshot 3" width="200" style="margin: 10px;"/>
-  <img src="screenshots/Screenshot4.png" alt="Screenshot 4" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot4.png" alt="Screenshot 4" width="200" style="margin: 10px;"/> 
 </p>
 <p align="center">
   <img src="screenshots/Screenshot5.png" alt="Screenshot 5" width="200" style="margin: 10px;"/>
