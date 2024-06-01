@@ -40,11 +40,11 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 - **API Documentation**: Swagger
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/django/django.png" alt="Django" width="50"/>
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/postgresql/postgresql.png" alt="PostgreSQL" width="50"/>
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/websockets/websockets.png" alt="WebSockets" width="50"/>
+  <img src="https://static.djangoproject.com/img/logos/django-logo-positive.svg" alt="Django" width="50"/>
+  <img src="https://www.postgresql.org/media/img/about/press/elephant.png" alt="PostgreSQL" width="50"/>
+  <img src="https://www.vectorlogo.zone/logos/websockets/websockets-icon.svg" alt="WebSockets" width="50"/>
   <img src="https://res.cloudinary.com/cloudinary/image/upload/v1627981345/logo/cloudinary_icon_blue_2020_rgb_1x_c4d9129ca4.svg" alt="Cloudinary" width="50"/>
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/swagger/swagger.png" alt="Swagger" width="50"/>
+  <img src="https://static1.smartbear.co/swagger/media/assets/swagger_logo.svg" alt="Swagger" width="50"/>
 </p>
 
 ## Tools Used
