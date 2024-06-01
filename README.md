@@ -39,7 +39,7 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 - **Task Scheduling**: Cronjobs
 - **API Documentation**: Swagger
 
-<p align="center">
+<p align="left">
   <img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white" alt="Django" />
   <img src="https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/WebSockets-000000?style=for-the-badge&logo=websocket&logoColor=white" alt="WebSockets" />
@@ -52,7 +52,7 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 - **IDE**: Visual Studio Code
 - **Version Control**: Git, GitHub, GitDesktop
 
-<p align="center">
+<p align="left">
   <img src="https://img.shields.io/badge/VSCode-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" alt="VSCode" />
   <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git" />
   <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
