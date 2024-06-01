@@ -90,6 +90,7 @@ class UpdateUserProfileView(generics.GenericAPIView) :
     def put(self, request):
         try :
             urls = []
+
             user = UserUtils.getUserFromToken(request.headers['Authorization'].split(' ')[1])
             current_avatar = None    
             if request.data.get('avatar', None):
@@ -202,10 +203,6 @@ class UserDetailView(generics.RetrieveAPIView) :
     tags = ['User'],
     operation_summary= "USER DETAILS WITH USER ID", operation_description = 'Provides User\'s details expecting User Id IN URL', 
     responses={200: openapi.Response('', UserSerializer)})       
-    def get(self, request, id):
-    # @swagger_auto_schema(
-    # operation_summary= "USER DETAILS WITH USER ID", operation_description = 'Provides User\'s details expecting User Id IN URL', 
-    # responses={200: openapi.Response('', UserSerializer)})       
     def get(self, request, id):
         return super().get(request)
 
