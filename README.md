@@ -38,18 +38,27 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 - **Media Storage**: Cloudinary
 - **Task Scheduling**: Cronjobs
 - **API Documentation**: Swagger
-- **Version Control**: Git, GitHub, GitDesktop
-- **IDE**: Visual Studio Code
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/github/explore/main/topics/django/django.png" alt="Django" width="50"/>
   <img src="https://raw.githubusercontent.com/github/explore/main/topics/postgresql/postgresql.png" alt="PostgreSQL" width="50"/>
   <img src="https://raw.githubusercontent.com/github/explore/main/topics/websockets/websockets.png" alt="WebSockets" width="50"/>
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/cloudinary/cloudinary.png" alt="Cloudinary" width="50"/>
+  <img src="https://res.cloudinary.com/cloudinary/image/upload/v1627981345/logo/cloudinary_icon_blue_2020_rgb_1x_c4d9129ca4.svg" alt="Cloudinary" width="50"/>
   <img src="https://raw.githubusercontent.com/github/explore/main/topics/swagger/swagger.png" alt="Swagger" width="50"/>
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/git/git.png" alt="Git" width="50"/>
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/vscode/vscode.png" alt="VSCode" width="50"/>
 </p>
+
+## Tools Used
+
+- **IDE**: Visual Studio Code
+- **Version Control**: Git, GitHub, GitDesktop
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/github/explore/main/topics/vscode/vscode.png" alt="VSCode" width="50"/>
+  <img src="https://raw.githubusercontent.com/github/explore/main/topics/git/git.png" alt="Git" width="50"/>
+  <img src="https://avatars.githubusercontent.com/u/9919?s=200&v=4" alt="GitHub" width="50"/>
+  <img src="https://avatars.githubusercontent.com/u/16530019?s=200&v=4" alt="GitHub Desktop" width="50"/>
+</p>
+
 
 ## Installation
 
