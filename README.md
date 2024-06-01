@@ -40,11 +40,11 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 - **API Documentation**: Swagger
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white" alt="Django" width="100"/>
-  <img src="https://www.postgresql.org/media/img/about/press/elephant.png" alt="PostgreSQL" width="50"/>
-  <img src="https://www.vectorlogo.zone/logos/websockets/websockets-icon.svg" alt="WebSockets" width="50"/>
-  <img src="https://res.cloudinary.com/cloudinary/image/upload/v1531592180/cloudinary_icon.png" alt="Cloudinary" width="50"/>
-  <img src="https://static1.smartbear.co/swagger/media/assets/swagger_logo.svg" alt="Swagger" width="50"/>
+  <img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white" alt="Django" />
+  <img src="https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/WebSockets-000000?style=for-the-badge&logo=websocket&logoColor=white" alt="WebSockets" />
+  <img src="https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white" alt="Cloudinary" />
+  <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=white" alt="Swagger" />
 </p>
 
 ## Tools Used
@@ -53,10 +53,10 @@ InnoTune is a comprehensive music platform designed to provide an immersive musi
 - **Version Control**: Git, GitHub, GitDesktop
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/vscode/vscode.png" alt="VSCode" width="50"/>
-  <img src="https://raw.githubusercontent.com/github/explore/main/topics/git/git.png" alt="Git" width="50"/>
-  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" width="50"/>
-  <img src="https://desktop.github.com/images/desktop-icon.svg" alt="GitHub Desktop" width="50"/>
+  <img src="https://img.shields.io/badge/VSCode-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" alt="VSCode" />
+  <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git" />
+  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
+  <img src="https://img.shields.io/badge/GitHub_Desktop-181717?style=for-the-badge&logo=github-desktop&logoColor=white" alt="GitHub Desktop" />
 </p>
 
 
