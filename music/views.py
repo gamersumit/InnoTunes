@@ -209,10 +209,9 @@ class PlaylistViewSet(viewsets.ModelViewSet):
             request.data['user_id'] = request.user.id
             serializer = PlaylistSerializer(data = request.data)
             serializer.is_valid(raise_exception=True)
-            serializer.save()
-            data = serializer.data
-            playlist_id = data['id']
-            songs = json.loads(request.data.get('songs', None))
+            data = serializer.save()
+            playlist_id = data.id
+            songs = request.data.get('songs', None)
             if songs :
                 for song in  songs :
                     temp = {'playlist_id' : playlist_id, 'song_id' : int(song)}
