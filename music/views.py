@@ -36,7 +36,7 @@ class SongCreateView(generics.CreateAPIView):
     operation_summary= "POST SONG",
     operation_description 
         = 'Only Artist are allowed to post songs. This API is to let an artist, realese a song on our app',
-    responses={200: openapi.Response( "SONG UPLOADED SUCCESSFULLY",SongSerializer)},
+    responses={200: openapi.Response( "SONG UPLOADED SUCCESSFULLY", SongSerializer)},
     )
     def post(self, request):
         try:
@@ -205,13 +205,14 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     def create(self, request):
         try: 
             urls = []
+            
             CommonUtils.Update_Create(request, ['playlist_picture'], urls)
-            request.data['user_id'] = request.user
+            
+            request.data['user_id'] = request.user.id 
             serializer = PlaylistSerializer(data = request.data)
             serializer.is_valid(raise_exception=True)
-            serializer.save()
-            data = serializer.data
-            playlist_id = data['id']
+            data = serializer.save()
+            playlist_id = data.id
             songs = json.loads(request.data.get('songs', None))
             if songs :
                 for song in  songs :
@@ -245,7 +246,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
             playlist = Playlist.objects.get(id = id)
             
             request.data['user_id'] = request.user.id
-            serializer = PlaylistSerializer(playlist, request.data, partial=True)
+            serializer = PlaylistSerializer(playlist, data = request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response({'message': 'playlist updated successfully'}, status = 200)
@@ -328,12 +329,12 @@ class AlbumViewSet(viewsets.ModelViewSet):
         = 'USER CAN EDIT AN ALBUM\'s DETAILS WITH THIS API',
     responses={200: openapi.Response('Album Updated successfully', AlbumSerializer)},
    )
-    def update(self, request):
+    def update(self, request, *args, **kwargs):
         try:
             urls = []
             CommonUtils.Update_Create(request, ['album_picture'], urls)
             request.data['artist_id'] = request.user.id
-            return CommonUtils.Serialize(request.data, AlbumSerializer, partial = True)
+            return AlbumSerializer(self.get_object, data=request.data, partial = True)
 
         except Exception as e:
             CommonUtils.delete_media_from_cloudinary(urls)

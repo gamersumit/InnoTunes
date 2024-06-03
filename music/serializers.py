@@ -48,7 +48,7 @@ class PostSongSerializer(serializers.Serializer):
 
     song_name = serializers.CharField(max_length = 500, required = True)
     song_discription = serializers.CharField(max_length = 100000, required = False)
-    song_pitcure = serializers.ImageField(required = False)
+    song_pitcure = serializers.ImageField(required = True)
     audio = serializers.FileField(required = True)
     video = serializers.FileField(required = False)
     genre = serializers.ChoiceField(choices = genre_choices, required = True)
@@ -78,7 +78,7 @@ class PlaylistSerializer(serializers.ModelSerializer):
 
 class PostPlaylistSerializer(serializers.Serializer):
     playlist_name = serializers.CharField(max_length = 50)
-    playlist_picture = serializers.FileField(required = False)
+    playlist_picture = serializers.FileField(required = True)
     is_global = serializers.BooleanField(default = False, required = False)
     songs = serializers.ListField(
         child=serializers.CharField(max_length = 32),

@@ -130,6 +130,9 @@ class LoginView(generics.GenericAPIView) :
             if user:
                 user.is_deleted = False
                 user.save()
+                
+                if not user.is_verified:
+                    return Response({'status': False, 'message': 'Please verify your email first'}, status=403)
                 token, created = Token.objects.get_or_create(user=user)
                 data = UserSerializer(user).data
                 liked_songs = {song.song_id.id : 'id' for song in SongLikes.objects.filter(user_id = user.id)} 
