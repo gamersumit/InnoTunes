@@ -36,7 +36,7 @@ class SongCreateView(generics.CreateAPIView):
     operation_summary= "POST SONG",
     operation_description 
         = 'Only Artist are allowed to post songs. This API is to let an artist, realese a song on our app',
-    responses={200: openapi.Response( "SONG UPLOADED SUCCESSFULLY",SongSerializer)},
+    responses={200: openapi.Response( "SONG UPLOADED SUCCESSFULLY", SongSerializer)},
     )
     def post(self, request):
         try:
@@ -205,13 +205,15 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     def create(self, request):
         try: 
             urls = []
+            
             CommonUtils.Update_Create(request, ['playlist_picture'], urls)
-            request.data['user_id'] = request.user.id
+            
+            request.data['user_id'] = request.user.id 
             serializer = PlaylistSerializer(data = request.data)
             serializer.is_valid(raise_exception=True)
             data = serializer.save()
             playlist_id = data.id
-            songs = request.data.get('songs', None)
+            songs = json.loads(request.data.get('songs', None))
             if songs :
                 for song in  songs :
                     temp = {'playlist_id' : playlist_id, 'song_id' : int(song)}
