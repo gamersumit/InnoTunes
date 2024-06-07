@@ -115,10 +115,10 @@ Here are some screenshots to give you a visual overview of the InnoTune backend.
   <img src="screenshots/Screenshot8.png" alt="Screenshot 8" width="200" style="margin: 10px;"/>
 </p>
 <p align="center">
-  <img src="screenshots/Screenshot5.png" alt="Screenshot 9" width="200" style="margin: 10px;"/>
-  <img src="screenshots/Screenshot6.png" alt="Screenshot 10" width="200" style="margin: 10px;"/>
-  <img src="screenshots/Screenshot7.png" alt="Screenshot 11" width="200" style="margin: 10px;"/>
-  <img src="screenshots/Screenshot8.png" alt="Screenshot 12" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot9.png" alt="Screenshot 9" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot10.png" alt="Screenshot 10" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot11.png" alt="Screenshot 11" width="200" style="margin: 10px;"/>
+  <img src="screenshots/Screenshot12.png" alt="Screenshot 12" width="200" style="margin: 10px;"/>
 </p>
 
 ## Frontend Link
