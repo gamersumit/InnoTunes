@@ -128,5 +128,5 @@ The frontend of the InnoTune project is handled by another team and can be acces
 
 ## Mobile APK
 
-You can download the InnoTune mobile application [here](link-to-your-apk-file).
+You can download the InnoTune mobile application [here](https://drive.google.com/file/d/12znJDNr73RTuva2YP9V0QTg2RSrKeXJd/view?usp=sharing).
 
