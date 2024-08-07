@@ -1,6 +1,6 @@
 # InnoTune Backend
 
-Welcome to the InnoTune Backend repository! This project is built using Django Rest Framework to support a music application with robust features including role-based user authentication, music uploads by artists, playlist management, and real-time updates using WebSockets.
+Welcome to the InnoTune Backend repository! This project is built using Django Rest Framework to support a music application with robust features including role-based user authentication, music uploads by artists, playlist management, and real-time updates using WebSocket.
 
 ## Table of Contents
 
